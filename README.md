@@ -161,7 +161,7 @@ It's clear in your mind in one moment and then gone in the next. Do your dreams 
 - Aproteem Majumder - This is an edit
 - Tejasvi Yasa (That's me)
 - Mayowa Akinyede
-- Suha Desai
+- Suha Desai ----
 
 **Project Manager**
 - Noel Emmanuel - The Great 
