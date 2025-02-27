@@ -158,13 +158,13 @@ It's clear in your mind in one moment and then gone in the next. Do your dreams 
 ## Team DreamScope 🙌
 
 **Developers**
-- Aproteem Majumder
-- Tejasvi Yasa
+- Aproteem Majumder - This is an edit
+- Tejasvi Yasa (That's me)
 - Mayowa Akinyede
 - Suha Desai ----
 
 **Project Manager**
-- Noel Emmanuel 
+- Noel Emmanuel - The Great III
 
 **Industry Mentor**
 - Anjelica Avorque
