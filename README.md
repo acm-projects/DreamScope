@@ -159,7 +159,7 @@ It's clear in your mind in one moment and then gone in the next. Do your dreams 
 
 **Developers**
 - Aproteem Majumder
-- Tejasvi Yasa
+- Tejasvi Yasa (That's me)
 - Mayowa Akinyede
 - Suha Desai
 
