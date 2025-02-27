@@ -164,7 +164,7 @@ It's clear in your mind in one moment and then gone in the next. Do your dreams 
 - Suha Desai
 
 **Project Manager**
-- Noel Emmanuel - The Great 
+- Noel Emmanuel - The Great III
 
 **Industry Mentor**
 - Anjelica Avorque
