@@ -158,7 +158,7 @@ It's clear in your mind in one moment and then gone in the next. Do your dreams 
 ## Team DreamScope 🙌
 
 **Developers**
-- Aproteem Majumder
+- Aproteem Majumder - This is an edit
 - Tejasvi Yasa
 - Mayowa Akinyede
 - Suha Desai
