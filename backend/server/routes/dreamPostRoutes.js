@@ -23,4 +23,38 @@ router.get("/", async (req, res) => {
   }
 });
 
+// Update a dream post by ID
+router.put("/:id", async (req, res) => {
+  try {
+    const updatedDreamPost = await DreamPost.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedDreamPost) {
+      return res.status(404).json({ error: "Dream post not found" });
+    }
+
+    res.json(updatedDreamPost);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+// Delete a dream post by ID
+router.delete("/:id", async (req, res) => {
+  try {
+    const deletedDreamPost = await DreamPost.findByIdAndDelete(req.params.id);
+
+    if (!deletedDreamPost) {
+      return res.status(404).json({ error: "Dream post not found" });
+    }
+
+    res.json({ message: "Dream post deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 module.exports = router;
