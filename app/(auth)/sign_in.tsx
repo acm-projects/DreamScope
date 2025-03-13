@@ -2,12 +2,12 @@ import { View, Text, Image } from 'react-native'
 import React, { useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { ScrollView } from 'react-native'
-import FormField from '@/components/FormField'
-import CustomButton from '@/components/CustomButton'
+import FormField from '../../Frontend/components/FormField'
+import CustomButton from '../../Frontend/components/CustomButton'
 import { Link } from 'expo-router'
 import { Redirect, router } from 'expo-router';
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../../firebaseConfig.js'; // Import auth
+import { auth } from '../../Backend/firebaseConfig'; // Import auth
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
 
@@ -57,7 +57,7 @@ const submit = async () => {
                     </Text>
 
                     <Image
-                        source={require('../../assets/images/logo.png')}
+                        source={require('../../Frontend/assets/images/logo.png')}
                         className="w-32 h-32 mt-2"
                         resizeMode="contain"
                     />

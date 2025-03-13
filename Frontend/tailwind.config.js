@@ -1,7 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   // NOTE: Update this to include the paths to all of your component files.
-  content: ["./app/**/*.{js,jsx,ts,tsx}", "./components/**/*.{js,jsx,ts,tsx}"],
+  content: ["../app/**/*.{js,jsx,ts,tsx}", "./components/**/*.{js,jsx,ts,tsx}"],
   presets: [require("nativewind/preset")],
   theme: {
     extend: {
@@ -11,10 +11,11 @@ module.exports = {
         light: "#94C9A9"
       },
       fontFamily: {
-        custom: ['pregular', 'sans-serif'],
+        custom: ['Apple Chancery', 'sans-serif'],
       }
 
     },
   },
   plugins: [],
+  assets: ['./assets/fonts']
 }

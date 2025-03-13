@@ -1,8 +1,8 @@
 import { ScrollView, Text, View, Image } from "react-native";
 import { Redirect, router } from 'expo-router';
-import "../global.css"
+import '../Frontend/global.css'
 import { SafeAreaView } from "react-native-safe-area-context";
-import CustomButton from "@/components/CustomButton";
+import CustomButton from "../Frontend/components/CustomButton";
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import {useState, useEffect } from 'react'
 
@@ -24,7 +24,7 @@ export default function Index() {
       <ScrollView contentContainerStyle={{ height: '100%' }}>
         <View className=" w-full min-h-[85vh] justify-center items-center  px-4">
           <Image
-            source={require('../assets/images/logo.png')}
+            source={require('../Frontend/assets/images/logo.png')}
             className="w-52 h-52"
             resizeMode="contain"
           />

@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import { router } from 'expo-router'
-import CustomButton from "@/components/CustomButton";
+import CustomButton from "../../../Frontend/components/CustomButton";
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const HomeLayout = () => {
