@@ -4,9 +4,7 @@ import { useFonts } from 'expo-font'
 
 
 const RootLayout = () => {
-  const [fontsloaded, error] = useFonts({
-    "pregular": require("../assets/fonts/PlaywriteITModerna-VariableFont_wght.ttf")
-  })
+
   return (
     <Stack>
       <Stack.Screen name="index" options={{ headerShown: false }} />

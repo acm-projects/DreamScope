@@ -5,10 +5,13 @@ import { TouchableOpacity, Text, GestureResponderEvent } from 'react-native';
 interface CustomButtonProps {
     title: string;
     handlePress: (event: GestureResponderEvent) => void;
+    containerStyles?: string;  // Add containerStyles as an optional prop
+    isLoading?: boolean;
+
 }
 
 // Annotate the component with the props type
-const CustomButton: React.FC<CustomButtonProps> = ({ title, handlePress, containerStyles }) => {
+const CustomButton: React.FC<CustomButtonProps> = ({ title, handlePress, containerStyles = '' }) => {
     return (
         <TouchableOpacity
             onPress={handlePress}

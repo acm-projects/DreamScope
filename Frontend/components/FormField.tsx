@@ -29,8 +29,8 @@ const FormField: React.FC<FormFieldProps> = ({
       </Text>
 
       <View
-        className={`w-full h-16 px-4 bg-black-100 rounded-2xl border-2 ${isFocused ? 'border-light' : 'border-white'
-          } flex flex-row items-center`}
+        className={`w-full h-16 px-4 bg-black-100 rounded-2xl border-2 ${isFocused ? 'border-light' : 'border-white'} 
+                  flex flex-row items-center`}
       >
         <TextInput
           className="flex-1 text-light font-semibold"
