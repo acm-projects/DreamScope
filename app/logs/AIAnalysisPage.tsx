@@ -23,14 +23,14 @@ export default function AIAnalysisPage() {
     const router = useRouter();
     return (
 
-        <ScrollView style={{ flex: 1, backgroundColor: "2C123F" }}>
+        <View style={{ flex: 1, backgroundColor: "#2C123F" }}>
 
             <View>
                 <Text>
                     {currentDate}
                 </Text>
                 <Button onPress={() => router.push("/tabs")}>
-                    <ButtonText style={{ color: "white", }}>
+                    <ButtonText style={{ color: "white", fontSize: 55 }}>
                         X
                     </ButtonText>
                 </Button>
@@ -48,13 +48,12 @@ export default function AIAnalysisPage() {
             {/* Places*/}
 
             <View>
-                <Text style={{ color: "white" }}>
-                    Places:
-                </Text>
-
-                <FlatList data={dummyAIAnalysis}>
-
-                </FlatList>
+                <Text style={{ color: "white", fontSize: 18, marginTop: 16 }}>Places:</Text>
+                <FlatList
+                    data={dummyAIAnalysis.places}
+                    renderItem={({ item }) => <Text style={{ color: "white", marginLeft: 8 }}>• {item}</Text>}
+                    keyExtractor={(item, index) => index.toString()}
+                />
             </View>
 
 
@@ -66,9 +65,10 @@ export default function AIAnalysisPage() {
                 </Text>
 
 
-                <FlatList>
-
-                </FlatList>
+                <FlatList data={dummyAIAnalysis.people}
+                    renderItem={({ item }) => <Text style={{ color: "white", marginLeft: 8 }}>• {item}</Text>}
+                    keyExtractor={(item, index) => index.toString()}
+                />
             </View>
 
 
@@ -78,9 +78,10 @@ export default function AIAnalysisPage() {
                     Objects:
                 </Text>
 
-                <FlatList>
-
-                </FlatList>
+                <FlatList data={dummyAIAnalysis.objects}
+                    renderItem={({ item }) => <Text style={{ color: "white", marginLeft: 8 }}>• {item}</Text>}
+                    keyExtractor={(item, index) => index.toString()}
+                />
             </View>
 
 
@@ -91,25 +92,25 @@ export default function AIAnalysisPage() {
                     Themes:
                 </Text>
 
-                <FlatList>
-
-                </FlatList>
+                <FlatList data={dummyAIAnalysis.themes}
+                    renderItem={({ item }) => <Text style={{ color: "white", marginLeft: 8 }}> {item}</Text>}
+                    keyExtractor={(item, index) => index.toString()}
+                />
             </View>
 
 
 
             {/*Reoccuring Places from past logs*/}
-
             <View>
                 <Text style={{ color: "white" }}>
-                    Reoccuring Places:
+                    Reoccuring People:
                 </Text>
 
-                <FlatList>
-
-                </FlatList>
+                <FlatList data={dummyAIAnalysis["reoccuring-places"]}
+                    renderItem={({ item }) => <Text style={{ color: "white", marginLeft: 8 }}>{item}</Text>}
+                    keyExtractor={(item, index) => index.toString()}
+                />
             </View>
-
 
 
 
@@ -120,9 +121,10 @@ export default function AIAnalysisPage() {
                     Reoccuring People:
                 </Text>
 
-                <FlatList>
-
-                </FlatList>
+                <FlatList data={dummyAIAnalysis["reoccuring-people"]}
+                    renderItem={({ item }) => <Text style={{ color: "white", marginLeft: 8 }}>{item}</Text>}
+                    keyExtractor={(item, index) => index.toString()}
+                />
             </View>
 
 
@@ -134,11 +136,11 @@ export default function AIAnalysisPage() {
                     Reoccuring Objects:
                 </Text>
 
-                <FlatList>
-
-                </FlatList>
+                <FlatList data={dummyAIAnalysis["reoccuring-objects"]}
+                    renderItem={({ item }) => <Text style={{ color: "white", marginLeft: 8 }}>{item}</Text>}
+                    keyExtractor={(item, index) => index.toString()}
+                />
             </View>
-
 
 
 
@@ -149,9 +151,10 @@ export default function AIAnalysisPage() {
                     Reoccuring Themes:
                 </Text>
 
-                <FlatList>
-
-                </FlatList>
+                <FlatList data={dummyAIAnalysis["reoccuring-themes"]}
+                    renderItem={({ item }) => <Text style={{ color: "white", marginLeft: 8 }}>{item}</Text>}
+                    keyExtractor={(item, index) => index.toString()}
+                />
             </View>
 
 
@@ -174,7 +177,7 @@ export default function AIAnalysisPage() {
 
 
 
-        </ScrollView>
+        </View >
 
     )
 }
