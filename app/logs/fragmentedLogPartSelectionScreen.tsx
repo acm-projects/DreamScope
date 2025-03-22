@@ -5,7 +5,7 @@ import { HStack } from "@/components/ui/hstack";
 import { useSearchParams, useLocalSearchParams } from "expo-router/build/hooks";
 import { useRouter } from "expo-router";
 import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
-import tags from "../../assets/tagsHolder.json";
+import tags from "../../Frontend/assets/dummyJson/tagsHolder.json";
 
 
 export default function TagsScreen() {
@@ -55,7 +55,7 @@ export default function TagsScreen() {
                             backgroundColor: "transparent",
                         }}
                     >
-                        <Text style={{ fontSize: 24, color: "white" }}>✖
+                        <Text style={{ fontSize: 24, color: "white" }}>X
 
                         </Text>
                     </Button>

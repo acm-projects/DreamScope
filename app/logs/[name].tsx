@@ -5,21 +5,31 @@ import { HStack } from "@/components/ui/hstack";
 import { useSearchParams, useLocalSearchParams } from "expo-router/build/hooks";
 import { useRouter } from "expo-router";
 import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
-import tags from "../../assets/tagsHolder.json";
+import tags from "../../Frontend/assets/dummyJson/tagsHolder.json";
 import Feather from '@expo/vector-icons/Feather';
 import { AntDesign, Fontisto } from "@expo/vector-icons";
 
 export default function TagsScreen() {
     const router = useRouter();
+
+    //THIS NAME COMES FROM THE LAST PAGE IT GETS THE NAME OF THE TYPE OF LOG PRESSED!!
     const { name } = useLocalSearchParams();
+
+    //Params to push all of the tags the user clicked to the next page
     const params = useSearchParams();
+
+    //
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
+
+    //function for todays date!
     const currentDate = new Date().toLocaleDateString("en-US", {
         month: "long",
         day: "numeric",
         year: "numeric",
     });
 
+
+    //Each section corresponds to its stuff in the json file tagsHolder
     const sections: { title: string; data: string[] }[] = [
         { title: "Themes", data: tags.themes },
         { title: "Settings", data: tags.settings },
@@ -35,7 +45,7 @@ export default function TagsScreen() {
         );
     };
 
-
+    //checks if the type of dream the user pressed is an Empty Log or Fragmented Log or Detailed Log
     if (name == "Empty Capture") {
         return (
             router.push("/logCompletion/emptyLogCompletion")

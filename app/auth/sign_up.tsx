@@ -55,7 +55,7 @@ const SignUp = (): JSX.Element => {
                         <Text style={styles.highlight}>cope</Text>
                     </Text>
 
-                    <Image source={require("../../assets/logo.png")} style={styles.logo} resizeMode="contain" />
+                    <Image source={require("../../Frontend/images/logo.png")} style={styles.logo} resizeMode="contain" />
 
                     {/* Form Fields */}
                     <TextInput
