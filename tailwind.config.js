@@ -2,14 +2,14 @@ import gluestackPlugin from '@gluestack-ui/nativewind-utils/tailwind-plugin';
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-
-  darkMode: process.env.DARK_MODE ? process.env.DARK_MODE : 'class',
+  darkMode: "media",
   content: [
-    "./app/**/*.{js,jsx,ts,tsx}",
-    "./screens/**/*.{js,jsx,ts,tsx}",
-    "./Frontend/components/**/*.{js,jsx,ts,tsx}",
+    "App.{tsx,jsx,ts,js}",
+    "index.{tsx,jsx,ts,js}",
+    "app/**/*.{tsx,jsx,ts,js}",
+    "components/**/*.{tsx,jsx,ts,js}",
   ],
-  presets: [require("nativewind/preset")],
+  presets: [require('nativewind/preset')],
   safelist: [
     {
       pattern:
@@ -19,11 +19,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: "#2C123F",
-        secondary: "#D7C9E3",
-        light: "#94C9A9",
-
-        primarygs: {
+        primary: {
           0: 'rgb(var(--color-primary-0)/<alpha-value>)',
           50: 'rgb(var(--color-primary-50)/<alpha-value>)',
           100: 'rgb(var(--color-primary-100)/<alpha-value>)',
@@ -37,7 +33,7 @@ module.exports = {
           900: 'rgb(var(--color-primary-900)/<alpha-value>)',
           950: 'rgb(var(--color-primary-950)/<alpha-value>)',
         },
-        secondarygs: {
+        secondary: {
           0: 'rgb(var(--color-secondary-0)/<alpha-value>)',
           50: 'rgb(var(--color-secondary-50)/<alpha-value>)',
           100: 'rgb(var(--color-secondary-100)/<alpha-value>)',
@@ -177,7 +173,6 @@ module.exports = {
           info: 'rgb(var(--color-indicator-info)/<alpha-value>)',
           error: 'rgb(var(--color-indicator-error)/<alpha-value>)',
         },
-
       },
       fontFamily: {
         heading: undefined,
@@ -206,6 +201,3 @@ module.exports = {
   },
   plugins: [gluestackPlugin],
 };
-
-
-

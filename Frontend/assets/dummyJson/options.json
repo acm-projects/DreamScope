@@ -1,0 +1,17 @@
+[
+    {
+        "id": 1,
+        "name": "Detailed Capture",
+        "description": "A in-depths log of the Users dream"
+    },
+    {
+        "id": 2,
+        "name": "Fragmented Capture",
+        "description": "When the User's dream was split into multiple parts"
+    },
+    {
+        "id": 3,
+        "name": "Empty Capture",
+        "description": "User didnt have a dream/or forgot *keeps streaks*"
+    }
+]

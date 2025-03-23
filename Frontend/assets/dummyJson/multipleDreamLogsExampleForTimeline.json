@@ -1,0 +1,26 @@
+[
+    {
+        "DreamType": "Detailed Capture",
+        "DreamTitle": "The chilling artic",
+        "description": "Woke up in the artic",
+        "DayMonthYear": "03/20/25",
+        "TimeOfCapture": "13:30pm"
+    },
+    {
+        "DreamType": " Empty Capture",
+        "DreamTitle": "N/A",
+        "description": "N/A",
+        "DayMonthYear": "03/20/25",
+        "TimeOfCapture": "13:30pm"
+    },
+    {
+        "DreamType": "Fragmented Capture",
+        "DreamTitle": "N/A",
+        "descriptions": [
+            "Woke up in Narnia",
+            "Woke up in space"
+        ],
+        "DayMonthYear": "03/20/25",
+        "TimeOfCapture": "13:30pm"
+    }
+]
