@@ -1,43 +1,116 @@
-import React from 'react';
-import { View, FlatList, Text, StyleSheet, ScrollView, Pressable, Image } from "react-native";
-import { Button, ButtonText } from "@/components/ui/button";
-import { useRouter } from "expo-router";
+import React, { useRef, useEffect } from 'react';
+import {
+    View,
+    Text,
+    StyleSheet,
+    Image,
+    Pressable,
+    Dimensions,
+    ScrollView,
+} from 'react-native';
+import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Fontisto } from "@expo/vector-icons";
+import { Fontisto } from '@expo/vector-icons';
 
-export default function HomeScreenScreen() {
+const { width } = Dimensions.get('window');
+const CIRCLE_SIZE = 100;
+
+function generatePastDates(count: number) {
+    const dates = [];
+    const now = new Date();
+    for (let i = count - 1; i >= 0; i--) {
+        const d = new Date();
+        d.setDate(now.getDate() - i);
+        const label = d.toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+        });
+        dates.push(label);
+    }
+    return dates;
+}
+
+function DateTimeline() {
+    const scrollRef = useRef<ScrollView>(null);
+    const dates = generatePastDates(90);
+    const todayLabel = new Date().toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+    });
+
+    useEffect(() => {
+        setTimeout(() => {
+            scrollRef.current?.scrollToEnd({ animated: false });
+        }, 300);
+    }, []);
+
+    return (
+        <ScrollView
+            ref={scrollRef}
+            contentContainerStyle={styles.timelineContainer}
+            showsVerticalScrollIndicator={false}
+        >
+            {dates.map((date, index) => {
+                const isToday = date === todayLabel;
+                const reverseIndex = dates.length - 1 - index;
+
+                let alignmentStyle;
+                if (isToday) {
+                    alignmentStyle = styles.centerItem;
+                } else if (reverseIndex % 4 === 1) {
+                    alignmentStyle = styles.leftItem;
+                } else if (reverseIndex % 4 === 2) {
+                    alignmentStyle = styles.centerItem;
+                } else if (reverseIndex % 4 === 3) {
+                    alignmentStyle = styles.rightItem;
+                } else {
+                    alignmentStyle = styles.centerItem;
+                }
+
+                return (
+                    <View
+                        key={index}
+                        style={[styles.dateItemWrapper, alignmentStyle]}
+                    >
+                        <View style={[styles.circle, isToday && styles.todayCircle]}>
+                            <Text style={[styles.dateText, isToday && styles.todayText]}>
+                                {date}
+                            </Text>
+                        </View>
+                    </View>
+                );
+            })}
+        </ScrollView>
+    );
+}
+
+export default function HomeScreen() {
     const router = useRouter();
 
     const handleProfilePress = () => {
-        router.push("../Settings&ProfilePages/Profile"); // Make sure this route exists
+        router.push("../Settings&ProfilePages/Profile");
     };
 
     return (
         <LinearGradient colors={['#180723', '#2C123F', '#2C123F', '#3d1865']} style={{ flex: 1 }}>
             <SafeAreaView style={styles.container}>
 
-
                 <View style={styles.imageContainer}>
                     <Image
-                        source={require("../../Frontend/images/treeforeground.png")}
+                        source={require('../../Frontend/images/treeforeground.png')}
                         style={styles.image}
-                        resizeMode="stretch" // or "stretch"
+                        resizeMode="stretch"
                     />
                 </View>
 
-                <ScrollView contentContainerStyle={styles.scrollContainer}>
-
+                <View style={styles.profileButtonContainer}>
                     <Pressable onPress={handleProfilePress} style={styles.profileButton}>
                         <Fontisto name="person" size={24} color="#D7C9E3" />
                     </Pressable>
+                </View>
 
-                </ScrollView>
-
-
-
-
-
+                <DateTimeline />
             </SafeAreaView>
         </LinearGradient>
     );
@@ -46,103 +119,75 @@ export default function HomeScreenScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        position: 'relative'
+        position: 'relative',
     },
-    scrollContainer: {
-        flexGrow: 1,
-        justifyContent: "center",
-        paddingHorizontal: 0,
-        zIndex: 1,
-    },
-    profileButton: {
+    profileButtonContainer: {
         position: 'absolute',
         top: 10,
         right: 20,
         zIndex: 10,
+    },
+    profileButton: {
         width: 44,
         height: 44,
         borderRadius: 22,
-        backgroundColor: '#2C123F', // or 'transparent' with a border
+        backgroundColor: '#2C123F',
         borderWidth: 2,
         borderColor: '#D7C9E3',
         justifyContent: 'center',
         alignItems: 'center',
     },
-
-    // (existing styles remain unchanged below)
-    innerContainer: {
-        alignItems: "center"
-    },
-    title: {
-        fontSize: 32,
-        fontWeight: "bold",
-        color: "#fff",
-        marginBottom: 10
-    },
-    highlight: {
-        color: "#FFD700"
-    },
-    logo: {
-        width: 100,
-        height: 100,
-        marginBottom: 20
-    },
-    input: {
-        width: "100%",
-        height: 50,
-        backgroundColor: "#fff",
-        borderRadius: 8,
-        paddingHorizontal: 15,
-        marginBottom: 15,
-        fontSize: 16,
-        borderWidth: 2,
-        borderColor: "#fff"
-    },
-    inputFocused: {
-        borderColor: "#FFD700"
-    },
-    button: {
-        backgroundColor: "#FFD700",
-        paddingVertical: 12,
-        paddingHorizontal: 20,
-        borderRadius: 8,
-        alignItems: "center",
-        width: "100%"
-    },
-    buttonText: {
-        fontSize: 18,
-        fontWeight: "bold",
-        color: "#000"
-    },
-    footer: {
-        flexDirection: "row",
-        marginTop: 20
-    },
-    footerText: {
-        color: "#fff",
-        fontSize: 16
-    },
-    linkText: {
-        fontSize: 16,
-        fontWeight: "bold",
-        color: "#FFD700",
-        marginLeft: 5
-    },
-
     imageContainer: {
         position: 'absolute',
         bottom: 0,
         left: 0,
         right: 0,
-        height: 800, // Adjust this based on how tall your trees image should be
+        height: 800,
         zIndex: 0,
     },
-
     image: {
         width: '100%',
         height: '100%',
-
     },
-
-
+    timelineContainer: {
+        paddingVertical: 100,
+        position: 'relative',
+    },
+    dateItemWrapper: {
+        marginVertical: 40,
+        position: 'relative',
+    },
+    circle: {
+        width: CIRCLE_SIZE,
+        height: CIRCLE_SIZE,
+        borderRadius: CIRCLE_SIZE / 2,
+        backgroundColor: '#D7C9E3',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 2,
+    },
+    dateText: {
+        fontSize: 14,
+        fontWeight: 'bold',
+        color: '#2C123F',
+    },
+    todayCircle: {
+        backgroundColor: '#94C9A9',
+        transform: [{ scale: 2.0 }],
+    },
+    todayText: {
+        color: '#180723',
+        fontSize: 16,
+    },
+    leftItem: {
+        alignSelf: 'flex-start',
+        marginLeft: 20,
+    },
+    rightItem: {
+        alignSelf: 'flex-end',
+        marginRight: 20,
+    },
+    centerItem: {
+        alignSelf: 'center',
+    },
 });

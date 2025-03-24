@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { View, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
+
 
 export default function Entry() {
     const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null); // null = loading
@@ -37,5 +39,6 @@ export default function Entry() {
     }
 
     // This screen never actually renders content — redirect happens above
+
     return null;
 }

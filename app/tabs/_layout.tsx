@@ -1,9 +1,13 @@
 import { Tabs } from "expo-router";
 import { Fontisto } from "@expo/vector-icons";
 import { View } from "react-native";
+import { StatusBar } from 'expo-status-bar';
+
+
 
 export default function RootLayout() {
     return (
+
         <Tabs
             screenOptions={{
                 tabBarShowLabel: false,

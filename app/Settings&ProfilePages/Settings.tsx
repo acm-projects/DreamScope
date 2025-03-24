@@ -1,15 +1,17 @@
 import React, { useState } from "react";
+import { router } from "expo-router";
 import {
     View,
     Text,
     TextInput,
     StyleSheet,
     ScrollView,
-    SafeAreaView,
     TouchableOpacity,
     Alert,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function SettingsPage() {
     const [accountName, setAccountName] = useState("");
@@ -25,7 +27,6 @@ export default function SettingsPage() {
                     text: "Delete",
                     style: "destructive",
                     onPress: () => {
-                        // Logic to delete logs here
                         Alert.alert("Logs Deleted", "Your logs history has been deleted.");
                     },
                 },
@@ -34,72 +35,102 @@ export default function SettingsPage() {
     };
 
     const handleSaveChanges = () => {
-        // Placeholder save logic
         Alert.alert("Changes Saved", "Your account settings have been updated.");
     };
 
+    const handleTopRightButton = () => {
+        router.push("./Profile");
+    };
+
     return (
-        <SafeAreaView style={styles.container}>
-            <ScrollView contentContainerStyle={styles.content}>
-                <Text style={styles.heading}>Settings</Text>
+        <LinearGradient
+            colors={["#180723", "#2C123F", "#2C123F", "#3d1865"]}
+            style={{ flex: 1 }}
+        >
+            <SafeAreaView style={styles.container}>
+                <ScrollView contentContainerStyle={styles.content}>
+                    <View style={styles.headerRow}>
+                        <TouchableOpacity
+                            style={styles.backButton}
+                            onPress={handleTopRightButton}
+                        >
+                            <Feather name="arrow-left" size={20} color="#D7C9E3" />
+                        </TouchableOpacity>
+                        <Text style={styles.heading}>Settings</Text>
+                    </View>
 
-                <View style={styles.settingItem}>
-                    <Feather name="user" size={20} color="#333" style={styles.icon} />
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Change account name"
-                        value={accountName}
-                        onChangeText={setAccountName}
-                    />
-                </View>
+                    <View style={styles.settingItem}>
+                        <Feather name="user" size={20} color="#D7C9E3" style={styles.icon} />
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Change account name"
+                            placeholderTextColor="#B5A7C7"
+                            value={accountName}
+                            onChangeText={setAccountName}
+                        />
+                    </View>
 
-                <View style={styles.settingItem}>
-                    <Feather name="lock" size={20} color="#333" style={styles.icon} />
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Change password"
-                        value={password}
-                        onChangeText={setPassword}
-                        secureTextEntry
-                    />
-                </View>
+                    <View style={styles.settingItem}>
+                        <Feather name="lock" size={20} color="#D7C9E3" style={styles.icon} />
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Change password"
+                            placeholderTextColor="#B5A7C7"
+                            value={password}
+                            onChangeText={setPassword}
+                            secureTextEntry
+                        />
+                    </View>
 
-                <TouchableOpacity style={styles.saveButton} onPress={handleSaveChanges}>
-                    <Text style={styles.saveButtonText}>Save Changes</Text>
-                </TouchableOpacity>
+                    <TouchableOpacity style={styles.saveButton} onPress={handleSaveChanges}>
+                        <Text style={styles.saveButtonText}>Save Changes</Text>
+                    </TouchableOpacity>
 
-                <View style={styles.divider} />
+                    <View style={styles.divider} />
 
-                <TouchableOpacity style={styles.deleteButton} onPress={handleDeleteLogs}>
-                    <Feather name="trash-2" size={18} color="#fff" />
-                    <Text style={styles.deleteButtonText}>Delete Logs History</Text>
-                </TouchableOpacity>
-            </ScrollView>
-        </SafeAreaView>
+                    <TouchableOpacity style={styles.deleteButton} onPress={handleDeleteLogs}>
+                        <Feather name="trash-2" size={18} color="#fff" />
+                        <Text style={styles.deleteButtonText}>Delete Logs History</Text>
+                    </TouchableOpacity>
+                </ScrollView>
+            </SafeAreaView>
+        </LinearGradient>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#f2f2f2",
     },
     content: {
-        padding: 20,
+        padding: 24,
+    },
+    headerRow: {
+        flexDirection: "row",
+        alignItems: "center",
+        marginBottom: 30,
     },
     heading: {
         fontSize: 24,
-        fontWeight: "600",
-        marginBottom: 20,
+        fontWeight: "700",
+        color: "#D7C9E3",
+        marginLeft: 16,
+    },
+    backButton: {
+        padding: 10,
+        borderRadius: 10,
+        backgroundColor: "#2C123F",
+        borderWidth: 1.5,
+        borderColor: "#D7C9E3",
     },
     settingItem: {
         flexDirection: "row",
         alignItems: "center",
-        backgroundColor: "#fff",
-        borderRadius: 10,
-        padding: 15,
-        marginBottom: 15,
-        elevation: 1,
+        backgroundColor: "#3d1865",
+        borderRadius: 16,
+        padding: 16,
+        marginBottom: 20,
+        elevation: 2,
     },
     icon: {
         marginRight: 10,
@@ -107,22 +138,24 @@ const styles = StyleSheet.create({
     input: {
         flex: 1,
         fontSize: 16,
+        color: "#D7C9E3",
     },
     saveButton: {
-        backgroundColor: "#4CAF50",
-        padding: 15,
-        borderRadius: 10,
+        backgroundColor: "#94C9A9",
+        padding: 16,
+        borderRadius: 16,
         alignItems: "center",
         marginBottom: 30,
+        elevation: 3,
     },
     saveButtonText: {
-        color: "#fff",
+        color: "#180723",
         fontSize: 16,
         fontWeight: "600",
     },
     divider: {
         height: 1,
-        backgroundColor: "#ccc",
+        backgroundColor: "#B5A7C7",
         marginVertical: 20,
     },
     deleteButton: {
@@ -130,12 +163,13 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "center",
-        padding: 15,
-        borderRadius: 10,
+        padding: 16,
+        borderRadius: 16,
+        elevation: 3,
     },
     deleteButtonText: {
         color: "#fff",
-        marginLeft: 8,
+        marginLeft: 10,
         fontSize: 16,
         fontWeight: "600",
     },
