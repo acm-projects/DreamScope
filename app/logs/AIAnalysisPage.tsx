@@ -1,13 +1,6 @@
 import { useState } from "react";
-import { View, Text, FlatList, Pressable, ScrollView, TextInput } from "react-native";
-import { Button, ButtonText } from "@/components/ui/button";
-import { HStack } from "@/components/ui/hstack";
-import { useSearchParams, useLocalSearchParams } from "expo-router/build/hooks";
+import { View, Text, FlatList, TextInput, ScrollView, Button } from "react-native";
 import { useRouter } from "expo-router";
-import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
-import tags from "../../Frontend/assets/dummyJson/tagsHolder.json";
-import Feather from '@expo/vector-icons/Feather';
-import { AntDesign, Fontisto } from "@expo/vector-icons";
 import dummyAIAnalysis from "../../Frontend/assets/dummyJson/DummyDataForAIAnalysis.json";
 
 const currentDate = new Date().toLocaleDateString("en-US", {
@@ -16,168 +9,104 @@ const currentDate = new Date().toLocaleDateString("en-US", {
     year: "numeric",
 });
 
-
-
-
 export default function AIAnalysisPage() {
     const router = useRouter();
+
     return (
-
-        <View style={{ flex: 1, backgroundColor: "#2C123F" }}>
-
-            <View>
-                <Text>
+        <ScrollView style={{ flex: 1, backgroundColor: "#2C123F", padding: 20 }}>
+            {/* Header Section */}
+            <View style={{ alignItems: "center", marginBottom: 20 }}>
+                <Text style={{ color: "white", fontSize: 30, fontWeight: "bold" }}>
                     {currentDate}
                 </Text>
-                <Button onPress={() => router.push("/tabs")}>
-                    <ButtonText style={{ color: "white", fontSize: 55 }}>
-                        X
-                    </ButtonText>
-                </Button>
-
-
+                <Button
+                    onPress={() => router.push("/tabs")}
+                    title="Back to Home"
+                    color="grey"
+                    style={{
+                        marginTop: 10,
+                        backgroundColor: "transparent",
+                        borderWidth: 2,
+                        borderColor: "white",
+                        padding: 5,
+                        borderRadius: 50,
+                    }}
+                />
             </View>
 
-
-            <Text>
-                Your Dream breakdown/analysis:
+            {/* Dream Breakdown */}
+            <Text style={{ color: "white", fontSize: 24, fontWeight: "600", marginBottom: 10 }}>
+                Your Dream Breakdown/Analysis:
             </Text>
 
+            {/* Categories (Places, People, Objects, Themes, etc.) */}
+            {[
+                { label: "Places", data: dummyAIAnalysis.places },
+                { label: "People", data: dummyAIAnalysis.people },
+                { label: "Objects", data: dummyAIAnalysis.objects },
+                { label: "Themes", data: dummyAIAnalysis.themes },
+                { label: "Reoccurring Places", data: dummyAIAnalysis["reoccuring-places"] },
+                { label: "Reoccurring People", data: dummyAIAnalysis["reoccuring-people"] },
+                { label: "Reoccurring Objects", data: dummyAIAnalysis["reoccuring-objects"] },
+                { label: "Reoccurring Themes", data: dummyAIAnalysis["reoccuring-themes"] },
+            ].map((section, index) => (
+                <View key={index} style={{ marginBottom: 20 }}>
+                    <Text
+                        style={{
+                            color: "white",
+                            fontSize: 20,
+                            fontWeight: "bold",
+                            marginBottom: 10,
+                            backgroundColor: "#ADD8E6",
+                            padding: 10,
+                            borderRadius: 15,
+                        }}
+                    >
+                        {section.label}:
+                    </Text>
+                    <FlatList
+                        data={section.data}
+                        renderItem={({ item }) => (
+                            <Text style={{ color: "white", marginLeft: 10, fontSize: 16, flexWrap: "wrap" }}>
+                                • {item}
+                            </Text>
+                        )}
+                        keyExtractor={(item, index) => index.toString()}
+                    />
+                </View>
+            ))}
 
-
-            {/* Places*/}
-
-            <View>
-                <Text style={{ color: "white", fontSize: 18, marginTop: 16 }}>Places:</Text>
-                <FlatList
-                    data={dummyAIAnalysis.places}
-                    renderItem={({ item }) => <Text style={{ color: "white", marginLeft: 8 }}>• {item}</Text>}
-                    keyExtractor={(item, index) => index.toString()}
-                />
-            </View>
-
-
-            {/* People*/}
-
-            <View>
-                <Text style={{ color: "white" }}>
-                    People:
-                </Text>
-
-
-                <FlatList data={dummyAIAnalysis.people}
-                    renderItem={({ item }) => <Text style={{ color: "white", marginLeft: 8 }}>• {item}</Text>}
-                    keyExtractor={(item, index) => index.toString()}
-                />
-            </View>
-
-
-            {/* Objects*/}
-            <View>
-                <Text style={{ color: "white" }}>
-                    Objects:
-                </Text>
-
-                <FlatList data={dummyAIAnalysis.objects}
-                    renderItem={({ item }) => <Text style={{ color: "white", marginLeft: 8 }}>• {item}</Text>}
-                    keyExtractor={(item, index) => index.toString()}
-                />
-            </View>
-
-
-
-            {/* Themes*/}
-            <View>
-                <Text style={{ color: "white" }}>
-                    Themes:
-                </Text>
-
-                <FlatList data={dummyAIAnalysis.themes}
-                    renderItem={({ item }) => <Text style={{ color: "white", marginLeft: 8 }}> {item}</Text>}
-                    keyExtractor={(item, index) => index.toString()}
-                />
-            </View>
-
-
-
-            {/*Reoccuring Places from past logs*/}
-            <View>
-                <Text style={{ color: "white" }}>
-                    Reoccuring People:
-                </Text>
-
-                <FlatList data={dummyAIAnalysis["reoccuring-places"]}
-                    renderItem={({ item }) => <Text style={{ color: "white", marginLeft: 8 }}>{item}</Text>}
-                    keyExtractor={(item, index) => index.toString()}
-                />
-            </View>
-
-
-
-            {/*Reoccuring People from past logs*/}
-
-            <View>
-                <Text style={{ color: "white" }}>
-                    Reoccuring People:
-                </Text>
-
-                <FlatList data={dummyAIAnalysis["reoccuring-people"]}
-                    renderItem={({ item }) => <Text style={{ color: "white", marginLeft: 8 }}>{item}</Text>}
-                    keyExtractor={(item, index) => index.toString()}
-                />
-            </View>
-
-
-
-            {/*Reoccuring Objects from past logs*/}
-
-            <View>
-                <Text style={{ color: "white" }}>
-                    Reoccuring Objects:
-                </Text>
-
-                <FlatList data={dummyAIAnalysis["reoccuring-objects"]}
-                    renderItem={({ item }) => <Text style={{ color: "white", marginLeft: 8 }}>{item}</Text>}
-                    keyExtractor={(item, index) => index.toString()}
-                />
-            </View>
-
-
-
-            {/*Reoccuring Themes*/}
-
-            <View>
-                <Text style={{ color: "white" }}>
-                    Reoccuring Themes:
-                </Text>
-
-                <FlatList data={dummyAIAnalysis["reoccuring-themes"]}
-                    renderItem={({ item }) => <Text style={{ color: "white", marginLeft: 8 }}>{item}</Text>}
-                    keyExtractor={(item, index) => index.toString()}
-                />
-            </View>
-
-
-
-
-            {/*AI Insight/Analysis View*/}
-            <View>
-                <Text style={{ color: "white" }}>
+            {/* AI Insight/Analysis View */}
+            <View style={{ marginTop: 20 }}>
+                <Text
+                    style={{
+                        color: "white",
+                        fontSize: 20,
+                        fontWeight: "bold",
+                        marginBottom: 10,
+                        backgroundColor: "blue",
+                        padding: 10,
+                        borderRadius: 15,
+                    }}
+                >
                     AI Overview:
                 </Text>
-
-
-                <TextInput editable={false} style={{}}>
-
-
-                </TextInput>
+                <TextInput
+                    editable={false}
+                    style={{
+                        backgroundColor: "#3C1E59",
+                        color: "white",
+                        padding: 10,
+                        borderRadius: 15,
+                        marginTop: 10,
+                        height: 150,
+                        textAlignVertical: "top",
+                        fontSize: 16,
+                        fontStyle: "italic",
+                    }}
+                    placeholder="AI analysis will appear here"
+                />
             </View>
-
-
-
-
-
-        </View >
-
-    )
+        </ScrollView>
+    );
 }

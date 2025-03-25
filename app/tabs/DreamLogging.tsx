@@ -1,4 +1,4 @@
-import { View, FlatList, Text } from "react-native";
+import { View, FlatList, Text, TouchableOpacity, SafeAreaView, Touchable } from "react-native";
 import { Button, ButtonText } from "@/components/ui/button";
 import { useSearchParams } from "expo-router/build/hooks";
 import { Redirect, useRouter } from "expo-router";
@@ -20,34 +20,38 @@ export default function DreamLogScreen() {
 
         // <GluestackUIProvider>
 
-        <View style={{ flex: 1, backgroundColor: "#2C123F", padding: 20 }}>
-            <Text style={{ marginBottom: 35, fontSize: 30, color: "white" }}>
-                {currentDate}
+        <SafeAreaView style={{ flex: 1, backgroundColor: "#2C123F" }}>
+            <Text style={{
+                color: "white",
+                fontSize: 40,
+                marginTop: 0,
+                marginBottom: 5, flex: 1, backgroundColor: "#304575"
+            }}>Dream Logging, {currentDate}</Text>
 
-            </Text>
 
 
 
 
-
-            <FlatList
+            <FlatList style={{ marginTop: 30 }}
                 data={options}
                 keyExtractor={(item) => item.name.toString()}
                 renderItem={({ item }) => (
 
-                    <Button onPress={() => router.push(`/logs/${item.name}`)} style={{ borderStyle: "dotted", borderColor: "white", marginBottom: 30, padding: 55, borderWidth: 1, borderRadius: 12, backgroundColor: "#00314C", }}>
+                    <TouchableOpacity onPress={() => router.push(`/logs/${item.name}`)} style={{ borderColor: "white", marginBottom: 30, padding: 55, borderRadius: 12, backgroundColor: "#00314C", }}>
+
                         <View>
-                            <ButtonText style={{ fontSize: 18, fontWeight: "bold", color: "white", textAlign: "center" }}>
+                            <Text style={{ fontSize: 18, fontWeight: "bold", color: "white", textAlign: "center" }}>
                                 {item.name}
-                            </ButtonText>
-                            <ButtonText style={{ fontSize: 14, color: "white", opacity: 0.8, textAlign: "center" }}>
+                            </Text>
+                            <Text style={{ fontSize: 14, color: "white", opacity: 0.8, textAlign: "center" }}>
                                 {item.description}
-                            </ButtonText>
+                            </Text>
                         </View>
-                    </Button>
+                    </TouchableOpacity>
+
                 )}
             />
-        </View>
+        </SafeAreaView>
         // </GluestackUIProvider>
     );
 }

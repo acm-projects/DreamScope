@@ -27,7 +27,6 @@ export default function emptyLogCompletion() {
                 {currentDate}
             </Text>
 
-            {currentDate}
 
 
 

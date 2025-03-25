@@ -8,12 +8,14 @@ import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
 import tags from "../../Frontend/assets/dummyJson/tagsHolder.json";
 
 
+
+
 export default function TagsScreen() {
     const router = useRouter();
     let parts = ["2", "3", "4"];
     const { name } = useLocalSearchParams();
     const params = useSearchParams();
-    const [selectedTags, setSelectedTags] = useState<string[]>([]);
+    const [selectedPart, setSelectedPart] = useState<string[]>([]);
     const currentDate = new Date().toLocaleDateString("en-US", {
         month: "long",
         day: "numeric",
@@ -27,13 +29,24 @@ export default function TagsScreen() {
 
     // Function to toggle tag selection
     const handleTagPress = (tag: string) => {
-        setSelectedTags((prevTags) =>
+
+        setSelectedPart((prevTags) =>
             prevTags.includes(tag)
                 ? prevTags.filter((t) => t !== tag)
                 : [...prevTags, tag]
         );
+
+
     };
 
+    const handleContinuePress = (partSelected: string[]) => {
+        if (partSelected.length >= 1) {
+            return router.push({ pathname: "logs/fragmentedLogText", params: { parts: selectedPart, name: name } })
+        }
+        else {
+            console.log("please select a number of parts");
+        }
+    };
 
 
 
@@ -47,7 +60,7 @@ export default function TagsScreen() {
                 <View>
                     {/* Close Button */}
                     <Button
-                        onPress={() => router.back()}
+                        onPress={() => router.push("/tabs")}
                         style={{
                             position: "absolute",
                             top: 10,
@@ -105,7 +118,7 @@ export default function TagsScreen() {
                                         paddingHorizontal: 20,
                                         borderRadius: 12,
                                         borderWidth: 2,
-                                        backgroundColor: selectedTags.includes(tag)
+                                        backgroundColor: selectedPart.includes(tag)
                                             ? "#00BFFF"
                                             : "#00314C",
                                         borderColor: "#00BFFF",
@@ -140,7 +153,7 @@ export default function TagsScreen() {
                 <View>
                     {/*Finished*/}
                     <Button
-                        onPress={() => router.push({ pathname: "logs/fragmentedLogText", params: { tags: selectedTags.join(",") } })}
+                        onPress={() => handleContinuePress(selectedPart)}
                         style={{
                             backgroundColor: "#0000ff",
                             paddingVertical: 12,
