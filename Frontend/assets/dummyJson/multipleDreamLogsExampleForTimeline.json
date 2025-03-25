@@ -1,26 +1,99 @@
 [
     {
+        "DreamNumber": "1",
         "DreamType": "Detailed Capture",
         "DreamTitle": "The chilling artic",
         "description": "Woke up in the artic",
         "DayMonthYear": "03/20/25",
-        "TimeOfCapture": "13:30pm"
+        "TimeOfCapture": "13:30pm",
+        "AiAnalysis": true
     },
     {
-        "DreamType": " Empty Capture",
+        "DreamNumber": "2",
+        "DreamType": "Empty Capture",
         "DreamTitle": "N/A",
         "description": "N/A",
         "DayMonthYear": "03/20/25",
-        "TimeOfCapture": "13:30pm"
+        "TimeOfCapture": "13:30pm",
+        "AiAnalysis": false
     },
     {
+        "DreamNumber": "3",
         "DreamType": "Fragmented Capture",
-        "DreamTitle": "N/A",
+        "DreamTitle": "The night before christmas",
         "descriptions": [
             "Woke up in Narnia",
             "Woke up in space"
         ],
         "DayMonthYear": "03/20/25",
-        "TimeOfCapture": "13:30pm"
+        "TimeOfCapture": "13:30pm",
+        "AiAnalysis": true
+    },
+    {
+        "DreamNumber": "4",
+        "DreamType": "Detailed Capture",
+        "DreamTitle": "The Enchanted Forest",
+        "description": "Roamed through a mystical forest filled with glowing trees",
+        "DayMonthYear": "03/21/25",
+        "TimeOfCapture": "08:45am",
+        "AiAnalysis": false
+    },
+    {
+        "DreamNumber": "5",
+        "DreamType": "Fragmented Capture",
+        "DreamTitle": "N/A",
+        "descriptions": [
+            "Was underwater exploring a shipwreck",
+            "Floating in a sea of clouds"
+        ],
+        "DayMonthYear": "03/22/25",
+        "TimeOfCapture": "10:00am",
+        "AiAnalysis": true
+    },
+    {
+        "DreamNumber": "6",
+        "DreamType": "Empty Capture",
+        "DreamTitle": "N/A",
+        "description": "N/A",
+        "DayMonthYear": "03/22/25",
+        "TimeOfCapture": "11:15am",
+        "AiAnalysis": false
+    },
+    {
+        "DreamNumber": "7",
+        "DreamType": "Detailed Capture",
+        "DreamTitle": "The City in the Sky",
+        "description": "Walked through an ancient city suspended in the clouds",
+        "DayMonthYear": "03/23/25",
+        "TimeOfCapture": "07:00am",
+        "AiAnalysis": true
+    },
+    {
+        "DreamNumber": "8",
+        "DreamType": "Fragmented Capture",
+        "DreamTitle": "N/A",
+        "descriptions": [
+            "Riding a dragon through the mountains",
+            "A beach on an alien planet"
+        ],
+        "DayMonthYear": "03/23/25",
+        "TimeOfCapture": "14:45pm",
+        "AiAnalysis": false
+    },
+    {
+        "DreamType": "Detailed Capture",
+        "DreamTitle": "The Infinite Library",
+        "description": "Explored a massive library with books that never ended",
+        "DayMonthYear": "03/24/25",
+        "TimeOfCapture": "09:30am",
+        "AiAnalysis": true
+    },
+    {
+        "DreamType": "Empty Capture",
+        "DreamTitle": "N/A",
+        "description": "N/A",
+        "DayMonthYear": "03/24/25",
+        "TimeOfCapture": "06:30am",
+        "AiAnalysis": false
     }
 ]

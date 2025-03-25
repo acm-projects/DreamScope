@@ -1,4 +1,4 @@
-import { View, Text } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
 import { HStack } from "@/components/ui/hstack";
 import { Textarea, TextareaInput } from "@/components/ui/textarea";
 import { Button, ButtonText } from "@/components/ui/button";
@@ -42,23 +42,26 @@ export default function detailedLogCompletion() {
 
 
 
-            <View style={{ flexDirection: "row", gap: 10, marginTop: 20 }}>
-                <Button onPress={() => router.push("/logs/AIAnalysisPage")}>
-                    <ButtonText style={{ backgroundColor: "blue", color: "white", borderColor: "blue", borderRadius: 12, borderWidth: 12 }}>
-                        Continue to Dream Analysis
-                    </ButtonText>
-                </Button>
+            <View style={{ alignItems: "center", backgroundColor: "00314D", width: "100%", borderWidth: 2, borderColor: "#03A4FF" }}>
+                <Text>
+                    <TouchableOpacity onPress={() => router.push("/logs/AIAnalysisPage")} style={{ alignItems: "center", marginTop: 25, marginBottom: 25, justifyContent: "center", width: 200, height: 50, borderColor: "white", borderWidth: 2, borderRadius: 12, backgroundColor: "#0093ED" }}>
+                        <Text style={{ justifyContent: "center", color: "white" }} >
+                            Continue to Dream Analysis
+                        </Text>
+                    </TouchableOpacity>
 
-                <Button onPress={() => router.push("/tabs/DreamLogging")}>
-
-                    <ButtonText style={{ color: "white", borderColor: "blue", backgroundColor: "blue", borderRadius: 12, borderWidth: 12 }}>
-                        Back to Home
-
-                    </ButtonText>
-                </Button>
+                    <TouchableOpacity onPress={() => router.push("/logs/tabs")} style={{ alignItems: "center", marginTop: 25, marginBottom: 25, justifyContent: "center", width: 200, height: 50, borderColor: "white", borderWidth: 2, borderRadius: 12, backgroundColor: "#0093ED" }}>
+                        <Text style={{ justifyContent: "center", color: "white" }} >
+                            Back to home
+                        </Text>
+                    </TouchableOpacity>
+                </Text>
             </View>
         </View>
 
 
     );
 }
+
+
+

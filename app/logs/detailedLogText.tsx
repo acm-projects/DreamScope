@@ -142,10 +142,10 @@ export default function detailedLogTextScreen() {
                                 style={{
                                     margin: 2, // Adds spacing between items
                                     padding: 3,
-                                    backgroundColor: "blue",
+                                    backgroundColor: "#0093ED",
                                     borderRadius: 12,
                                     borderWidth: 2,
-                                    borderColor: "grey",
+                                    borderColor: "white",
 
                                 }}
                             >
@@ -174,12 +174,12 @@ export default function detailedLogTextScreen() {
                                 style={{
                                     height: 25,
                                     width: 100,
-                                    backgroundColor: "white",
+                                    backgroundColor: "#0093ED",
                                     backfaceVisibility: "visible",
                                     borderWidth: 2,
                                     borderColor: borderColor,
                                     borderRadius: 10,
-                                    color: "grey"
+                                    color: "white"
                                 }}>
 
                             </TextInput>
@@ -197,13 +197,14 @@ export default function detailedLogTextScreen() {
                         onEndEditing={userEndedEditingText}
                         multiline={true}
 
+                        placeholderTextColor={"#D7C9E3"}
                         numberOfLines={10} // Optional: Sets the visible number of lines
                         placeholder="Begin typing your dream here.."
                         style={{
                             height: 375,  // Adjust height as needed
                             width: 325,
                             borderColor: borderColor,
-                            borderWidth: 2,
+                            borderWidth: 0,
                             backfaceVisibility: "visible",
                             backgroundColor: "#00314C",
                             padding: 10,
@@ -219,13 +220,15 @@ export default function detailedLogTextScreen() {
 
 
                     {/*Complete Log Button*/}
-                    <Text>
-                        <Button onPress={handlePress} style={{ marginTop: 25, justifyContent: "center", width: 200, height: 50, borderColor: "white", borderWidth: 2, borderRadius: 12, backgroundColor: "#0093ED" }} >
-                            <ButtonText style={{ justifyContent: "center", color: "white" }} >
-                                Complete log
-                            </ButtonText>
-                        </Button>
-                    </Text>
+                    <View style={{ alignItems: "center", backgroundColor: "00314D", width: "100%", borderWidth: 2, borderColor: "#03A4FF" }}>
+                        <Text>
+                            <TouchableOpacity onPress={handlePress} style={{ alignItems: "center", marginTop: 25, marginBottom: 25, justifyContent: "center", width: 200, height: 50, borderColor: "white", borderWidth: 2, borderRadius: 12, backgroundColor: "#0093ED" }}>
+                                <Text style={{ justifyContent: "center", color: "white" }} >
+                                    Submit
+                                </Text>
+                            </TouchableOpacity>
+                        </Text>
+                    </View>
                 </View>
             </ScrollView>
         </SafeAreaView>

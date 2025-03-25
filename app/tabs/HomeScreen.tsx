@@ -12,6 +12,7 @@ import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Fontisto } from '@expo/vector-icons';
+import * as Animatable from 'react-native-animatable';
 
 const { width } = Dimensions.get('window');
 const CIRCLE_SIZE = 100;
@@ -68,17 +69,36 @@ function DateTimeline() {
                     alignmentStyle = styles.centerItem;
                 }
 
+                const animationType = isToday ? 'pulse' : 'fadeInUp';
+                const animationDelay = isToday ? 0 : index * 10;
+
+                // Add size variation for organic layout
+                const sizeVariation = isToday ? 2.0 : 0.85 + Math.random() * 0.3;
+
                 return (
-                    <View
+                    <Animatable.View
                         key={index}
+                        animation={animationType}
+                        delay={animationDelay}
+                        duration={300}
+                        easing="ease-out"
+                        iterationCount={isToday ? 'infinite' : 1}
+                        iterationDelay={5000}
+                        useNativeDriver
                         style={[styles.dateItemWrapper, alignmentStyle]}
                     >
-                        <View style={[styles.circle, isToday && styles.todayCircle]}>
+                        <View
+                            style={[
+                                styles.circle,
+                                isToday && styles.todayCircle,
+                                { transform: [{ scale: sizeVariation }] },
+                            ]}
+                        >
                             <Text style={[styles.dateText, isToday && styles.todayText]}>
                                 {date}
                             </Text>
                         </View>
-                    </View>
+                    </Animatable.View>
                 );
             })}
         </ScrollView>
@@ -95,7 +115,6 @@ export default function HomeScreen() {
     return (
         <LinearGradient colors={['#180723', '#2C123F', '#2C123F', '#3d1865']} style={{ flex: 1 }}>
             <SafeAreaView style={styles.container}>
-
                 <View style={styles.imageContainer}>
                     <Image
                         source={require('../../Frontend/images/treeforeground.png')}
@@ -173,7 +192,10 @@ const styles = StyleSheet.create({
     },
     todayCircle: {
         backgroundColor: '#94C9A9',
-        transform: [{ scale: 2.0 }],
+        shadowColor: '#74a589',
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.6,
+        shadowRadius: 20,
     },
     todayText: {
         color: '#180723',

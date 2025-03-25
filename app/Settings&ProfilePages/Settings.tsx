@@ -1,96 +1,77 @@
-import React, { useState } from "react";
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, Switch, ScrollView } from "react-native";
 import { router } from "expo-router";
-import {
-    View,
-    Text,
-    TextInput,
-    StyleSheet,
-    ScrollView,
-    TouchableOpacity,
-    Alert,
-} from "react-native";
-import { Feather } from "@expo/vector-icons";
-import { SafeAreaView } from "react-native-safe-area-context";
+import React, { useState } from "react";
 import { LinearGradient } from "expo-linear-gradient";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SettingsPage() {
-    const [accountName, setAccountName] = useState("");
-    const [password, setPassword] = useState("");
+    const [isDarkMode, setIsDarkMode] = useState(false);
+    const [isNotificationsEnabled, setIsNotificationsEnabled] = useState(true);
+    const [feedback, setFeedback] = useState('');
 
-    const handleDeleteLogs = () => {
-        Alert.alert(
-            "Delete Logs",
-            "Are you sure you want to delete all log history?",
-            [
-                { text: "Cancel", style: "cancel" },
-                {
-                    text: "Delete",
-                    style: "destructive",
-                    onPress: () => {
-                        Alert.alert("Logs Deleted", "Your logs history has been deleted.");
-                    },
-                },
-            ]
-        );
+    const handleClearData = () => {
+        Alert.alert('Confirmation', 'Are you sure you want to clear your dream data?', [
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Yes', onPress: () => Alert.alert('Data Cleared!') }
+        ]);
     };
 
-    const handleSaveChanges = () => {
-        Alert.alert("Changes Saved", "Your account settings have been updated.");
+    const handleFeedbackSubmit = () => {
+        if (feedback.trim() === '') {
+            Alert.alert('Please enter your feedback');
+        } else {
+            Alert.alert('Feedback Submitted!');
+            setFeedback('');
+        }
     };
 
-    const handleTopRightButton = () => {
-        router.push("./Profile");
+    const handleLogout = () => {
+        Alert.alert('Logout', 'Are you sure you want to log out?', [
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Yes', onPress: () => router.push('../auth/sign_in') }
+        ]);
     };
 
     return (
-        <LinearGradient
-            colors={["#180723", "#2C123F", "#2C123F", "#3d1865"]}
-            style={{ flex: 1 }}
-        >
+        <LinearGradient colors={['#180723', '#2C123F', '#3d1865']} style={{ flex: 1 }}>
             <SafeAreaView style={styles.container}>
-                <ScrollView contentContainerStyle={styles.content}>
-                    <View style={styles.headerRow}>
-                        <TouchableOpacity
-                            style={styles.backButton}
-                            onPress={handleTopRightButton}
-                        >
-                            <Feather name="arrow-left" size={20} color="#D7C9E3" />
-                        </TouchableOpacity>
-                        <Text style={styles.heading}>Settings</Text>
-                    </View>
+                <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
+                    <Text style={styles.headerText}>SETTINGS</Text>
 
-                    <View style={styles.settingItem}>
-                        <Feather name="user" size={20} color="#D7C9E3" style={styles.icon} />
-                        <TextInput
-                            style={styles.input}
-                            placeholder="Change account name"
-                            placeholderTextColor="#B5A7C7"
-                            value={accountName}
-                            onChangeText={setAccountName}
-                        />
-                    </View>
+                    <SettingRow label="Light Mode" value={isDarkMode} onValueChange={setIsDarkMode} />
+                    <SettingRow label="Notifications" value={isNotificationsEnabled} onValueChange={setIsNotificationsEnabled} />
 
-                    <View style={styles.settingItem}>
-                        <Feather name="lock" size={20} color="#D7C9E3" style={styles.icon} />
-                        <TextInput
-                            style={styles.input}
-                            placeholder="Change password"
-                            placeholderTextColor="#B5A7C7"
-                            value={password}
-                            onChangeText={setPassword}
-                            secureTextEntry
-                        />
-                    </View>
-
-                    <TouchableOpacity style={styles.saveButton} onPress={handleSaveChanges}>
-                        <Text style={styles.saveButtonText}>Save Changes</Text>
+                    {/* Data Management */}
+                    <TouchableOpacity style={styles.logoutButton} onPress={handleClearData}>
+                        <Text style={styles.buttonText}>Clear Dream Data</Text>
                     </TouchableOpacity>
 
-                    <View style={styles.divider} />
+                    {/* Feedback Section */}
+                    <View style={styles.feedbackContainer}>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Enter your feedback..."
+                            placeholderTextColor="#D7C9E3"
+                            value={feedback}
+                            onChangeText={setFeedback}
+                            multiline
+                        />
+                        <TouchableOpacity style={styles.submitButton} onPress={handleFeedbackSubmit}>
+                            <Text style={styles.submitButtonText}>Submit Feedback</Text>
+                        </TouchableOpacity>
+                    </View>
 
-                    <TouchableOpacity style={styles.deleteButton} onPress={handleDeleteLogs}>
-                        <Feather name="trash-2" size={18} color="#fff" />
-                        <Text style={styles.deleteButtonText}>Delete Logs History</Text>
+                    {/* Navigation Buttons */}
+                    <TouchableOpacity style={styles.button} onPress={() => router.push('../tabs/HomeScreen')}>
+                        <Text style={styles.buttonText}>Back to Home Page</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity style={styles.button} onPress={() => router.push('./Profile')}>
+                        <Text style={styles.buttonText}>Profile</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+                        <Text style={styles.logoutButtonText}>Log Out</Text>
                     </TouchableOpacity>
                 </ScrollView>
             </SafeAreaView>
@@ -98,79 +79,110 @@ export default function SettingsPage() {
     );
 }
 
+const SettingRow = ({ label, value, onValueChange }) => (
+    <View style={styles.row}>
+        <Text style={styles.label}>{label}</Text>
+        <Switch
+            trackColor={{ false: '#4B4453', true: '#94C9A9' }}
+            thumbColor={value ? '#180723' : '#D7C9E3'}
+            ios_backgroundColor="#4B4453"
+            onValueChange={onValueChange}
+            value={value}
+        />
+    </View>
+);
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        paddingHorizontal: 20,
     },
-    content: {
-        padding: 24,
+    scrollContainer: {
+        alignItems: 'center',
+        paddingBottom: 40,
     },
-    headerRow: {
-        flexDirection: "row",
-        alignItems: "center",
-        marginBottom: 30,
+    headerText: {
+        fontSize: 28,
+        fontWeight: 'bold',
+        color: '#D7C9E3',
+        marginVertical: 30,
     },
-    heading: {
-        fontSize: 24,
-        fontWeight: "700",
-        color: "#D7C9E3",
-        marginLeft: 16,
-    },
-    backButton: {
-        padding: 10,
-        borderRadius: 10,
-        backgroundColor: "#2C123F",
+    row: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        backgroundColor: '#3d1865',
+        paddingVertical: 14,
+        paddingHorizontal: 20,
+        borderRadius: 12,
+        borderColor: '#D7C9E3',
         borderWidth: 1.5,
-        borderColor: "#D7C9E3",
+        marginBottom: 15,
+        width: '100%',
     },
-    settingItem: {
-        flexDirection: "row",
-        alignItems: "center",
-        backgroundColor: "#3d1865",
-        borderRadius: 16,
-        padding: 16,
-        marginBottom: 20,
-        elevation: 2,
+    label: {
+        color: '#D7C9E3',
+        fontSize: 16,
+        fontWeight: '600',
     },
-    icon: {
-        marginRight: 10,
+    button: {
+        backgroundColor: '#94C9A9',
+        paddingVertical: 14,
+        borderRadius: 12,
+        alignItems: 'center',
+        marginTop: 10,
+        width: '100%',
+    },
+    buttonText: {
+        color: '#180723',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    logoutButton: {
+        backgroundColor: '#C41E3A',
+        paddingVertical: 14,
+        borderRadius: 12,
+        alignItems: 'center',
+        marginTop: 30,
+        width: '100%',
+    },
+    logoutButtonText: {
+        color: '#FFFFFF',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    feedbackContainer: {
+        backgroundColor: '#3d1865',
+        padding: 15,
+        borderRadius: 12,
+        borderWidth: 1.5,
+        borderColor: '#D7C9E3',
+        width: '100%',
+        alignItems: 'center',
+        marginTop: 20,
     },
     input: {
-        flex: 1,
+        backgroundColor: '#2C123F',
+        color: '#D7C9E3',
+        padding: 14,
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: '#D7C9E3',
+        height: 100,
+        textAlignVertical: 'top',
+        marginBottom: 10,
+        width: '100%',
+    },
+    submitButton: {
+        backgroundColor: '#94C9A9',
+        paddingVertical: 10,
+        borderRadius: 10,
+        width: '100%',
+        alignItems: 'center',
+    },
+    submitButtonText: {
+        color: '#180723',
+        fontWeight: 'bold',
         fontSize: 16,
-        color: "#D7C9E3",
-    },
-    saveButton: {
-        backgroundColor: "#94C9A9",
-        padding: 16,
-        borderRadius: 16,
-        alignItems: "center",
-        marginBottom: 30,
-        elevation: 3,
-    },
-    saveButtonText: {
-        color: "#180723",
-        fontSize: 16,
-        fontWeight: "600",
-    },
-    divider: {
-        height: 1,
-        backgroundColor: "#B5A7C7",
-        marginVertical: 20,
-    },
-    deleteButton: {
-        backgroundColor: "#FF4D4D",
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: 16,
-        borderRadius: 16,
-        elevation: 3,
-    },
-    deleteButtonText: {
-        color: "#fff",
-        marginLeft: 10,
-        fontSize: 16,
-        fontWeight: "600",
     },
 });

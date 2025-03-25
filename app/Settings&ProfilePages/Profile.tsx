@@ -1,89 +1,83 @@
-import React from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import {
-    View,
-    Text,
-    Image,
-    StyleSheet,
-    TouchableOpacity,
-    Alert,
-    ScrollView,
-} from "react-native";
-import { useRouter } from "expo-router";
-import { Feather } from "@expo/vector-icons";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, Image, ScrollView } from "react-native";
+import { router } from "expo-router";
+import { useState } from "react";
+import * as ImagePicker from "expo-image-picker";
 import { LinearGradient } from "expo-linear-gradient";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ProfilePage() {
-    const router = useRouter();
+    const [profilePic, setProfilePic] = useState<string | null>(null);
+    const [displayName, setDisplayName] = useState('');
+    const [bio, setBio] = useState('');
 
-    const handleLogout = () => {
-        Alert.alert("Logged Out", "You have been logged out successfully.", [
-            {
-                text: "OK",
-                onPress: async () => {
-                    try {
-                        await AsyncStorage.setItem("isLoggedIn", "false");
-                        router.push("/auth/sign_in");
-                    } catch (error) {
-                        console.error("Logout failed:", error);
-                    }
-                },
-            },
+    const handleProfilePicChange = async () => {
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            aspect: [1, 1],
+            quality: 1,
+        });
+
+        if (!result.canceled && result.assets && result.assets.length > 0) {
+            setProfilePic(result.assets[0].uri);
+        }
+    };
+
+    const handleDeleteAccount = () => {
+        Alert.alert('Account Deletion', 'Are you sure you want to delete your account?', [
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Yes', onPress: () => Alert.alert('Account Deleted!') }
         ]);
     };
 
-    const handleSettings = () => {
-        router.push("./Settings");
-    };
-
-    const handleTopRightButton = () => {
-        router.push("../tabs/HomeScreen");
-    };
-
     return (
-        <LinearGradient
-            colors={["#180723", "#2C123F", "#2C123F", "#3d1865"]}
-            style={{ flex: 1 }}
-        >
+        <LinearGradient colors={['#180723', '#2C123F', '#2C123F', '#3d1865']} style={{ flex: 1 }}>
             <SafeAreaView style={styles.container}>
-                <ScrollView contentContainerStyle={styles.content}>
-                    <View style={styles.profileSection}>
-                        <TouchableOpacity
-                            style={styles.backButton}
-                            onPress={handleTopRightButton}
-                        >
-                            <Feather name="arrow-left" size={20} color="#D7C9E3" />
-                        </TouchableOpacity>
+                <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
+                    <Text style={styles.headerText}>MY PROFILE</Text>
 
-                        <Image
-                            source={{ uri: "https://via.placeholder.com/100" }}
-                            style={styles.avatar}
-                        />
-                        <Text style={styles.username}>John Doe</Text>
-                        <Text style={styles.email}>john.doe@example.com</Text>
+                    {/* Profile Picture */}
+                    <TouchableOpacity style={styles.profilePicContainer} onPress={handleProfilePicChange}>
+                        {profilePic ? (
+                            <Image source={{ uri: profilePic }} style={styles.profilePic} />
+                        ) : (
+                            <Text style={styles.profilePicText}>Add Profile Pic</Text>
+                        )}
+                    </TouchableOpacity>
+
+                    {/* Bio Input */}
+                    <TextInput
+                        style={styles.bioInput}
+                        placeholder="Add a short bio..."
+                        placeholderTextColor="#D7C9E3"
+                        value={bio}
+                        onChangeText={setBio}
+                        multiline
+                    />
+
+                    {/* Stats */}
+                    <View style={styles.statsBox}>
+                        <Text style={styles.statsText}>Joined on: 03-24-2025</Text>
+                        <Text style={styles.statsText}>Total Dreams: 0</Text>
+                        <Text style={styles.statsText}>Thorough Logs: 0</Text>
+                        <Text style={styles.statsText}>Fragmented Logs: 0</Text>
                     </View>
 
-                    <View style={styles.options}>
-                        <TouchableOpacity
-                            style={styles.optionButton}
-                            onPress={handleSettings}
-                        >
-                            <Feather name="settings" size={20} color="#D7C9E3" />
-                            <Text style={styles.optionText}>Account Settings</Text>
-                        </TouchableOpacity>
+                    {/* Buttons */}
+                    <TouchableOpacity style={styles.button} onPress={() => router.push('../tabs/DreamTimeline')}>
+                        <Text style={styles.buttonText}>My Dream Timeline</Text>
+                    </TouchableOpacity>
 
-                        <TouchableOpacity style={styles.optionButton}>
-                            <Feather name="info" size={20} color="#D7C9E3" />
-                            <Text style={styles.optionText}>About</Text>
-                        </TouchableOpacity>
-                    </View>
+                    <TouchableOpacity style={styles.button} onPress={() => router.push('../tabs/HomeScreen')}>
+                        <Text style={styles.buttonText}>Back to Home Page</Text>
+                    </TouchableOpacity>
 
-                    <TouchableOpacity
-                        style={styles.logoutButton}
-                        onPress={handleLogout}
-                    >
-                        <Text style={styles.logoutText}>Log Out</Text>
+                    <TouchableOpacity style={styles.button} onPress={() => router.push('./Settings')}>
+                        <Text style={styles.buttonText}>Settings</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity style={styles.deleteButton} onPress={handleDeleteAccount}>
+                        <Text style={styles.deleteButtonText}>Delete Account</Text>
                     </TouchableOpacity>
                 </ScrollView>
             </SafeAreaView>
@@ -94,73 +88,92 @@ export default function ProfilePage() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-    },
-    content: {
-        padding: 24,
-        alignItems: "center",
-    },
-    profileSection: {
-        alignItems: "center",
-        marginBottom: 40,
-        width: "100%",
-    },
-    backButton: {
-        alignSelf: "flex-start",
-        marginBottom: 20,
-        backgroundColor: "#2C123F",
-        padding: 10,
-        borderRadius: 10,
-        borderWidth: 1.5,
-        borderColor: "#D7C9E3",
-    },
-    avatar: {
-        width: 100,
-        height: 100,
-        borderRadius: 50,
-        marginBottom: 15,
-        borderWidth: 2,
-        borderColor: "#D7C9E3",
-    },
-    username: {
-        fontSize: 20,
-        fontWeight: "700",
-        color: "#D7C9E3",
-    },
-    email: {
-        fontSize: 14,
-        color: "#B5A7C7",
-        marginTop: 4,
-    },
-    options: {
-        width: "100%",
-        marginBottom: 40,
-    },
-    optionButton: {
-        flexDirection: "row",
-        alignItems: "center",
-        paddingVertical: 16,
         paddingHorizontal: 20,
-        backgroundColor: "#3d1865",
-        borderRadius: 16,
-        marginBottom: 16,
-        elevation: 2,
     },
-    optionText: {
-        marginLeft: 12,
+    scrollContainer: {
+        alignItems: 'center',
+        paddingBottom: 60,
+    },
+    headerText: {
+        fontSize: 28,
+        fontWeight: 'bold',
+        color: '#D7C9E3',
+        marginTop: 30,
+        marginBottom: 20,
+    },
+    profilePicContainer: {
+        backgroundColor: '#D7C9E3',
+        width: 120,
+        height: 120,
+        borderRadius: 60,
+        borderWidth: 3,
+        borderColor: '#94C9A9',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 20,
+    },
+    profilePic: {
+        width: '100%',
+        height: '100%',
+        borderRadius: 60,
+    },
+    profilePicText: {
+        color: '#180723',
+        fontWeight: 'bold',
+        fontSize: 14,
+        textAlign: 'center',
+    },
+    bioInput: {
+        backgroundColor: '#2C123F',
+        color: '#D7C9E3',
+        padding: 15,
+        borderRadius: 12,
+        borderWidth: 2,
+        borderColor: '#D7C9E3',
+        height: 80,
+        textAlignVertical: 'top',
+        width: '100%',
+        marginBottom: 20,
+    },
+    statsBox: {
+        backgroundColor: '#3d1865',
+        borderRadius: 12,
+        padding: 20,
+        width: '100%',
+        borderWidth: 2,
+        borderColor: '#D7C9E3',
+        marginBottom: 30,
+    },
+    statsText: {
+        color: '#D7C9E3',
         fontSize: 16,
-        color: "#D7C9E3",
-        fontWeight: "500",
+        fontStyle: 'italic',
+        marginBottom: 5,
     },
-    logoutButton: {
-        backgroundColor: "#ff4d4d",
-        paddingVertical: 16,
-        paddingHorizontal: 40,
-        borderRadius: 16,
-        elevation: 3,
+    button: {
+        backgroundColor: '#94C9A9',
+        paddingVertical: 12,
+        borderRadius: 14,
+        alignItems: 'center',
+        marginBottom: 12,
+        width: '100%',
     },
-    logoutText: {
-        color: "#fff",
+    buttonText: {
+        color: '#180723',
         fontSize: 16,
-        fontWeight: "600",
+        fontWeight: 'bold',
+    },
+    deleteButton: {
+        backgroundColor: '#C41E3A',
+        paddingVertical: 12,
+        borderRadius: 14,
+        alignItems: 'center',
+        marginTop: 20,
+        width: '100%',
+    },
+    deleteButtonText: {
+        color: '#FFFFFF',
+        fontSize: 16,
+        fontWeight: 'bold',
     },
 });
