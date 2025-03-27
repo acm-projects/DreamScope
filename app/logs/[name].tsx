@@ -53,7 +53,7 @@ export default function TagsScreen() {
     }
     else if (name == "Fragmented Capture") {
         return (
-            router.push("/logs/fragmentedLogPartSelectionScreen")
+            router.push({ pathname: "logs/fragmentedLogPartSelectionScreen", params: { name: name } })
 
         )
 

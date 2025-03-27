@@ -6,48 +6,46 @@ import { useSearchParams, useLocalSearchParams } from "expo-router/build/hooks";
 import { useRouter } from "expo-router";
 import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
 import tags from "../../Frontend/assets/dummyJson/tagsHolder.json";
-
-
-
+import Feather from '@expo/vector-icons/Feather';
+import { AntDesign, Fontisto } from "@expo/vector-icons";
 
 export default function TagsScreen() {
     const router = useRouter();
-    let parts = ["2", "3", "4"];
+
+    //THIS NAME COMES FROM THE LAST PAGE IT GETS THE NAME OF THE TYPE OF LOG PRESSED!!
     const { name } = useLocalSearchParams();
-    const params = useSearchParams();
-    const [selectedPart, setSelectedPart] = useState<string[]>([]);
+
+    //Params to push all of the tags the user clicked to the next page
+    const params = useLocalSearchParams();
+
+    //
+    const [selectedTags, setSelectedTags] = useState<string[]>([]);
+
+    //function for todays date!
     const currentDate = new Date().toLocaleDateString("en-US", {
         month: "long",
         day: "numeric",
         year: "numeric",
     });
 
-    const sections: { title: string; data: string[] }[] = [
-        { title: "", data: parts },
 
+    //Each section corresponds to its stuff in the json file tagsHolder
+    const sections: { title: string; data: string[] }[] = [
+        { title: "Themes", data: tags.themes },
+        { title: "Settings", data: tags.settings },
+        { title: "Add-ons", data: tags.addons },
     ];
 
     // Function to toggle tag selection
     const handleTagPress = (tag: string) => {
-
-        setSelectedPart((prevTags) =>
+        setSelectedTags((prevTags) =>
             prevTags.includes(tag)
                 ? prevTags.filter((t) => t !== tag)
                 : [...prevTags, tag]
         );
-
-
     };
 
-    const handleContinuePress = (partSelected: string[]) => {
-        if (partSelected[0] != null) {
-            router.push({ pathname: "/logs/fragmentedLogTagSelection", params: { parts: selectedPart, name: name } })
-        }
-        else {
-            console.log("please select a number of parts");
-        }
-    };
-
+    //checks if the type of dream the user pressed is an Empty Log or Fragmented Log or Detailed Log
 
 
     return (
@@ -58,27 +56,21 @@ export default function TagsScreen() {
             contentContainerStyle={{ padding: 20, paddingBottom: 50 }}
             ListHeaderComponent={() => (
                 <View>
-                    {/* Close Button */}
+                    {/* Back Button */}
                     <Button
-                        onPress={() => router.push("/tabs")}
+                        onPress={() => router.back()}
                         style={{
                             position: "absolute",
-                            top: 10,
-                            left: 10,
+                            top: 5,
+                            left: -8,
+
                             backgroundColor: "transparent",
                         }}
                     >
-                        <Text style={{ fontSize: 24, color: "white" }}>X
-
+                        <Text style={{ fontSize: 24, color: "white" }}>
+                            <Feather name="arrow-left" size={30} />
                         </Text>
                     </Button>
-
-
-
-
-
-
-
 
                     {/* Date */}
                     <Text
@@ -88,13 +80,15 @@ export default function TagsScreen() {
                             color: "white",
                             textAlign: "center",
                             marginBottom: 20,
+                            marginTop: 40
                         }}
                     >
-                        {currentDate}
+                        {currentDate} , {params.name} {"\n"}
+                        <Text style={{ fontSize: 17, color: "grey", marginTop: 20 }}>add some tags for your log!</Text>
                     </Text>
                 </View>
             )}
-            renderItem={({ item, index }) => (
+            renderItem={({ item }) => (
                 <View style={{ marginBottom: 20 }}>
                     <Text
                         style={{
@@ -104,21 +98,24 @@ export default function TagsScreen() {
                             marginBottom: 10,
                         }}
                     >
-                        Parts:
+                        {item.title}:
                     </Text>
 
                     <FlatList
+
                         data={item.data}
                         keyExtractor={(tag) => tag}
+                        numColumns={3}
+                        columnWrapperStyle={{ justifyContent: "flex-start" }}
                         renderItem={({ item: tag }) => (
                             <Pressable onPress={() => handleTagPress(tag)}>
                                 <View
                                     style={{
                                         paddingVertical: 10,
-                                        paddingHorizontal: 20,
+                                        paddingHorizontal: 10,
                                         borderRadius: 12,
                                         borderWidth: 2,
-                                        backgroundColor: selectedPart.includes(tag)
+                                        backgroundColor: selectedTags.includes(tag)
                                             ? "#00BFFF"
                                             : "#00314C",
                                         borderColor: "#00BFFF",
@@ -127,7 +124,7 @@ export default function TagsScreen() {
                                 >
                                     <Text
                                         style={{
-                                            fontSize: 16,
+                                            fontSize: 14,
                                             fontWeight: "bold",
                                             color: "white",
                                             textAlign: "center",
@@ -144,16 +141,10 @@ export default function TagsScreen() {
             ListFooterComponent={() => (
 
 
-
-
-
-
-
-
                 <View>
-                    {/*Finished*/}
+                    {/*Continue Button*/}
                     <Button
-                        onPress={() => handleContinuePress(selectedPart)}
+                        onPress={() => router.push({ pathname: "logs/fragmentedLogText", params: { parts: params.parts, tags: selectedTags.join(",") } })}
                         style={{
                             backgroundColor: "#0000ff",
                             paddingVertical: 12,

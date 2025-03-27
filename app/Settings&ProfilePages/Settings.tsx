@@ -41,10 +41,6 @@ export default function SettingsPage() {
                     <SettingRow label="Light Mode" value={isDarkMode} onValueChange={setIsDarkMode} />
                     <SettingRow label="Notifications" value={isNotificationsEnabled} onValueChange={setIsNotificationsEnabled} />
 
-                    {/* Data Management */}
-                    <TouchableOpacity style={styles.logoutButton} onPress={handleClearData}>
-                        <Text style={styles.buttonText}>Clear Dream Data</Text>
-                    </TouchableOpacity>
 
                     {/* Feedback Section */}
                     <View style={styles.feedbackContainer}>
@@ -73,6 +69,12 @@ export default function SettingsPage() {
                     <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
                         <Text style={styles.logoutButtonText}>Log Out</Text>
                     </TouchableOpacity>
+
+                    {/* Data Management */}
+                    <TouchableOpacity style={styles.logoutButton} onPress={handleClearData}>
+                        <Text style={styles.logoutButtonText}>Clear Dream Data</Text>
+                    </TouchableOpacity>
+
                 </ScrollView>
             </SafeAreaView>
         </LinearGradient>
@@ -134,7 +136,7 @@ const styles = StyleSheet.create({
         width: '100%',
     },
     buttonText: {
-        color: '#180723',
+        color: '#2d5136',
         fontSize: 16,
         fontWeight: 'bold',
     },
