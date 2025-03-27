@@ -1,7 +1,7 @@
 import { View, FlatList, Text, TouchableOpacity, SafeAreaView, Touchable } from "react-native";
 import { Button, ButtonText } from "@/components/ui/button";
 import { useSearchParams } from "expo-router/build/hooks";
-import { Redirect, useRouter } from "expo-router";
+import { Redirect, useRouter, useLocalSearchParams } from "expo-router";
 import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
 import options from "../../Frontend/assets/dummyJson/options.json";  // Update path because we moved this file
 import { Fontisto } from "@expo/vector-icons";
@@ -14,6 +14,7 @@ const currentDate = new Date().toLocaleDateString("en-US", {
 
 export default function DreamLogScreen() {
     const router = useRouter();
+    const params = useLocalSearchParams();
 
     return (
 
@@ -36,8 +37,8 @@ export default function DreamLogScreen() {
                 data={options}
                 keyExtractor={(item) => item.name.toString()}
                 renderItem={({ item }) => (
-
-                    <TouchableOpacity onPress={() => router.push(`/logs/${item.name}`)} style={{ borderColor: "white", marginBottom: 30, padding: 55, borderRadius: 12, backgroundColor: "#00314C", }}>
+                    <TouchableOpacity onPress={() => router.push({ pathname: `/logs/${item.name}`, params: { name: item.name } }
+                    )} style={{ borderColor: "white", marginBottom: 30, padding: 55, borderRadius: 12, backgroundColor: "#00314C", }}>
 
                         <View>
                             <Text style={{ fontSize: 18, fontWeight: "bold", color: "white", textAlign: "center" }}>

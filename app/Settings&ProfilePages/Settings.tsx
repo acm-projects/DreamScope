@@ -1,7 +1,8 @@
-
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, Switch } from "react-native";
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, Switch, ScrollView } from "react-native";
 import { router } from "expo-router";
 import React, { useState } from "react";
+import { LinearGradient } from "expo-linear-gradient";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SettingsPage() {
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -32,49 +33,49 @@ export default function SettingsPage() {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerText}>SETTINGS</Text>
-      </View>
+    <LinearGradient colors={['#180723', '#2C123F', '#3d1865']} style={{ flex: 1 }}>
+      <SafeAreaView style={styles.container}>
+        <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
+          <Text style={styles.headerText}>SETTINGS</Text>
 
-      <SettingRow label="Light Mode" value={isDarkMode} onValueChange={setIsDarkMode} />
-      <SettingRow label="Notifications" value={isNotificationsEnabled} onValueChange={setIsNotificationsEnabled} />
+          <SettingRow label="Light Mode" value={isDarkMode} onValueChange={setIsDarkMode} />
+          <SettingRow label="Notifications" value={isNotificationsEnabled} onValueChange={setIsNotificationsEnabled} />
 
-      {/* Data Management */}
-      <TouchableOpacity style={styles.button} onPress={handleClearData}>
-        <Text style={styles.buttonText}>Clear Dream Data</Text>
-      </TouchableOpacity>
+          {/* Data Management */}
+          <TouchableOpacity style={styles.logoutButton} onPress={handleClearData}>
+            <Text style={styles.buttonText}>Clear Dream Data</Text>
+          </TouchableOpacity>
 
+          {/* Feedback Section */}
+          <View style={styles.feedbackContainer}>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter your feedback..."
+              placeholderTextColor="#D7C9E3"
+              value={feedback}
+              onChangeText={setFeedback}
+              multiline
+            />
+            <TouchableOpacity style={styles.submitButton} onPress={handleFeedbackSubmit}>
+              <Text style={styles.submitButtonText}>Submit Feedback</Text>
+            </TouchableOpacity>
+          </View>
 
+          {/* Navigation Buttons */}
+          <TouchableOpacity style={styles.button} onPress={() => router.push('../tabs/HomeScreen')}>
+            <Text style={styles.buttonText}>Back to Home Page</Text>
+          </TouchableOpacity>
 
-      <View style={styles.differentContainer}>
-        {/* Feedback Section */}
-        <TextInput
-          style={styles.input}
-          placeholder="Enter your feedback..."
-          placeholderTextColor="#ccc"
-          value={feedback}
-          onChangeText={setFeedback}
-        />
-        <TouchableOpacity style={styles.submitButton} onPress={handleFeedbackSubmit}>
-          <Text style={styles.buttonText}>Submit Feedback</Text>
-        </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={() => router.push('./Profile')}>
+            <Text style={styles.buttonText}>Profile</Text>
+          </TouchableOpacity>
 
-      </View>
-      {/* Navigation Buttons */}
-      <TouchableOpacity style={styles.button} onPress={() => router.push('../tabs/HomeScreen')}>
-        <Text style={styles.buttonText}>Back to Home Page</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.button} onPress={() => router.push('./Profile')}>
-        <Text style={styles.buttonText}>Profile</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-        <Text style={styles.logoutButtonText}>Log Out</Text>
-      </TouchableOpacity>
-
-
-
-    </View>
+          <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+            <Text style={styles.logoutButtonText}>Log Out</Text>
+          </TouchableOpacity>
+        </ScrollView>
+      </SafeAreaView>
+    </LinearGradient>
   );
 }
 
@@ -82,9 +83,9 @@ const SettingRow = ({ label, value, onValueChange }) => (
   <View style={styles.row}>
     <Text style={styles.label}>{label}</Text>
     <Switch
-      trackColor={{ false: '#1E293B', true: '#007bff' }}
-      thumbColor={value ? '#fff' : '#ccc'}
-      ios_backgroundColor="#1E293B"
+      trackColor={{ false: '#4B4453', true: '#94C9A9' }}
+      thumbColor={value ? '#180723' : '#D7C9E3'}
+      ios_backgroundColor="#4B4453"
       onValueChange={onValueChange}
       value={value}
     />
@@ -94,97 +95,94 @@ const SettingRow = ({ label, value, onValueChange }) => (
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: '#2C123F',
+    paddingHorizontal: 20,
   },
-  header: {
-    flexDirection: 'row',
+  scrollContainer: {
     alignItems: 'center',
-    marginBottom: 20,
+    paddingBottom: 40,
   },
   headerText: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: 'white',
+    color: '#D7C9E3',
+    marginVertical: 30,
   },
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#003554',
-    paddingVertical: 15,
+    backgroundColor: '#3d1865',
+    paddingVertical: 14,
     paddingHorizontal: 20,
-    borderRadius: 10,
-    marginBottom: 10,
-    width: '90%',
+    borderRadius: 12,
+    borderColor: '#D7C9E3',
+    borderWidth: 1.5,
+    marginBottom: 15,
+    width: '100%',
   },
   label: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: 'bold',
+    color: '#D7C9E3',
+    fontSize: 16,
+    fontWeight: '600',
   },
   button: {
-    backgroundColor: '#003554',
-    paddingVertical: 15,
-    borderRadius: 10,
+    backgroundColor: '#94C9A9',
+    paddingVertical: 14,
+    borderRadius: 12,
     alignItems: 'center',
-    marginTop: 5,
-
-    width: '90%',
+    marginTop: 10,
+    width: '100%',
   },
   buttonText: {
-    color: 'white',
-    fontSize: 18,
+    color: '#180723',
+    fontSize: 16,
     fontWeight: 'bold',
   },
   logoutButton: {
     backgroundColor: '#C41E3A',
-    paddingVertical: 10,
-    borderRadius: 10,
+    paddingVertical: 14,
+    borderRadius: 12,
     alignItems: 'center',
-    marginTop: 20,
-    width: '90%',
+    marginTop: 30,
+    width: '100%',
   },
   logoutButtonText: {
-    color: 'white',
-    fontSize: 18,
+    color: '#FFFFFF',
+    fontSize: 16,
     fontWeight: 'bold',
   },
-
-  input: {
-    backgroundColor: '#003554',
-    color: 'white',
+  feedbackContainer: {
+    backgroundColor: '#3d1865',
     padding: 15,
-    borderRadius: 10,
-    borderWidth: 2,
-    borderColor: 'grey',
-    height: 100,
-    textAlignVertical: 'top',
-    marginBottom: 2,
-    marginTop: 5,
-    width: '90%',
-  },
-  submitButton: {
-    backgroundColor: '#8FBC8B',
-    paddingVertical: 8,
-    borderRadius: 10,
-    borderWidth: 2,
-    borderColor: 'grey',
-    alignItems: 'center',
-    marginTop: 5,
-    width: '90%',
-  },
-  differentContainer: {
-    backgroundColor: '#003554',
-    padding: 15,
-    borderRadius: 10,
-    borderWidth: 2,
-    borderColor: 'white',
-    width: '90%',
+    borderRadius: 12,
+    borderWidth: 1.5,
+    borderColor: '#D7C9E3',
+    width: '100%',
     alignItems: 'center',
     marginTop: 20,
-    marginBottom: 20,
   },
-
+  input: {
+    backgroundColor: '#2C123F',
+    color: '#D7C9E3',
+    padding: 14,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#D7C9E3',
+    height: 100,
+    textAlignVertical: 'top',
+    marginBottom: 10,
+    width: '100%',
+  },
+  submitButton: {
+    backgroundColor: '#94C9A9',
+    paddingVertical: 10,
+    borderRadius: 10,
+    width: '100%',
+    alignItems: 'center',
+  },
+  submitButtonText: {
+    color: '#180723',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
 });

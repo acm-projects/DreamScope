@@ -1,4 +1,4 @@
-import { View, FlatList, Text, ScrollView, SafeAreaView } from "react-native";
+import { View, FlatList, Text, ScrollView, SafeAreaView, TouchableOpacity } from "react-native";
 import { Button, ButtonText } from "@/components/ui/button";
 import { useSearchParams } from "expo-router/build/hooks";
 import { Redirect, useRouter } from "expo-router";
@@ -23,11 +23,18 @@ export default function DreamVisualizationScreen() {
                     marginBottom: 5, flex: 1, backgroundColor: "#304575"
                 }}>Dream Visualization</Text>
                 <ScrollView>
-                    <CalendarPicker >
-
+                    <CalendarPicker  >
+                  
                     </CalendarPicker>
 
+               
 
+
+        <TouchableOpacity>
+            
+        </TouchableOpacity>
+
+               
                 </ScrollView>
             </View>
         </SafeAreaView>
