@@ -4,6 +4,8 @@ import { useState } from "react";
 import * as ImagePicker from "expo-image-picker";
 import { LinearGradient } from "expo-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Fontisto } from '@expo/vector-icons';
+
 
 export default function ProfilePage() {
     const [profilePic, setProfilePic] = useState<string | null>(null);
@@ -30,18 +32,37 @@ export default function ProfilePage() {
         ]);
     };
 
+    const handleLogout = () => {
+        Alert.alert('Logout', 'Are you sure you want to log out?', [
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Yes', onPress: () => router.push('../auth/sign_in') }
+        ]);
+    };
+
+
     return (
         <LinearGradient colors={['#180723', '#2C123F', '#2C123F', '#3d1865']} style={{ flex: 1 }}>
             <SafeAreaView style={styles.container}>
                 <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
-                    <Text style={styles.headerText}>MY PROFILE</Text>
+
+                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: '100%', marginBottom: 20 }}>
+                        <TouchableOpacity onPress={() => router.push('../tabs/HomeScreen')} style={{ padding: 10 }}>
+                            <Fontisto name="arrow-left" size={24} color="#D7C9E3" />
+                        </TouchableOpacity>
+
+                        <Text style={styles.headerText}>MY PROFILE</Text>
+
+                        <TouchableOpacity onPress={() => router.push('./Settings')} style={{ padding: 10 }}>
+                            <Fontisto name="player-settings" size={24} color="#D7C9E3" />
+                        </TouchableOpacity>
+                    </View>
 
                     {/* Profile Picture */}
                     <TouchableOpacity style={styles.profilePicContainer} onPress={handleProfilePicChange}>
                         {profilePic ? (
                             <Image source={{ uri: profilePic }} style={styles.profilePic} />
                         ) : (
-                            <Text style={styles.profilePicText}>Add Profile Pic</Text>
+                            <Fontisto name="person" size={40} color="#180723" />
                         )}
                     </TouchableOpacity>
 
@@ -64,21 +85,20 @@ export default function ProfilePage() {
                     </View>
 
                     {/* Buttons */}
-                    <TouchableOpacity style={styles.button} onPress={() => router.push('../tabs/DreamTimeline')}>
+                    {/* <TouchableOpacity style={styles.button} onPress={() => router.push('../tabs/DreamTimeline')}>
                         <Text style={styles.buttonText}>My Dream Timeline</Text>
                     </TouchableOpacity>
+ */}
 
-                    <TouchableOpacity style={styles.button} onPress={() => router.push('../tabs/HomeScreen')}>
-                        <Text style={styles.buttonText}>Back to Home Page</Text>
+
+                    <TouchableOpacity style={[styles.logoutButton, { flex: 1, marginRight: 10 }]} onPress={handleLogout}>
+                        <Text style={styles.logoutButtonText}>Log Out</Text>
                     </TouchableOpacity>
-
-                    <TouchableOpacity style={styles.button} onPress={() => router.push('./Settings')}>
-                        <Text style={styles.buttonText}>Settings</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity style={styles.deleteButton} onPress={handleDeleteAccount}>
+                    <TouchableOpacity style={[styles.deleteButton, { flex: 1, marginLeft: 10 }]} onPress={handleDeleteAccount}>
                         <Text style={styles.deleteButtonText}>Delete Account</Text>
                     </TouchableOpacity>
+
+
                 </ScrollView>
             </SafeAreaView>
         </LinearGradient>
@@ -107,7 +127,7 @@ const styles = StyleSheet.create({
         height: 120,
         borderRadius: 60,
         borderWidth: 3,
-        borderColor: '#94C9A9',
+        borderColor: '#3d1865',
         alignItems: 'center',
         justifyContent: 'center',
         marginBottom: 20,
@@ -124,7 +144,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     bioInput: {
-        backgroundColor: '#2C123F',
+        backgroundColor: '#180723',
         color: '#D7C9E3',
         padding: 15,
         borderRadius: 12,
@@ -136,7 +156,7 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     statsBox: {
-        backgroundColor: '#3d1865',
+        backgroundColor: '#180723',
         borderRadius: 12,
         padding: 20,
         width: '100%',
@@ -147,7 +167,6 @@ const styles = StyleSheet.create({
     statsText: {
         color: '#D7C9E3',
         fontSize: 16,
-        fontStyle: 'italic',
         marginBottom: 5,
     },
     button: {
@@ -165,14 +184,29 @@ const styles = StyleSheet.create({
     },
     deleteButton: {
         backgroundColor: '#C41E3A',
-        paddingVertical: 12,
-        borderRadius: 14,
+        paddingVertical: 14,
+        borderRadius: 20,
+        width: '70%',
         alignItems: 'center',
-        marginTop: 20,
-        width: '100%',
+        marginTop: 15,
+
     },
     deleteButtonText: {
         color: '#FFFFFF',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    logoutButton: {
+        backgroundColor: '#FFD700',
+        paddingVertical: 14,
+        borderRadius: 20,
+        width: '40%',
+        alignItems: 'center',
+        marginTop: 30,
+
+    },
+    logoutButtonText: {
+        color: '#2C123F',
         fontSize: 16,
         fontWeight: 'bold',
     },

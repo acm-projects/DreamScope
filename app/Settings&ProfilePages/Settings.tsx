@@ -3,6 +3,7 @@ import { router } from "expo-router";
 import React, { useState } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Fontisto } from '@expo/vector-icons';
 
 export default function SettingsPage() {
     const [isDarkMode, setIsDarkMode] = useState(false);
@@ -25,18 +26,20 @@ export default function SettingsPage() {
         }
     };
 
-    const handleLogout = () => {
-        Alert.alert('Logout', 'Are you sure you want to log out?', [
-            { text: 'Cancel', style: 'cancel' },
-            { text: 'Yes', onPress: () => router.push('../auth/sign_in') }
-        ]);
-    };
 
     return (
         <LinearGradient colors={['#180723', '#2C123F', '#3d1865']} style={{ flex: 1 }}>
             <SafeAreaView style={styles.container}>
                 <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
-                    <Text style={styles.headerText}>SETTINGS</Text>
+
+
+                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', width: '100%', marginBottom: 20, position: 'relative' }}>
+                        <TouchableOpacity onPress={() => router.push('./Profile')} style={{ position: 'absolute', left: 0, padding: 10 }}>
+                            <Fontisto name="arrow-left" size={24} color="#D7C9E3" />
+                        </TouchableOpacity>
+
+                        <Text style={styles.headerText}>SETTINGS</Text>
+                    </View>
 
                     <SettingRow label="Light Mode" value={isDarkMode} onValueChange={setIsDarkMode} />
                     <SettingRow label="Notifications" value={isNotificationsEnabled} onValueChange={setIsNotificationsEnabled} />
@@ -57,18 +60,8 @@ export default function SettingsPage() {
                         </TouchableOpacity>
                     </View>
 
-                    {/* Navigation Buttons */}
-                    <TouchableOpacity style={styles.button} onPress={() => router.push('../tabs/HomeScreen')}>
-                        <Text style={styles.buttonText}>Back to Home Page</Text>
-                    </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.button} onPress={() => router.push('./Profile')}>
-                        <Text style={styles.buttonText}>Profile</Text>
-                    </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-                        <Text style={styles.logoutButtonText}>Log Out</Text>
-                    </TouchableOpacity>
 
                     {/* Data Management */}
                     <TouchableOpacity style={styles.logoutButton} onPress={handleClearData}>
@@ -81,7 +74,7 @@ export default function SettingsPage() {
     );
 }
 
-const SettingRow = ({ label, value, onValueChange }) => (
+const SettingRow: React.FC<{ label: string; value: boolean; onValueChange: (value: boolean) => void }> = ({ label, value, onValueChange }) => (
     <View style={styles.row}>
         <Text style={styles.label}>{label}</Text>
         <Switch

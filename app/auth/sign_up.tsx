@@ -66,7 +66,7 @@ const SignUp = (): JSX.Element => {
 
                         <TextInput
                             style={[styles.input, focusedField === "username" && styles.inputFocused]}
-                            placeholder="Enter your username"
+                            placeholder="Enter your full name"
                             value={form.username}
                             onChangeText={(text) => setForm({ ...form, username: text })}
                             autoCapitalize="none"
