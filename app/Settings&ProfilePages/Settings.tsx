@@ -79,7 +79,7 @@ const SettingRow: React.FC<{ label: string; value: boolean; onValueChange: (valu
         <Text style={styles.label}>{label}</Text>
         <Switch
             trackColor={{ false: '#4B4453', true: '#94C9A9' }}
-            thumbColor={value ? '#180723' : '#D7C9E3'}
+            thumbColor={value ? '#D7C9E3' : '#D7C9E3'}
             ios_backgroundColor="#4B4453"
             onValueChange={onValueChange}
             value={value}
@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        backgroundColor: '#3d1865',
+        backgroundColor: '#180723',
         paddingVertical: 14,
         paddingHorizontal: 20,
         borderRadius: 12,
@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     feedbackContainer: {
-        backgroundColor: '#3d1865',
+        backgroundColor: '#180723',
         padding: 15,
         borderRadius: 12,
         borderWidth: 1.5,
