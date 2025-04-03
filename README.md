@@ -168,3 +168,5 @@ It's clear in your mind in one moment and then gone in the next. Do your dreams 
 
 **Industry Mentor**
 - Anjelica Avorque
+
+![image](https://drive.google.com/uc?export=view&id=1vGT_Y9fs4hP7V2QixaatEY2_2835FrPH)
