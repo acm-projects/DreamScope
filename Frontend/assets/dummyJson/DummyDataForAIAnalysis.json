@@ -1,0 +1,41 @@
+{
+    "places": [
+        "Forest",
+        "City",
+        "Beach"
+    ],
+    "people": [
+        "Noel",
+        "Teja",
+        "Aproteem",
+        "Suha",
+        "Mayo"
+    ],
+    "objects": [
+        "Silver Bell",
+        "Donuts",
+        "Stopwatch"
+    ],
+    "themes": [
+        "Fantasy",
+        "Love",
+        "Mystery"
+    ],
+    "reoccuring places": [
+        "Forest",
+        "Beach"
+    ],
+    "reoccuring people": [
+        "Suha",
+        "Teja"
+    ],
+    "reoccuring objects": [
+        "Stopwatch"
+    ],
+    "reoccuring themes": [
+        "Mystery"
+    ],
+    "AI's insight": [
+        "Data from your previous logs as well as the weekly recap suggest that you might be through a mental period of anxiety from the upcoming concert you're performing in. I belive that you should continue to practice hard as well as take breaks accordingly."
+    ]
+}

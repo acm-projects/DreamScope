@@ -1,58 +1,40 @@
-import { ScrollView, Text, View, Image } from "react-native";
-import { Redirect, router } from 'expo-router';
-import '../Frontend/global.css'
-import { SafeAreaView } from "react-native-safe-area-context";
-import CustomButton from "../Frontend/components/CustomButton";
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import {useState, useEffect } from 'react'
+import React, { useEffect, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { View, ActivityIndicator, Text } from 'react-native';
+import { useRouter } from 'expo-router';
+import { UserProvider } from './context/UserContext';
 
+export default function Entry() {
+    const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
+    const router = useRouter();
 
-export default function Index() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  async function getData()
-  {
-    const data = await AsyncStorage.getItem('isLoggedIn');
-    console.log(data, 'at index.tsx')
-    setIsLoggedIn(data == 'true');
-  }
+    useEffect(() => {
+        const checkLoginStatus = async () => {
+            try {
+                const data = await AsyncStorage.getItem('isLoggedIn');
+                const loggedIn = data === 'true';
+                setIsLoggedIn(loggedIn);
 
-  useEffect(() => {
-    getData();
-  }, []); 
-  return (
-    <SafeAreaView className="bg-primary h-full">
-      <ScrollView contentContainerStyle={{ height: '100%' }}>
-        <View className=" w-full min-h-[85vh] justify-center items-center  px-4">
-          <Image
-            source={require('../Frontend/assets/images/logo.png')}
-            className="w-52 h-52"
-            resizeMode="contain"
-          />
-          
-          <Text className="mt-5 px-5 font-custom text-5xl leading-relaxed color-light" >
-            D
-            <Text className="color-secondary font-custom">
-              ream
-            </Text>
-            S
-            <Text className="color-secondary font-custom">
-              cope
-            </Text>
-          </Text>
+                if (loggedIn) {
+                    router.replace('./tabs/HomeScreen');
+                } else {
+                    router.replace('./auth/sign_in');
+                }
+            } catch (error) {
+                console.error('Error reading login status:', error);
+            } 
+        };
 
-          <CustomButton
-            title="Proceed to app"
-            handlePress={() => {
-              isLoggedIn ? router.push('/(tabs)/(home)/home') : router.push('/sign_in');
+        checkLoginStatus();
+    }, []);
 
-            }
-            
-            }
-          />
+    if (isLoggedIn === null) {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <ActivityIndicator size="large" color="#663399" />
+            </View>
+        );
+    }
 
-        </View>
-      </ScrollView>
-
-    </SafeAreaView>
-  );
+    return null;
 }
