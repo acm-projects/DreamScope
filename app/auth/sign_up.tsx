@@ -3,9 +3,15 @@ import { View, Text, Image, TextInput, StyleSheet, ScrollView, SafeAreaView, Tou
 import { Link, router } from "expo-router";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../Backend/firebaseConfig";
+import { LinearGradient } from 'expo-linear-gradient';
 
 const SignUp = (): JSX.Element => {
-    const [form, setForm] = useState<{ username: string; email: string; password: string; confirmPassword: string }>({
+    const [form, setForm] = useState<{
+        username: string;
+        email: string;
+        password: string;
+        confirmPassword: string;
+    }>({
         username: "",
         email: "",
         password: "",
@@ -13,6 +19,7 @@ const SignUp = (): JSX.Element => {
     });
 
     const [isSubmitting, setSubmitting] = useState<boolean>(false);
+    const [focusedField, setFocusedField] = useState<"username" | "email" | "password" | "confirmPassword" | null>(null);
 
     const submit = async () => {
         if (!form.username || !form.email || !form.password || !form.confirmPassword) {
@@ -44,75 +51,82 @@ const SignUp = (): JSX.Element => {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
-            <ScrollView contentContainerStyle={styles.scrollContainer}>
-                <View style={styles.innerContainer}>
-                    {/* Logo & Title */}
-                    <Text style={styles.title}>
-                        <Text>D</Text>
-                        <Text style={styles.highlight}>ream</Text>
-                        <Text>S</Text>
-                        <Text style={styles.highlight}>cope</Text>
-                    </Text>
+        <LinearGradient colors={['#180723', '#2C123F', '#2C123F', '#3d1865']} style={{ flex: 1 }}>
+            <SafeAreaView style={styles.container}>
+                <ScrollView contentContainerStyle={styles.scrollContainer}>
+                    <View style={styles.innerContainer}>
+                        <Text style={styles.title}>
+                            <Text>D</Text>
+                            <Text style={styles.highlight}>ream</Text>
+                            <Text>S</Text>
+                            <Text style={styles.highlight}>cope</Text>
+                        </Text>
 
-                    <Image source={require("../../Frontend/images/logo.png")} style={styles.logo} resizeMode="contain" />
+                        <Image source={require("../../Frontend/images/logo-final.png")} style={styles.logo} resizeMode="contain" />
 
-                    {/* Form Fields */}
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Enter your username"
-                        value={form.username}
-                        onChangeText={(text) => setForm({ ...form, username: text })}
-                        autoCapitalize="none"
-                    />
+                        <TextInput
+                            style={[styles.input, focusedField === "username" && styles.inputFocused]}
+                            placeholder="Enter your full name"
+                            value={form.username}
+                            onChangeText={(text) => setForm({ ...form, username: text })}
+                            autoCapitalize="none"
+                            onFocus={() => setFocusedField("username")}
+                            onBlur={() => setFocusedField(null)}
+                        />
 
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Enter your email"
-                        value={form.email}
-                        onChangeText={(text) => setForm({ ...form, email: text })}
-                        keyboardType="email-address"
-                        autoCapitalize="none"
-                    />
+                        <TextInput
+                            style={[styles.input, focusedField === "email" && styles.inputFocused]}
+                            placeholder="Enter your email"
+                            value={form.email}
+                            onChangeText={(text) => setForm({ ...form, email: text })}
+                            keyboardType="email-address"
+                            autoCapitalize="none"
+                            onFocus={() => setFocusedField("email")}
+                            onBlur={() => setFocusedField(null)}
+                        />
 
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Enter your password"
-                        value={form.password}
-                        onChangeText={(text) => setForm({ ...form, password: text })}
-                        secureTextEntry
-                    />
+                        <TextInput
+                            style={[styles.input, focusedField === "password" && styles.inputFocused]}
+                            placeholder="Enter your password"
+                            value={form.password}
+                            onChangeText={(text) => setForm({ ...form, password: text })}
+                            secureTextEntry
+                            onFocus={() => setFocusedField("password")}
+                            onBlur={() => setFocusedField(null)}
+                        />
 
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Confirm your password"
-                        value={form.confirmPassword}
-                        onChangeText={(text) => setForm({ ...form, confirmPassword: text })}
-                        secureTextEntry
-                    />
+                        <TextInput
+                            style={[styles.input, focusedField === "confirmPassword" && styles.inputFocused]}
+                            placeholder="Confirm your password"
+                            value={form.confirmPassword}
+                            onChangeText={(text) => setForm({ ...form, confirmPassword: text })}
+                            secureTextEntry
+                            onFocus={() => setFocusedField("confirmPassword")}
+                            onBlur={() => setFocusedField(null)}
+                        />
 
-                    {/* Register Button */}
-                    <TouchableOpacity style={styles.button} onPress={submit} disabled={isSubmitting}>
-                        <Text style={styles.buttonText}>{isSubmitting ? "Registering..." : "Register"}</Text>
-                    </TouchableOpacity>
+                        <TouchableOpacity style={styles.button} onPress={submit} disabled={isSubmitting}>
+                            <Text style={styles.buttonText}>
+                                {isSubmitting ? "Registering..." : "Register"}
+                            </Text>
+                        </TouchableOpacity>
 
-                    {/* Login Redirect */}
-                    <View style={styles.footer}>
-                        <Text style={styles.footerText}>Already have an account?</Text>
-                        <Link href="../../auth/sign_in" style={styles.linkText}>
-                            Log in
-                        </Link>
+                        <View style={styles.footer}>
+                            <Text style={styles.footerText}>Already have an account?</Text>
+                            <Link href="../../auth/sign_in" style={styles.linkText}>
+                                Log in
+                            </Link>
+                        </View>
                     </View>
-                </View>
-            </ScrollView>
-        </SafeAreaView>
+                </ScrollView>
+            </SafeAreaView>
+        </LinearGradient>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#2C123F",
     },
     scrollContainer: {
         flexGrow: 1,
@@ -144,6 +158,11 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15,
         marginBottom: 15,
         fontSize: 16,
+        borderWidth: 2,
+        borderColor: "#fff",
+    },
+    inputFocused: {
+        borderColor: "#FFD700",
     },
     button: {
         backgroundColor: "#FFD700",

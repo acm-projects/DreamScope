@@ -1,8 +1,11 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
     View,
+    Modal,
     Text,
+    TextInput,
     StyleSheet,
+    TouchableOpacity,
     Image,
     Pressable,
     Dimensions,
@@ -16,6 +19,9 @@ import * as Animatable from 'react-native-animatable';
 
 const { width } = Dimensions.get('window');
 const CIRCLE_SIZE = 100;
+
+
+
 
 function generatePastDates(count: number) {
     const dates = [];
@@ -32,19 +38,23 @@ function generatePastDates(count: number) {
     return dates;
 }
 
+
 function DateTimeline() {
     const scrollRef = useRef<ScrollView>(null);
-    const dates = generatePastDates(90);
+    const dates = generatePastDates(30);
     const todayLabel = new Date().toLocaleDateString('en-US', {
         month: 'short',
         day: 'numeric',
     });
+
+
 
     useEffect(() => {
         setTimeout(() => {
             scrollRef.current?.scrollToEnd({ animated: false });
         }, 300);
     }, []);
+
 
     return (
         <ScrollView
@@ -108,8 +118,27 @@ function DateTimeline() {
 export default function HomeScreen() {
     const router = useRouter();
 
+    const [modalVisible, setModalVisible] = useState(false);
 
 
+
+    const checkIfDayIsDivisibleBy7 = () => {
+        const justTheDay = new Date().toLocaleDateString('en-US', {
+            day: 'numeric'
+        });
+
+        if (Number(justTheDay) % 4 == 0) {
+            return true;
+        }
+        else {
+            return false;
+        }
+
+    }
+
+    useEffect(() => {
+        setModalVisible(checkIfDayIsDivisibleBy7);
+    }, []);
 
     const handleProfilePress = () => {
         router.push("../Settings&ProfilePages/Profile");
@@ -122,8 +151,55 @@ export default function HomeScreen() {
     };
 
     return (
+
+
         <LinearGradient colors={['#180723', '#2C123F', '#2C123F', '#3d1865']} style={{ flex: 1 }}>
+
             <SafeAreaView style={styles.container}>
+
+
+                <Modal
+                    animationType="fade"
+                    transparent={true}
+                    visible={modalVisible}
+                    onRequestClose={() => setModalVisible(false)}
+                >
+                    <View style={styles.modalOverlay}>
+                        <View style={styles.modalContainer}>
+                            <Text style={styles.modalText}>Weekly Check-in!</Text>
+                            <Text style={{ color: "white", marginBottom: 25 }}>Is there any updates you like to share from this week?</Text>
+
+                            <TextInput placeholder="Enter an update!" placeholderTextColor={"grey"} style={{ fontSize: 20, backgroundColor: "#212121", borderRadius: 12, borderWidth: 4, borderColor: "#212121", color: "white", width: "100%" }}>
+
+
+                            </TextInput>
+
+
+
+
+
+                            <View style={{
+                                flexDirection: "row",
+                                justifyContent: "space-around",
+                                width: "100%",
+                                marginTop: 45
+
+                            }}>
+                                <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.modalButton}>
+                                    <Text style={styles.modalButtonText}>Complete</Text>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.modalButton}>
+                                    <Text style={styles.modalButtonText}>Skip</Text>
+                                </TouchableOpacity>
+
+                            </View>
+
+
+                        </View>
+                    </View>
+                </Modal>
+
                 <View style={styles.imageContainer}>
                     <Image
                         source={require('../../Frontend/images/treeforeground.png')}
@@ -133,11 +209,7 @@ export default function HomeScreen() {
                 </View>
 
 
-                <View style={styles.settingsButtonContainer}>
-                    <Pressable onPress={handleSettingsPress} style={styles.settingsButton}>
-                        <Fontisto name="settings" size={24} color="#D7C9E3" />
-                    </Pressable>
-                </View>
+
 
 
                 <View style={styles.profileButtonContainer}>
@@ -245,4 +317,38 @@ const styles = StyleSheet.create({
     centerItem: {
         alignSelf: 'center',
     },
+    modalOverlay: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
+    },
+    modalContainer: {
+        width: "90%",
+        height: "35%",
+        backgroundColor: "#1E1E1E",
+        padding: 15,
+        borderRadius: 11,
+        alignItems: "center",
+    },
+    modalText: {
+        color: "white",
+        fontSize: 18,
+        marginBottom: 15,
+        textAlign: "center",
+    },
+    modalButton: {
+        backgroundColor: "#00BFFF",
+        alignItems: "center",
+        paddingVertical: 10,
+        width: "45%",
+        paddingHorizontal: 20,
+        borderRadius: 8,
+    },
+    modalButtonText: {
+        color: "white",
+        fontSize: 16,
+        fontWeight: "bold",
+    },
+
 });
