@@ -57,7 +57,7 @@ const generateImageFromPrompt = async (promptText, index) => {
             "Content-Type": "application/json"
         },
         body: JSON.stringify({
-            model: "dall-e-3",
+            model: "dall-e-2",
             prompt: promptText,
             n: 1,
             size: "1024x1024"

@@ -1,6 +1,8 @@
 import analyzeDream from "./openAiHelper.js";
 import dotenv from "dotenv";
 import express from "express";
+import axios from "axios";
+import sharp from "sharp"; // Image processing library
 import mongoose from "mongoose";
 import cors from "cors";
 
@@ -208,35 +210,36 @@ app.get("/api/dreamPosts/users/:userId/date/:date", async (req, res) => {
 // update a dream post
 app.put('/api/dreamPosts/:postId', async (req, res) => {
     try {
-
         // Step 1: Fetch the current post
         const dreamPost = await DreamPost.findById(req.params.postId);
-
         if (!dreamPost) {
             return res.status(404).json({ error: "Dream post not found." });
         }
 
-        const dreamText = dreamPost.dreamText
+        const dreamText = dreamPost.dreamText;
+        if (!dreamText) {
+            return res.status(400).json({ error: "dreamText is required to generate visualizations." });
+        }
 
-        // Step 2: Check if visualizations are empty or not
-        let newVisualizations = dreamPost.visualizations;
+        // Step 2: Generate DALL·E image URLs
+        const imageUrls = await getImages(dreamText);
+       
+        // Step 3: Store each compressed image as BLOB in MongoDB
+        for (const imageUrl of imageUrls) {
+            await storeImageAsBlob(req.params.postId, imageUrl);
+        }
 
-        //if (!dreamPost.visualizations || dreamPost.visualizations.length === 0) {
-            if (!dreamText) {
-                return res.status(400).json({ error: "dreamText is required to generate visualizations." });
-            }
+        // Step 4: Update other post data if provided in req.body
+        const updateData = { ...req.body };
+       
+        // Don't overwrite visualizations if they weren't provided in req.body
+        if (!req.body.visualizations) {
+            delete updateData.visualizations;
+        }
 
-            // Step 3: Call your getImages function and collect image URLs
-            newVisualizations = await getImages(dreamText);
-        //}
-
-        // Step 4: Update the dream post with new data + visualizations
         const updatedDreamPost = await DreamPost.findByIdAndUpdate(
             req.params.postId,
-            {
-                ...req.body,
-                visualizations: newVisualizations,
-            },
+            updateData,
             { new: true }
         );
 
@@ -244,6 +247,123 @@ app.put('/api/dreamPosts/:postId', async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(400).json({ error: error.message });
+    }
+});
+
+// Helper function to store compressed image as BLOB
+async function storeImageAsBlob(postId, imageUrl) {
+    try {
+        // 1. Download the image
+        const response = await axios.get(imageUrl, {
+            responseType: "arraybuffer",
+            headers: { "User-Agent": "Mozilla/5.0" },
+        });
+
+        // 2. Compress and optimize the image
+        const compressedImage = await sharp(Buffer.from(response.data))
+            .resize({
+                width: 1024,         // Set maximum width
+                height: 1024,        // Set maximum height
+                fit: 'inside',       // Keep aspect ratio
+                withoutEnlargement: true // Don't enlarge smaller images
+            })
+            .png({
+                quality: 80,         // Quality percentage (1-100)
+                compressionLevel: 9,  // Maximum compression
+                progressive: true     // Progressive loading
+            })
+            .toBuffer();
+
+        // 3. Calculate size savings
+        const originalSize = Buffer.from(response.data).length;
+        const compressedSize = compressedImage.length;
+        const savings = ((originalSize - compressedSize) / originalSize * 100).toFixed(2);
+       
+        console.log(`Compressed image: ${originalSize} bytes → ${compressedSize} bytes (${savings}% reduction)`);
+
+        // 4. Store compressed image in MongoDB
+        await DreamPost.findByIdAndUpdate(
+            postId,
+            {
+                $push: {
+                    visualizations: {
+                        binary: compressedImage,
+                        mimeType: "image/png",
+                        createdAt: new Date(),
+                        originalSize,
+                        compressedSize
+                    }
+                }
+            }
+        );
+       
+        console.log("✅ Compressed image stored as BLOB");
+    } catch (error) {
+        console.error("Error storing image:", error);
+        throw error;
+    }
+}
+
+// GET endpoint to retrieve and decompress base64 images
+app.get('/api/dreamPosts/:postId/visualizations', async (req, res) => {
+    try {
+        // 1. Fetch the post from MongoDB
+        const post = await mongoose.model('DreamPost').findById(req.params.postId);
+       
+        if (!post) {
+            return res.status(404).json({ error: "Post not found" });
+        }
+
+        if (!post.visualizations || post.visualizations.length === 0) {
+            return res.status(404).json({ error: "No visualizations found" });
+        }
+
+        // 2. Process all visualizations
+        const processedVisualizations = await Promise.all(
+            post.visualizations.map(async (vis, index) => {
+                try {
+                    // Decompress with sharp (optional processing)
+                    const processedBuffer = await sharp(vis.binary)
+                        .toFormat('png') // Ensure output format
+                        .toBuffer();
+
+                    // 3. Convert to base64
+                    const base64Image = processedBuffer.toString('base64');
+                    const dataURL = `data:${vis.mimeType};base64,${base64Image}`;
+
+                    return {
+                        id: vis._id,
+                        mimeType: vis.mimeType,
+                        createdAt: vis.createdAt,
+                        imageUrl: dataURL,
+                        metadata: {
+                            originalSize: vis.originalSize,
+                            compressedSize: vis.compressedSize,
+                            compressionRatio: vis.compressedSize
+                                ? ((vis.originalSize - vis.compressedSize) / vis.originalSize * 100).toFixed(2)
+                                : null
+                        }
+                    };
+                } catch (error) {
+                    console.error(`Error processing visualization ${index}:`, error);
+                    return {
+                        id: vis._id,
+                        error: "Failed to process image"
+                    };
+                }
+            })
+        );
+
+        // 4. Return the processed data
+        res.json({
+            postId: post._id,
+            title: post.title,
+            visualizations: processedVisualizations
+        });
+
+    } catch (error) {
+        console.error("Error in visualization endpoint:", error);
+        res.status(500).json({ error: "Internal server error" });
     }
 });
     
