@@ -15,7 +15,7 @@ export const AnalysisProvider = ({ children }) => {
         setError(null);
         try {
             const response = await axios.get(`${API_BASE_URL}/api/dreamPosts/post/${postId}`);
-            setAnalysisData(response.data.analysis);
+            setAnalysisData(response.data);
         } catch (err) {
             setError(err);
             console.error('Error fetching dream post by ID:', err);

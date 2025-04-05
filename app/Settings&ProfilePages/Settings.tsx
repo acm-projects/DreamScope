@@ -4,17 +4,27 @@ import React, { useState } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import axios from "axios";
+import {useUser} from "../context/UserContext"
 
+
+const API_BASE_URL = 'http://localhost:5001'
 
 export default function SettingsPage() {
     const [isDarkMode, setIsDarkMode] = useState(false);
     const [isNotificationsEnabled, setIsNotificationsEnabled] = useState(true);
     const [feedback, setFeedback] = useState('');
+    const { userData } = useUser();
+
+    const userId = userData._id;
 
     const handleClearData = () => {
         Alert.alert('Confirmation', 'Are you sure you want to clear your dream data?', [
             { text: 'Cancel', style: 'cancel' },
-            { text: 'Yes', onPress: () => Alert.alert('Data Cleared!') }
+            { text: 'Yes', onPress: async () => {
+                await axios.delete(`${API_BASE_URL}/api/dreamPosts/user/${userId}`, userId)
+                Alert.alert('Data Cleared!')
+            }  }
         ]);
     };
 

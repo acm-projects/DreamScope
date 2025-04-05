@@ -1,3 +1,5 @@
+//populate/repopulate recurring n dream related places, objects, people, themes arrays 
+//rename selected stuff
 import analyzeDream from "./openAiHelper.js";
 import dotenv from "dotenv";
 import express from "express";
@@ -93,24 +95,30 @@ app.put("/users/:userId", async (req, res) => {
   }
 });
 
-// delete user
-app.delete("/users/:userId", async (req, res) => {
-  try {
-      const deletedUser = await User.findByIdAndDelete(req.params.userId);
-      if (!deletedUser) {
-          return res.status(404).json({ error: "User not found" });
+app.delete('/api/deleteUser/:uid', authenticateUser, async (req, res) => {
+    try {
+      const { _id } = req.params;
+      const authenticatedUid = req.user._id;
+  
+      if (_id !== authenticatedUid) {
+        return res.status(403).json({ error: 'Unauthorized' });
       }
-      res.status(200).json({ message: "User deleted successfully" });
-  } catch (error) {
-      res.status(500).json({ error: error.message });
-  }
-});
+  
+      await User.deleteOne({ userId: _id });
+      await DreamPost.deleteMany({ userId: _id }); //Assuming you are storing the uid inside the userId field.
+  
+      res.status(200).json({ message: 'User data deleted successfully.' });
+    } catch (error) {
+      console.error('Error deleting user data:', error);
+      res.status(500).json({ error: 'Internal server error.' });
+    }
+  });
 
 //dream post routes
 
 app.post('/api/dreamPosts', async (req, res) => {
   try {
-      const { userId, title, type, dreamText, dreamFragments, themes, settings, emotions } = req.body;
+      const { userId, title, type, dreamText, dreamFragments, themes, settings, emotions, recurringPlaces, recurringObjects, recurringPeople, recurringThemes, } = req.body;
       const combinedDreamText = type === "Fragmented" ? dreamFragments.join('\n') : dreamText;
 
       const dreamPost = new DreamPost({
@@ -121,17 +129,23 @@ app.post('/api/dreamPosts', async (req, res) => {
           dreamFragments,
           themes,
           settings,
-          emotions, 
+          emotions,
+
       });
       const analysis = await analyzeDream(
           dreamPost.dreamText,
           dreamPost.themes,
           dreamPost.settings,
-          dreamPost.emotions
+          dreamPost.emotions,
+          recurringPlaces, 
+          recurringObjects, 
+          recurringPeople, 
+          recurringThemes,
       );
       dreamPost.analysis = analysis;
-      console.log(dreamPost);
-     await dreamPost.save();
+      //populate/repopulate recurring n dream related places, objects, people, themes arrays 
+      //make sure to update userdata based on recurring stuff
+      await dreamPost.save();
 
       res.status(201).json(dreamPost);
   } catch (error) {
@@ -179,7 +193,43 @@ app.delete('/api/dreamPosts/:postId', async (req, res) => {
   }
 });
 
-app.get('/api/dreamPosts/user/:userId/date/:date/postId/:postId', async (req, res) => {
+app.delete('/api/dreamPosts/user/:userId', async (req, res) => {
+    try {
+      const { userId } = req.params;
+  
+      const user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).json({ message: 'User not found.' });
+      }
+  
+      const originalTotalDreams = user.totalDreams;
+      const originalFragDreams = user.fragDreams;
+      const originalDetailedDreams = user.detailedDreams;
+
+      const result = await DreamPost.deleteMany({ userId: userId });
+  
+      await User.findByIdAndUpdate(userId, {
+        totalDreams: 0,
+        fragDreams: 0,
+        detailedDreams: 0,
+      });
+  
+      res.status(200).json({
+        message: `Successfully deleted ${result.deletedCount} dream posts for user ${userId}.`,
+        originalCounts: {
+          totalDreams: originalTotalDreams,
+          fragDreams: originalFragDreams,
+          detailedDreams: originalDetailedDreams,
+        },
+      });
+    } catch (error) {
+      console.error('Error deleting dream posts:', error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+//user, date
+app.get('/api/dreamPosts/user/:userId/date/:date', async (req, res) => {
     try {
         const { userId, date } = req.params;
         const parsedDate = new Date(date);
@@ -190,7 +240,7 @@ app.get('/api/dreamPosts/user/:userId/date/:date/postId/:postId', async (req, re
         endDate.setHours(0, 0, 0, 0);
 
         const dreamPost = await DreamPost.findOne({
-            userId: userId, // Corrected from _id to userId.
+            userId: userId,
             date: {
                 $gte: parsedDate,
                 $lt: endDate,

@@ -41,11 +41,10 @@ const SignUp = (): JSX.Element => {
         try {
             const userCredential = await createUserWithEmailAndPassword(auth, form.email, form.password);
 
-            // Register user in backend
             const response = await axios.post(`${API_BASE_URL}/api/users`, { name: form.username, email: form.email });
            
             await AsyncStorage.setItem("isLoggedIn", JSON.stringify(true));
-            await AsyncStorage.setItem("userEmail", form.email); // Add this line
+            await AsyncStorage.setItem("userEmail", form.email);
             console.log("User registered successfully!");
 
 

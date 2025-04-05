@@ -1,3 +1,4 @@
+//test user deletion
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, Image, ScrollView } from "react-native";
 import { router } from "expo-router";
 import { useState, useEffect } from "react";
@@ -6,6 +7,10 @@ import { LinearGradient } from "expo-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useUser } from '../context/UserContext'; 
 import React from 'react'; 
+import { getAuth, deleteUser } from "firebase/auth";
+import axios from "axios";
+
+const API_BASE_URL = 'http://localhost:5001'
 
 export default function ProfilePage() {
     const [profilePic, setProfilePic] = useState<string | null>(null);
@@ -36,12 +41,48 @@ export default function ProfilePage() {
         }
     };
 
-    const handleDeleteAccount = () => {
-        Alert.alert('Account Deletion', 'Are you sure you want to delete your account?', [
-            { text: 'Cancel', style: 'cancel' },
-            { text: 'Yes', onPress: () => Alert.alert('Account Deleted!') }
-        ]);
-    };
+    const handleDeleteAccount = async () => {
+        Alert.alert(
+          "Account Deletion",
+          "Are you sure you want to delete your account? This action cannot be undone.",
+          [
+            { text: "Cancel", style: "cancel" },
+            {
+              text: "Yes",
+              onPress: async () => {
+                const auth = getAuth();
+                const user = auth.currentUser;
+      
+                if (user) {
+                  try {
+                    await deleteUser(user);
+      
+                    try {
+                      await axios.delete(`${API_BASE_URL}/api/deleteUser/${userData._id}`);
+                      console.log("User data deleted from server.");
+                    } catch (serverError) {
+                      console.error("Error deleting user data from server:", serverError);
+                    }
+                    Alert.alert(
+                      "Account Deleted",
+                      "Your account has been deleted successfully."
+                    );
+      
+                  } catch (firebaseError) {
+                    console.error("Error deleting user from Firebase:", firebaseError);
+                    Alert.alert(
+                      "Error",
+                      "Failed to delete account. Please try again."
+                    );
+                  }
+                } else {
+                  Alert.alert("Error", "No user logged in.");
+                }
+              },
+            },
+          ]
+        );
+      };
 
     return (
         <LinearGradient colors={['#180723', '#2C123F', '#2C123F', '#3d1865']} style={{ flex: 1 }}>

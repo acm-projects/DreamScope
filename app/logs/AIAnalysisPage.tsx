@@ -1,8 +1,14 @@
+//fix input arrays, right now theyre not taking anything in
 import React, { useState, useEffect } from "react";
-import { View, Text, ScrollView, Button } from "react-native";
+import { View, Text, ScrollView } from "react-native";
 import { useRouter } from "expo-router";
 import { useAnalysis } from "../context/AnalysisContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Button, ButtonText } from "../../components/ui/button";
+import { LinearGradient } from "expo-linear-gradient";
+import { Feather } from '@expo/vector-icons';
+import { useUser } from "../context/UserContext";
+
 
 const currentDate = new Date().toLocaleDateString("en-US", {
     month: "long",
@@ -13,6 +19,7 @@ const currentDate = new Date().toLocaleDateString("en-US", {
 export default function AIAnalysisPage() {
     const router = useRouter();
     const { analysisData, loading, error, fetchDreamPostById } = useAnalysis();
+    const {userData } = useUser();
     const [postId, setPostId] = useState<string | null>(null);
 
     useEffect(() => {
@@ -26,13 +33,13 @@ export default function AIAnalysisPage() {
         };
 
         fetchPostId();
-    }, []); // Run only once on mount
+    }, []);
 
     useEffect(() => {
         if (postId) {
             fetchDreamPostById(postId);
         }
-    }, [postId, fetchDreamPostById]); // Run when postId changes
+    }, [postId, fetchDreamPostById]); 
 
     if (loading) {
         return <Text style={{ color: "white" }}>Loading Analysis...</Text>;
@@ -43,43 +50,255 @@ export default function AIAnalysisPage() {
     }
     console.log("in page: ", analysisData);
     return (
-        <ScrollView style={{ flex: 1, backgroundColor: "#2C123F", padding: 20 }}>
-            {/* Header Section */}
-            <View style={{ alignItems: "center", marginBottom: 20 }}>
-                <Text style={{ color: "white", fontSize: 30, fontWeight: "bold" }}>
-                    {currentDate}
-                </Text>
-                <Button
-                    onPress={() => router.push("/tabs")}
-                    title="Back to Home"
-                    color="grey"
-                    style={{
-                        marginTop: 10,
-                        backgroundColor: "transparent",
-                        borderWidth: 2,
-                        borderColor: "white",
-                        padding: 5,
-                        borderRadius: 50,
-                    }}
+        <LinearGradient
+            colors={["#15041D", "#2C123F", "#3B1856"]}
+            style={{ flex: 1 }}
+        >
+            <StatusBar barStyle="light-content" />
+ 
+ 
+            {/* Decorative background elements
+            <View style={{ position: "absolute", top: 0, right: 0, opacity: 0.4 }}>
+                <Image
+                    source={require("../../Frontend/images/treeforeground.png")}
+                    style={{ width: 200, height: 200 }}
+                    resizeMode="contain"
                 />
-            </View>
-
-            {/* AI Insight/Analysis View */}
-            <View style={{ marginTop: 20 }}>
-                <Text
-                    style={{
+            </View> */}
+ 
+ 
+            <ScrollView
+                style={{ flex: 1 }}
+                contentContainerStyle={{ padding: 20, paddingBottom: 40 }}
+            >
+                {/* Header Section */}
+                <View style={{ alignItems: "center", marginBottom: 30 }}>
+                    <Text
+                        style={{
+                            fontSize: 26,
+                            fontWeight: "bold",
+                            color: "white",
+                            textAlign: "center",
+                            marginBottom: 12,
+                            textShadowColor: "rgba(0, 191, 255, 0.3)",
+                            textShadowOffset: { width: 0, height: 1 },
+                            textShadowRadius: 5,
+                        }}
+                    >
+                        {currentDate}
+                    </Text>
+ 
+ 
+                    <Text
+                        style={{
+                            fontSize: 24,
+                            fontWeight: "bold",
+                            color: "#00BFFF",
+                            marginBottom: 10,
+                        }}
+                    >
+                        Dream Analysis
+                    </Text>
+                </View>
+ 
+ 
+                {/* Dream Breakdown Header */}
+                <View style={{
+                    backgroundColor: "rgba(0, 191, 255, 0.15)",
+                    borderRadius: 12,
+                    padding: 12,
+                    marginBottom: 20,
+                    flexDirection: "row",
+                    alignItems: "center"
+                }}>
+                    <Feather name="moon" size={18} color="#00BFFF" />
+                    <Text style={{
                         color: "white",
-                        fontSize: 20,
-                        fontWeight: "bold",
-                        marginBottom: 10,
-                        backgroundColor: "blue",
-                        padding: 10,
-                        borderRadius: 15,
-                    }}
-                >
-                    AI Overview: {analysisData}
-                </Text>
-            </View>
-        </ScrollView>
+                        fontSize: 18,
+                        fontWeight: "600",
+                        marginLeft: 8
+                    }}>
+                        Your Dream Elements
+                    </Text>
+                </View>
+ 
+ 
+                {/* Categories (Places, People, Objects, Themes, etc.) put backend here*/}
+                {[
+                    { label: "Places", icon: "map-pin", data: analysisData.dreamPlaces },
+                    { label: "People", icon: "users", data: analysisData.dreamPeople },
+                    { label: "Objects", icon: "box", data: analysisData.dreamObjects },
+                    { label: "Themes", icon: "feather", data: analysisData.dreamThemes },
+                    { label: "Reoccurring Places", icon: "repeat", data: userData.recurringPlaces },
+                    { label: "Reoccurring People", icon: "refresh-cw", data: userData.recurringPeople },
+                    { label: "Reoccurring Objects", icon: "rotate-cw", data: userData.recurringObjects },
+                    { label: "Reoccurring Themes", icon: "refresh-ccw", data: userData.recurringThemes },
+                ].map((section, index) => (
+                    <View
+                        key={index}
+                        style={{
+                            marginBottom: 20,
+                            backgroundColor: "rgba(0, 49, 76, 0.3)",
+                            borderRadius: 16,
+                            padding: 15,
+                            borderLeftWidth: 3,
+                            borderLeftColor: "#00BFFF",
+                        }}
+                    >
+                        <View style={{
+                            flexDirection: "row",
+                            alignItems: "center",
+                            marginBottom: 10
+                        }}>
+                            <Feather name={section.icon} size={18} color="#00BFFF" />
+                            <Text
+                                style={{
+                                    color: "#00BFFF",
+                                    fontSize: 18,
+                                    fontWeight: "bold",
+                                    marginLeft: 8
+                                }}
+                            >
+                                {section.label}
+                            </Text>
+                        </View>
+ 
+ 
+                        {section.data.length > 0 ? (
+                            section.data.map((item, idx) => (
+                                <Text
+                                    key={idx}
+                                    style={{
+                                        color: "#C9B9E2",
+                                        fontSize: 16,
+                                        marginBottom: 5,
+                                        marginLeft: 26,
+                                        lineHeight: 22
+                                    }}
+                                >
+                                    • {item}
+                                </Text>
+                            ))
+                        ) : (
+                            <Text style={{
+                                color: "#C9B9E2",
+                                fontSize: 16,
+                                marginLeft: 26,
+                                fontStyle: "italic",
+                                opacity: 0.8
+                            }}>
+                                No {section.label.toLowerCase()} found
+                            </Text>
+                        )}
+                    </View>
+                ))}
+ 
+ 
+                {/* AI Insight/Analysis View */}
+                <View style={{ marginTop: 10, marginBottom: 20 }}>
+                    <View style={{
+                        backgroundColor: "rgba(0, 191, 255, 0.15)",
+                        borderRadius: 12,
+                        padding: 12,
+                        marginBottom: 15,
+                        flexDirection: "row",
+                        alignItems: "center"
+                    }}>
+                        <Feather name="star" size={18} color="#00BFFF" />
+                        <Text style={{
+                            color: "white",
+                            fontSize: 18,
+                            fontWeight: "600",
+                            marginLeft: 8
+                        }}>
+                            AI Overview {analysisData.analysis}
+                        </Text>
+                    </View>
+ 
+ 
+                    <View
+                        style={{
+                            backgroundColor: "rgba(0, 49, 76, 0.3)",
+                            borderRadius: 16,
+                            padding: 20,
+                            borderLeftWidth: 3,
+                            borderLeftColor: "#00BFFF",
+                        }}
+                    >
+                        <Text
+                            style={{
+                                color: "#C9B9E2",
+                                padding: 10,
+                                fontSize: 16,
+                                lineHeight: 24,
+                                fontStyle: "italic",
+                            }}
+                        >
+                            {"Your dream reveals themes of exploration and discovery. The presence of familiar people suggests a desire for connection, while recurring objects may represent unresolved concerns. Consider how these elements relate to your current life circumstances and emotional state."}
+                        </Text>
+                    </View>
+                </View>
+ 
+ 
+                {/* Action buttons */}
+                <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 10 }}>
+                    <Button
+                        onPress={() => router.push("/tabs")}
+                        style={{
+                            backgroundColor: "rgba(0, 49, 76, 0.8)",
+                            borderColor: "#00BFFF",
+                            borderWidth: 1.5,
+                            borderRadius: 12,
+                            alignItems: "center",
+                            justifyContent: "center",
+                            height: 54,
+                            flex: 1,
+                        }}
+                    >
+                        <ButtonText
+                            style={{
+                                color: "#FFFFFF",
+                                fontSize: 16,
+                                fontWeight: "bold",
+                            }}
+                        >
+                            <Feather name="home" size={16} /> Home
+                        </ButtonText>
+                    </Button>
+ 
+ 
+                    <View style={{ width: 15 }} />
+ 
+ 
+                    <Button
+                        onPress={() => router.push("/tabs/DreamTimeline")}
+                        style={{
+                            backgroundColor: "#0000ff",
+                            borderRadius: 12,
+                            alignItems: "center",
+                            justifyContent: "center",
+                            height: 54,
+                            flex: 1,
+                            shadowColor: "#000",
+                            shadowOffset: { width: 0, height: 3 },
+                            shadowOpacity: 0.27,
+                            shadowRadius: 4.65,
+                            elevation: 6,
+                        }}
+                    >
+                        <ButtonText
+                            style={{
+                                color: "#FFFFFF",
+                                fontSize: 16,
+                                fontWeight: "bold",
+                            }}
+                        >
+                            <Feather name="book" size={16} /> Dream Timeline
+                        </ButtonText>
+                    </Button>
+                </View>
+            </ScrollView>
+        </LinearGradient>
     );
-}
+ }
+ 

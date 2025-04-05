@@ -9,11 +9,8 @@ const User = new mongoose.Schema({
   joinDate: { type: Date, default: Date.now},
   recurringPeople: [{type: String}],
   recurringObjects: [{type: String}],
-  recurringSettings: [{type: String}],
-  // people:,
-  // objects:,
-  // settings:,
-  
+  recurringPlaces: [{type: String}],
+  recurringThemes: [{type: String}],
 });
 
 module.exports = mongoose.model("User", User);

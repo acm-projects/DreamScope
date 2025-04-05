@@ -5,6 +5,7 @@ import { Feather } from "@expo/vector-icons";
 import React, { useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
+import { useUser } from "../context/UserContext"
 
 const API_BASE_URL = 'http://localhost:5001'
 
@@ -27,7 +28,8 @@ export default function detailedLogTextScreen() {
     //function that updates when the user finishes editing the text textinput
     const [inputText, setInputText] = useState("");
     const [validText, setValidText] = useState(false);
-    const [dreamType, setDreamType] = useState('Detailed'); // Default to Detailed
+    const { userData } = useUser();
+
 
 
     const userEndedEditingText = () => {
@@ -71,16 +73,33 @@ export default function detailedLogTextScreen() {
                 const storedEmail = await AsyncStorage.getItem('userEmail');
                 const response = await axios.get(`${API_BASE_URL}/users/email/${storedEmail}`);
                 const userId = response.data._id;
+                
                 const totalDreams = response.data.totalDreams + 1;
                 const detailedDreams = response.data.detailedDreams + 1;
 
+                const recurringObjects = userData.recurringObjects;
+                const recurringPeople = userData.recurringPeople;
+                const recurringPlaces = userData.recurringPlaces;
+                const recurringThemes = userData.recurringThemes;
+
+                await axios.put(`${API_BASE_URL}/users/${userId}`, {
+                    totalDreams: totalDreams,
+                    detailedDreams: detailedDreams,
+                });
+
                 console.log(response.data.name);
-                const dreamData = { userId: userId, title: inputTitle, type: "Detailed", dreamText: inputText, dreamFragments: [], themes: [], settings: [], emotions: [], };
- 
-                const apiResponse = await axios.post(`${API_BASE_URL}/api/dreamPosts`, { userId: userId, title: inputTitle, type: "Detailed", dreamText: inputText, dreamFragments: [], themes: [], settings: [], emotions: [], });
-                await AsyncStorage.setItem('postId', apiResponse.data._id);
+                const dreamData = { userId: userId, title: inputTitle, type: "Detailed", dreamText: inputText, dreamFragments: [], themes: [], settings: [], emotions: [], recurringPlaces, recurringObjects, recurringPeople, recurringThemes, };
+
+                const existingPost = await axios.get(`${API_BASE_URL}/api/dreamPosts/user/${userId}/date/${currentDate}`);
                 
-                router.push('/logCompletion/detailedLogCompletion');
+                if(!existingPost){
+                    const apiResponse = await axios.post(`${API_BASE_URL}/api/dreamPosts`, dreamData);
+                    await AsyncStorage.setItem('postId', apiResponse.data._id);
+                    router.push('/logCompletion/detailedLogCompletion');
+                }
+                else{
+                    router.replace('./tabs/HomeScreen');
+                }
             } catch (error) {
                 console.error('Error submitting dream log:', error);
                 Alert.alert('Error', 'Failed to submit dream log.');
