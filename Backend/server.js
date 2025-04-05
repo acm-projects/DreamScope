@@ -6,6 +6,7 @@ import cors from "cors";
 
 import User from './models/User.js';
 import DreamPost from './models/DreamPost.js';
+import getImages from './visualization.js';
 
 dotenv.config();
 
@@ -127,7 +128,7 @@ app.post('/api/dreamPosts', async (req, res) => {
           dreamPost.dreamText,
           dreamPost.themes,
           dreamPost.settings,
-          dreamPost.emotions
+          dreamPost.emotions,
       );
       dreamPost.analysis = analysis;
       console.log(dreamPost);
@@ -153,19 +154,99 @@ app.get('/api/dreamPosts/user/:userId', async (req, res) => {
   }
 });
 
+// get dream post by user ID and date
+app.get("/api/dreamPosts/users/:userId/date/:date", async (req, res) => {
+    try {
+      const { userId, date } = req.params;
+  
+      // 1. Convert userId to ObjectId (if stored as ObjectId)
+      let userIdObj;
+      try {
+        userIdObj = new mongoose.Types.ObjectId(userId);
+      } catch (error) {
+        return res.status(400).json({ error: "Invalid user ID format" });
+      }
+  
+      // 2. Parse and validate the date (format: "YYYY-MM-DD")
+      const parsedDate = new Date(date);
+      if (isNaN(parsedDate)) {
+        return res
+          .status(400)
+          .json({ error: "Invalid date format. Use YYYY-MM-DD." });
+      }
+  
+      // 3. Set time to start of day (00:00:00)
+      const startOfDay = new Date(parsedDate);
+      startOfDay.setUTCHours(0, 0, 0, 0); // Use UTC to avoid timezone issues
+  
+      // 4. Set end of day (next midnight, 00:00:00)
+      const endOfDay = new Date(startOfDay);
+      endOfDay.setUTCDate(endOfDay.getUTCDate() + 1);
+  
+      // 5. Query MongoDB (filter by userId + date range)
+      const dreamPost = await DreamPost.findOne({
+        userId: userIdObj,
+        date: {
+          $gte: startOfDay, // After or at start of day
+          $lt: endOfDay, // Before next day
+        },
+      }).select("_id"); // Only return _id
+  
+      if (!dreamPost) {
+        return res.status(404).json({
+          error: "No dream post found for this user on the specified date.",
+        });
+      }
+  
+      res.status(200).json(dreamPost);
+    } catch (error) {
+      console.error("Error fetching dream post:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+  
 // update a dream post
 app.put('/api/dreamPosts/:postId', async (req, res) => {
-  try {
-      const updatedDreamPost = await DreamPost.findByIdAndUpdate(req.params.postId, req.body, { new: true });
-      if (!updatedDreamPost) {
-          return res.status(404).json({ error: "Dream post not found." });
-      }
-      res.status(200).json(updatedDreamPost);
-  } catch (error) {
-      res.status(400).json({ error: error.message });
-  }
-});
+    try {
 
+        // Step 1: Fetch the current post
+        const dreamPost = await DreamPost.findById(req.params.postId);
+
+        if (!dreamPost) {
+            return res.status(404).json({ error: "Dream post not found." });
+        }
+
+        const dreamText = dreamPost.dreamText
+
+        // Step 2: Check if visualizations are empty or not
+        let newVisualizations = dreamPost.visualizations;
+
+        //if (!dreamPost.visualizations || dreamPost.visualizations.length === 0) {
+            if (!dreamText) {
+                return res.status(400).json({ error: "dreamText is required to generate visualizations." });
+            }
+
+            // Step 3: Call your getImages function and collect image URLs
+            newVisualizations = await getImages(dreamText);
+        //}
+
+        // Step 4: Update the dream post with new data + visualizations
+        const updatedDreamPost = await DreamPost.findByIdAndUpdate(
+            req.params.postId,
+            {
+                ...req.body,
+                visualizations: newVisualizations,
+            },
+            { new: true }
+        );
+
+        res.status(200).json(updatedDreamPost);
+    } catch (error) {
+        console.error(error);
+        res.status(400).json({ error: error.message });
+    }
+});
+    
 //delete a dream post
 app.delete('/api/dreamPosts/:postId', async (req, res) => {
   try {

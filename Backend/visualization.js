@@ -3,16 +3,16 @@
 // const inputElement = document.querySelector("#dream-input"); // MODIFY THIS LINE
 
 // Hardcoded test prompt for CLI testing
-const testPrompt = `
-I found myself in a haunted mansion alone. I went to each room in this mansion, 
-and I tried to find other people. But partway through, I found a room with a wardrobe,
-and when I opened the wardrobe, the ghost of a woman in a bloodied wedding dress locked
-eyes with me and chased me. I got super scared and I ran all the way across the mansion
-to try and escape her. I ran into a room and locked the door behind me and held my breath
-until I was sure I was safe. Then, I explored the room I was in and found a music box with
-the sound of a baby's laughter in it. I immediately got creeped out by the laugh, and it
-scared me so bad that I woke up.
-`;
+// const testPrompt = `
+// I found myself in a haunted mansion alone. I went to each room in this mansion, 
+// and I tried to find other people. But partway through, I found a room with a wardrobe,
+// and when I opened the wardrobe, the ghost of a woman in a bloodied wedding dress locked
+// eyes with me and chased me. I got super scared and I ran all the way across the mansion
+// to try and escape her. I ran into a room and locked the door behind me and held my breath
+// until I was sure I was safe. Then, I explored the room I was in and found a music box with
+// the sound of a baby's laughter in it. I immediately got creeped out by the laugh, and it
+// scared me so bad that I woke up.
+// `;
 
 const getSubpromptsFromChatGPT = async (rawPrompt) => {
     const chatOptions = {
@@ -70,21 +70,37 @@ const generateImageFromPrompt = async (promptText, index) => {
         const imageUrl = data.data[0].url;
 
         console.log(`Image ${index + 1} URL: ${imageUrl}`);
+        return imageUrl;
     } catch (error) {
         console.error(`Error generating image ${index + 1}:`, error);
     }
 };
 
-const getImages = async () => {
-    const subprompts = await getSubpromptsFromChatGPT(testPrompt);
-    if (subprompts.length === 0) return;
+const getImages = async (dreamText) => {
+    // Step 1: Get subprompts from ChatGPT
+    const subprompts = await getSubpromptsFromChatGPT(dreamText);
 
-    for (let i = 0; i < subprompts.length; i++) {
-        console.log(`Generating image for subprompt ${i + 1}: ${subprompts[i]}`);
-        await generateImageFromPrompt(subprompts[i], i);
+    // Step 2: Ensure there are subprompts to process
+    if (subprompts.length === 0) {
+        console.log("No subprompts generated.");
+        return [];
     }
+
+    // Step 3: Generate images for each subprompt
+    const imageUrls = [];
+
+    // Loop through each subprompt and generate an image
+    for (let i = 0; i < subprompts.length; i++) {
+        const imageUrl = await generateImageFromPrompt(subprompts[i], i);
+        if (imageUrl) {
+            imageUrls.push(imageUrl);  // Add the generated image URL to the array
+        }
+    }
+
+    // Return all generated image URLs
+    return imageUrls;
 };
 
-getImages();
+export default getImages
 
 // submitIcon.addEventListener("click", getImages); // MODIFY THIS LINE?

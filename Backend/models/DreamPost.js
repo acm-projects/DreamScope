@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 
 const DreamPost = new mongoose.Schema({
    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+   // postId: { type: String, required: true },
    title: { type: String, required: true },
    type: { type: String, enum: ["Detailed", "Fragmented"], required: true },
    dreamText: { type: String }, 
@@ -12,7 +13,7 @@ const DreamPost = new mongoose.Schema({
    settings: [{ type: String }],
    emotions: [{ type: String }],
    date: { type: Date, default: Date.now },
-   visualizations: [{type: String}],
+   visualizations: [{ type: String }],
 });
 
 module.exports = mongoose.model("DreamPost", DreamPost);
