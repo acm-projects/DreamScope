@@ -209,7 +209,7 @@ export default function DreamTimelinePage() {
                         <Text style={{ fontWeight: "bold", color: "#4fe38f", marginBottom: 8 }}>
                             Reoccuring People: {"\n"}
                             <Text style={{ color: "white" }}>
-                                {params.People}
+                                {params.RecurringPeople}
                             </Text>
                         </Text>
 
@@ -223,7 +223,7 @@ export default function DreamTimelinePage() {
                         <Text style={{ fontWeight: "bold", color: "#4fe38f", marginBottom: 8 }}>
                             Reoccuring Objects: {"\n"}
                             <Text style={{ color: "white" }}>
-                                {params.People}
+                                {params.RecurringObjects}
                             </Text>
                         </Text>
 
@@ -237,7 +237,7 @@ export default function DreamTimelinePage() {
                         <Text style={{ fontWeight: "bold", color: "#4fe38f", marginBottom: 8 }}>
                             Reoccuring Places: {"\n"}
                             <Text style={{ color: "white" }}>
-                                {params.Places}
+                                {params.RecurringPlaces}
                             </Text>
                         </Text>
 
@@ -251,7 +251,7 @@ export default function DreamTimelinePage() {
                         <Text style={{ fontWeight: "bold", color: "#4fe38f", marginBottom: 8 }}>
                             Reoccuring Themes: {"\n"}
                             <Text style={{ color: "white" }}>
-                                {params.Themes}
+                                {params.RecurringThemes}
                             </Text>
                         </Text>
 

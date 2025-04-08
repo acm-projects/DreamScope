@@ -9,6 +9,13 @@ import userDreamData from '../../Frontend/assets/dummyJson/multipleDreamLogsExam
 
 let validDate = true;
 
+let dreamLoggedDates = [];
+
+for (let i = 0; i < userDreamData.length; i++) {
+    dreamLoggedDates[i] = userDreamData[i].DayMonthYear;
+}
+
+
 const MonthViewCalendar = () => {
     const [selectedDate, setSelectedDate] = useState('');
     const router = useRouter();
@@ -52,6 +59,7 @@ const MonthViewCalendar = () => {
                             marked: true,
                             selectedColor: '#94C9A9', // Soft glowing green
                         },
+
                     }}
                     theme={{
                         backgroundColor: '#94C9A9',
@@ -78,7 +86,7 @@ const MonthViewCalendar = () => {
                     style={styles.visualizeDreamButton}
                 >
                     <Text style={styles.visualizeDreamButtonText}>
-                        Capture New Dream
+                        Visualize Dream
                     </Text>
                 </Button>
             </View>

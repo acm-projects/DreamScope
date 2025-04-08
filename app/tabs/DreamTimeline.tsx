@@ -76,6 +76,11 @@ export default function DreamTimelineScreen() {
                 Objects: item.objects,
                 Places: item.place,
                 Themes: item.theme,
+                RecurringPeople: item.RecurringPeople,
+                RecurringPlaces: item.RecurringPlaces,
+                RecurringThemes: item.RecurringThemes,
+                RecurringObjects: item.RecurringObjects
+
             },
         });
     };
@@ -230,7 +235,6 @@ export default function DreamTimelineScreen() {
             />
 
         </LinearGradient>
-
 
     );
 

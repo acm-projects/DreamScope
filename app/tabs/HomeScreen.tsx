@@ -127,7 +127,7 @@ export default function HomeScreen() {
             day: 'numeric'
         });
 
-        if (Number(justTheDay) % 4 == 0) {
+        if (Number(justTheDay) % 7 == 0) {
             return true;
         }
         else {
