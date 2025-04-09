@@ -46,7 +46,7 @@ const SignIn = (): JSX.Element => {
         >
             <SafeAreaView style={styles.container}>
 
-                <View style={{ position: "absolute", bottom: 0, top: 0, left: 0, opacity: 0.75 }}>
+                <View style={{ position: "absolute", bottom: 0, top: 0, left: 0, opacity: 0.85 }}>
                     <Image
                         source={require("../../Frontend/images/cloudedLoginSignin.png")}
                         style={{ maxWidth: "auto", maxHeight: "auto" }}
@@ -167,7 +167,7 @@ const styles = StyleSheet.create({
         marginTop: 20,
     },
     footerText: {
-        color: "#fff",
+        color: "black",
         fontSize: 16,
     },
     linkText: {

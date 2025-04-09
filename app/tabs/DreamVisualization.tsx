@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Pressable, Text } from 'react-native';
+import { View, StyleSheet, Image, Pressable, Text } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import { useRouter } from 'expo-router';
 import { Button } from "@/components/ui/button";
@@ -39,7 +39,18 @@ const MonthViewCalendar = () => {
     }
 
     return (
+
+
         <LinearGradient colors={['#180723', '#2C123F', '#3d1865']} style={styles.container}>
+
+            <View style={{ position: "absolute", top: 0, right: 0, opacity: 0.2 }}>
+                <Image
+                    source={require("../../Frontend/images/dreamCatcherBackground.png")}
+                    style={{ backgroundColor: "black", maxWidth: "150%", maxHeight: "100%" }}
+                    resizeMode="contain"
+                />
+            </View>
+
             <Text style={styles.headerText}>DREAM VISUALIZATION</Text>
             <Text style={{ color: "white", fontStyle: "italic", opacity: .5 }}>
                 Choose a date to bring a dream to life!
@@ -93,6 +104,8 @@ const MonthViewCalendar = () => {
 
 
         </LinearGradient>
+
+
     );
 };
 

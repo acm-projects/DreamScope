@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
         marginTop: 20,
     },
     footerText: {
-        color: "#fff",
+        color: "black",
         fontSize: 16,
     },
     linkText: {

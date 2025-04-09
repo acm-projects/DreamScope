@@ -86,11 +86,10 @@ export default function DetailedLogTextScreen() {
         >
             <StatusBar barStyle="light-content" />
 
-            {/* Decorative background elements */}
-            <View style={{ position: "absolute", top: 0, right: 0, opacity: 0.4 }}>
+            <View style={{ opacity: 0.2, left: 0, right: 0 }}>
                 <Image
-                    source={require("../../Frontend/images/treeforeground.png")}
-                    style={{ width: 200, height: 200 }}
+                    source={require("../../Frontend/images/cloudbackground2.png")}
+                    style={{ position: "absolute", maxWidth: "auto", maxHeight: "auto" }}
                     resizeMode="contain"
                 />
             </View>
