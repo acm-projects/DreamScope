@@ -12,11 +12,7 @@ const DreamPost = new mongoose.Schema({
    settings: [{ type: String }],
    emotions: [{ type: String }],
    date: { type: Date, default: Date.now },
-   visualizations: [{
-      binary: { type: Buffer, required: true },  // Image binary data
-      mimeType: { type: String, required: true }, // "image/png"
-      createdAt: { type: Date, default: Date.now }
-    }],
+   visualizations: [{type: String}],
 });
 
 module.exports = mongoose.model("DreamPost", DreamPost);
