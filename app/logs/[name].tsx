@@ -1,27 +1,27 @@
-import { useState } from "react";
-import { View, Text, FlatList, Pressable } from "react-native";
+import { useState, useEffect } from "react";
+import { View, Text, FlatList, TouchableOpacity, Pressable, StatusBar, Image } from "react-native";
 import { Button, ButtonText } from "../../components/ui/button";
-import { HStack } from "../../components/ui/hstack";
 import { useSearchParams, useLocalSearchParams } from "expo-router/build/hooks";
 import { useRouter } from "expo-router";
 import { GluestackUIProvider } from "../../components/ui/gluestack-ui-provider";
 import tags from "../../Frontend/assets/dummyJson/tagsHolder.json";
 import Feather from '@expo/vector-icons/Feather';
 import { AntDesign, Fontisto } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function TagsScreen() {
+
+    const [selectedThemesTags, setSelectedThemesTags] = useState<string[]>([]);
+    const [selectedSettingsTags, setSelectedSettingsTags] = useState<string[]>([]);
+    const [selectedAddonsTags, setSelectedAddonsTags] = useState<string[]>([]);
+
     const router = useRouter();
-
-    //THIS NAME COMES FROM THE LAST PAGE IT GETS THE NAME OF THE TYPE OF LOG PRESSED!!
     const { name } = useLocalSearchParams();
-
-    //Params to push all of the tags the user clicked to the next page
     const params = useSearchParams();
-
-    //
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
+    const [isNavigating, setIsNavigating] = useState(false);
 
-    //function for todays date!
+    // Function for today's date
     const currentDate = new Date().toLocaleDateString("en-US", {
         month: "long",
         day: "numeric",
@@ -29,15 +29,71 @@ export default function TagsScreen() {
     });
 
 
-    //Each section corresponds to its stuff in the json file tagsHolder
-    const sections: { title: string; data: string[] }[] = [
-        { title: "Themes", data: tags.themes },
-        { title: "Settings", data: tags.settings },
-        { title: "Add-ons", data: tags.addons },
-    ];
+    const currentDateNumFormat = new Date().toLocaleDateString("en-US", {
+        month: "2-digit",
+        day: "2-digit",
+        year: "2-digit",
+    })
+
+    // Use useEffect for navigation based on conditions
+    useEffect(() => {
+        // Prevent unnecessary navigation if we're already handling it
+        if (isNavigating) return;
+
+        if (name === "Empty Capture") {
+            
+            setIsNavigating(true);
+            router.push({
+                pathname: "/logCompletion/emptyLogCompletion", params: {
+                    monthDayYear: currentDateNumFormat,
+                    title: "",
+                    text: "",
+                    dreamtype: name,
+                    tags: [],
+                    THEMETAGS: [],
+                    SETTINGSTAGS: [],
+                    ADDONSTAGS: [],
+
+                }
+            });
+        } else if (name === "Fragmented Capture") {
+            setIsNavigating(true);
+            router.push({
+                pathname: "/logs/Image_pages",
+                params: { name: name }
+            });
+        }
+    }, [name, router, isNavigating]);
 
     // Function to toggle tag selection
-    const handleTagPress = (tag: string) => {
+    const handleTagPress = (tagType: string, tag: string) => {
+        {/*This if statement is to check what type of tag it is theme,setting,addon*/ }
+        if (tagType == "Themes") {
+            setSelectedThemesTags((prevThemeTags) =>
+                prevThemeTags.includes(tag)
+                    ? prevThemeTags.filter((T) => T !== tag)
+                    : [...prevThemeTags, tag]
+            )
+
+        }
+        else if (tagType == "Settings") {
+            setSelectedSettingsTags((prevSettingTags) =>
+                prevSettingTags.includes(tag)
+                    ? prevSettingTags.filter((S) => S !== tag)
+                    : [...prevSettingTags, tag]
+
+            )
+        }
+        else {
+            setSelectedAddonsTags((prevAddonTags) =>
+                prevAddonTags.includes(tag)
+                    ? prevAddonTags.filter((A) => A !== tag)
+                    : [...prevAddonTags, tag]
+
+            )
+        }
+
+        {/* this is basically the stuff above but a seperate string array that just has it all shoved and mixed togetther*/ }
         setSelectedTags((prevTags) =>
             prevTags.includes(tag)
                 ? prevTags.filter((t) => t !== tag)
@@ -45,98 +101,195 @@ export default function TagsScreen() {
         );
     };
 
-    //checks if the type of dream the user pressed is an Empty Log or Fragmented Log or Detailed Log
-    if (name == "Empty Capture") {
-        return (
-            router.push("/logCompletion/emptyLogCompletion")
-        )
+
+    // If we're in the process of navigating, return null to avoid rendering
+    if (isNavigating || name === "Empty Capture" || name === "Fragmented Capture") {
+        return null;
     }
-    else if (name == "Fragmented Capture") {
-        return (
-            router.push({ pathname: "logs/fragmentedLogPartSelectionScreen", params: { name: name } })
 
-        )
+    // Tags sections
+    const sections: { title: string; data: string[] }[] = [
+        { title: "Themes", data: tags.themes },
+        { title: "Settings", data: tags.settings },
+        { title: "Add-ons", data: tags.addons },
+    ];
 
-    }
-    else {
-        return (
+    return (
+        <LinearGradient
+            colors={["#15041D", "#2C123F", "#3B1856"]}
+            style={{ flex: 1 }}
+        >
+            <StatusBar barStyle="light-content" />
 
-            <FlatList style={{ backgroundColor: "#2C123F" }}
+            {/* Decorative background elements */}
+            <View style={{ opacity: 0.2, left: 0, right: 0 }}>
+                <Image
+                    source={require("../../Frontend/images/cloudbackground2.png")}
+                    style={{ position: "absolute", maxWidth: "auto", maxHeight: "auto" }}
+                    resizeMode="contain"
+                />
+            </View>
+
+            <FlatList
                 data={sections}
                 keyExtractor={(item) => item.title}
-                contentContainerStyle={{ padding: 20, paddingBottom: 50 }}
+                contentContainerStyle={{ padding: 20, paddingBottom: 80 }}
+                showsVerticalScrollIndicator={false}
                 ListHeaderComponent={() => (
                     <View>
-                        {/* Back Button */}
+                        {/* Back Button*/}
                         <Button
-                            onPress={() => router.back()}
+                            onPress={() => router.push("/tabs/DreamLogging")}
                             style={{
                                 position: "absolute",
                                 top: 5,
                                 left: -8,
-
                                 backgroundColor: "transparent",
+                                zIndex: 10,
                             }}
                         >
                             <Text style={{ fontSize: 24, color: "white" }}>
                                 <Feather name="arrow-left" size={30} />
                             </Text>
+
+
                         </Button>
 
-                        {/* Date */}
-                        <Text
-                            style={{
-                                fontSize: 24,
-                                fontWeight: "bold",
-                                color: "white",
-                                textAlign: "center",
+
+
+
+
+                        {/* Header */}
+                        <View style={{ alignItems: "center", marginTop: 40, marginBottom: 25 }}>
+                            <Text
+                                style={{
+                                    fontSize: 26,
+                                    fontWeight: "bold",
+                                    color: "white",
+                                    textAlign: "center",
+                                    marginBottom: 8,
+                                    textShadowColor: "rgba(0, 191, 255, 0.3)",
+                                    textShadowOffset: { width: 0, height: 1 },
+                                    textShadowRadius: 5,
+                                }}
+                            >
+                                {currentDate}
+                            </Text>
+                            <Text
+                                style={{
+                                    fontSize: 18,
+                                    fontWeight: "bold",
+                                    color: "#00BFFF",
+                                    marginBottom: 5,
+                                }}
+                            >
+                                {name}
+                            </Text>
+                            <Text
+                                style={{
+                                    fontSize: 16,
+                                    color: "#C9B9E2",
+                                    opacity: 0.85,
+                                    textAlign: "center",
+                                    fontStyle: "italic",
+                                }}
+                            >
+                                Add some tags for your log!
+                            </Text>
+                        </View>
+
+                        {/* Selected tags count indicator */}
+                        {selectedTags.length > 0 && (
+                            <View style={{
+                                backgroundColor: "rgba(0, 191, 255, 0.15)",
+                                borderRadius: 12,
+                                padding: 12,
                                 marginBottom: 20,
-                                marginTop: 40
-                            }}
-                        >
-                            {currentDate} , {name} {"\n"}
-                            <Text style={{ fontSize: 17, color: "grey", marginTop: 20 }}>add some tags for your log!</Text>
-                        </Text>
+                                flexDirection: "row",
+                                alignItems: "center",
+                                justifyContent: "center"
+                            }}>
+                                <Feather name="tag" size={18} color="#00BFFF" />
+                                <Text style={{
+                                    color: "white",
+                                    fontSize: 15,
+                                    marginLeft: 8
+                                }}>
+                                    {selectedTags.length} tag{selectedTags.length !== 1 ? "s" : ""} selected
+                                </Text>
+                            </View>
+                        )}
+
+
                     </View>
+
                 )}
                 renderItem={({ item }) => (
-                    <View style={{ marginBottom: 20 }}>
+                    <View style={{
+                        marginBottom: 25,
+                        backgroundColor: "rgba(0, 49, 76, 0.3)",
+                        borderRadius: 16,
+                        padding: 16,
+                        borderLeftWidth: 3,
+                        borderLeftColor: "#00BFFF",
+                    }}>
                         <Text
                             style={{
                                 fontSize: 20,
                                 fontWeight: "bold",
                                 color: "white",
-                                marginBottom: 10,
+                                marginBottom: 15,
                             }}
                         >
-                            {item.title}:
+                            <Feather
+                                name={
+                                    item.title === "Themes" ? "layout" :
+                                        item.title === "Settings" ? "settings" : "plus-circle"
+                                }
+                                size={16}
+                                color="#00BFFF"
+                            /> {item.title}
                         </Text>
 
                         <FlatList
                             data={item.data}
                             keyExtractor={(tag) => tag}
                             numColumns={3}
+                            scrollEnabled={false}
                             columnWrapperStyle={{ justifyContent: "flex-start" }}
                             renderItem={({ item: tag }) => (
-                                <Pressable onPress={() => handleTagPress(tag)}>
+                                <Pressable
+                                    onPress={() => handleTagPress(item.title, tag)}
+                                    style={({ pressed }) => ({
+                                        opacity: pressed ? 0.8 : 1,
+                                        transform: [{ scale: pressed ? 0.98 : 1 }],
+                                        shadowColor: selectedTags.includes(tag) ? "#00BFFF" : "transparent",
+                                        shadowOffset: { width: 0, height: 2 },
+                                        shadowOpacity: 0.5,
+                                        shadowRadius: 4,
+                                        elevation: selectedTags.includes(tag) ? 3 : 0,
+                                    })}
+                                >
                                     <View
                                         style={{
                                             paddingVertical: 10,
-                                            paddingHorizontal: 10,
+                                            paddingHorizontal: 12,
                                             borderRadius: 12,
-                                            borderWidth: 2,
                                             backgroundColor: selectedTags.includes(tag)
                                                 ? "#00BFFF"
                                                 : "#00314C",
                                             borderColor: "#00BFFF",
+                                            borderWidth: selectedTags.includes(tag) ? 0 : 1.5,
                                             margin: 5,
+                                            minWidth: 90,
+                                            alignItems: "center",
                                         }}
                                     >
                                         <Text
                                             style={{
                                                 fontSize: 14,
                                                 fontWeight: "bold",
-                                                color: "white",
+                                                color: selectedTags.includes(tag) ? "white" : "#E4D7F4",
                                                 textAlign: "center",
                                             }}
                                         >
@@ -149,20 +302,26 @@ export default function TagsScreen() {
                     </View>
                 )}
                 ListFooterComponent={() => (
-
-
-                    <View>
-                        {/*Continue Button*/}
+                    <View style={{ marginTop: 10, marginBottom: 5 }}>
+                        {/* Continue Button with improved styling */}
                         <Button
-                            onPress={() => router.push({ pathname: "logs/detailedLogText", params: { tags: selectedTags.join(",") } })}
+                            onPress={() => router.push({
+                                pathname: "logs/detailedLogText",
+                                params: { monthDayYear: currentDateNumFormat, name: name, tags: selectedTags.join(","), THEMETAGS: selectedThemesTags.join(","), ADDONTAGS: selectedAddonsTags.join(","), SETTINGSTAGS: selectedSettingsTags.join(",") }
+                            })}
                             style={{
-                                backgroundColor: "#0000ff",
-                                paddingVertical: 12,
-                                paddingHorizontal: 30,
-                                borderRadius: 8,
+                                backgroundColor: selectedTags.length > 0 ? "#0000ff" : "rgba(0, 0, 255, 0.5)",
+                                borderRadius: 12,
                                 alignItems: "center",
                                 justifyContent: "center",
+                                height: 54,
+                                shadowColor: "#000",
+                                shadowOffset: { width: 0, height: 3 },
+                                shadowOpacity: 0.27,
+                                shadowRadius: 4.65,
+                                elevation: 6,
                             }}
+                            disabled={selectedTags.length === 0}
                         >
                             <ButtonText
                                 style={{
@@ -171,16 +330,23 @@ export default function TagsScreen() {
                                     fontWeight: "bold",
                                 }}
                             >
-                                Continue
-
+                                Continue {selectedTags.length > 0 ? `with ${selectedTags.length} tag${selectedTags.length !== 1 ? "s" : ""}` : ""}
                             </ButtonText>
                         </Button>
 
+                        <TouchableOpacity style={{ alignItems: "center" }} onPress={() => router.push({
+                            pathname: "logs/detailedLogText",
+                            params: { monthDayYear: currentDateNumFormat, name: name, tags: selectedTags.join(","), THEMETAGS: selectedThemesTags.join(","), ADDONTAGS: selectedAddonsTags.join(","), SETTINGSTAGS: selectedSettingsTags.join(",") }
+                        })}>
+                            <Text style={{ fontSize: 20, marginTop: 35, color: "white", opacity: .50, shadowColor: "white" }}>
+                                Skip
+                            </Text>
+                        </TouchableOpacity>
 
 
                     </View>
                 )}
             />
-        );
-    }
+        </LinearGradient>
+    );
 }

@@ -7,7 +7,7 @@ const UserContext = createContext();
 export const UserProvider = ({ children }) => {
     const [userData, setUserData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
-    const API_BASE_URL = 'http://localhost:5001'
+    const API_BASE_URL = 'http://localhost:5001';
 
     const fetchUserData = async (email) => {
         try {
@@ -18,7 +18,7 @@ export const UserProvider = ({ children }) => {
                 setUserData(null);
             }
         } catch (error) {
-            console.error("Error fetching user data:", error); 
+            console.error("Error fetching user data:", error);
             setUserData(null);
         }
     };

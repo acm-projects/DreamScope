@@ -8,7 +8,7 @@ import axios from "axios";
 import {useUser} from "../context/UserContext"
 
 
-const API_BASE_URL = 'http://localhost:5001'
+const API_BASE_URL = 'http://localhost:5001';
 
 export default function SettingsPage() {
     const [isDarkMode, setIsDarkMode] = useState(false);

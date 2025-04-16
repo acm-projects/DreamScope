@@ -1,69 +1,48 @@
-import { View, Text, Image, TextInput, StyleSheet, ScrollView, SafeAreaView, TouchableOpacity, Alert } from "react-native";
+import { View, Text, Image, TextInput, StyleSheet, ScrollView, SafeAreaView, TouchableOpacity, Alert, StatusBar } from "react-native";
 import { Button, ButtonText } from "../../components/ui/button";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { Feather } from "@expo/vector-icons";
 import React, { useState } from "react";
+import { LinearGradient } from "expo-linear-gradient";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 
-const API_BASE_URL = 'http://localhost:5001'
+const API_BASE_URL = 'http://localhost:5001';
 
 export default function fragmentedLogTextScreen() {
 
-    //to push onto new pages
     const router = useRouter();
-    //to pass data between pages
     const params = useLocalSearchParams();
+    const numParts = Number(params.parts) || 1; // Default to 1 if not provided
+    const { name } = params;
 
+    // Current date formatting
+    const currentDate = new Date().toLocaleDateString("en-US", {
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+    });
 
-    //default border color, dynamically setting border color
-    const [borderColor, setBorderColor] = useState("white");
+    // Manage multiple input fields dynamically
+    const [inputFields, setInputFields] = useState(Array(numParts).fill(""));
+    const [error, setError] = useState(false);
 
-
-
-
-
-    //function that updates when the user finishes editing the text textinput
-    const [inputText, setInputText] = useState("");
-    const [validText, setValidText] = useState(false);
-    const userEndedEditingText = () => {
-        if (inputText.trim() === "") {
-            console.log("updated valid text to false")
-            setBorderColor("red");
-            setValidText(false);
-        }
-        else {
-            console.log("updated valid text to true")
-            setBorderColor("white");
-            setValidText(true);
-
-        }
+    // Handle text input changes
+    const handleInputChange = (text: string, index: number) => {
+        const newFields = [...inputFields];
+        newFields[index] = text;
+        setInputFields(newFields);
+        if (error) setError(false);
     };
-
-    //function that updates when the user finishes editing the title textinput
-    const [inputTitle, setInputTitle] = useState("");
-    const [validTitle, setValidTitle] = useState(false);
-    const userEndedEditingTitle = () => {
-        if (inputTitle.trim() === "") {
-            setBorderColor("red")
-            setValidTitle(false)
-            console.log("updated valid title to false")
-        }
-        else {
-            console.log("updated valid title to true")
-            setBorderColor("white")
-            setValidTitle(true)
-        }
-    };
-
 
     //function that checks if the title and text field both contain text.
     const handlePress = async () => {
 
-        if (validTitle == true && validText == true) {
+        if (inputFields.every(field => field.trim() !== "")) {
+            // Join all fragments and pass as a parameter
+            const allText = inputFields.join(" ||| ");
 
-            console.log("valid title and text are both true");
             try {
                 const storedEmail = await AsyncStorage.getItem('userEmail');
                 const response = await axios.get(`${API_BASE_URL}/users/email/${storedEmail}`);
@@ -71,75 +50,90 @@ export default function fragmentedLogTextScreen() {
 
                 const dreamData = {
                     _id: userId,
-                    title: inputTitle,
+                    title: "no title provided",
                     type: "Fragmented",
-                    dreamText: "",
-                    dreamFragments: [inputText],
-                    themes: [],
-                    settings: [],
-                    emotions: [],
+                    dreamText: allText,
+                    selectedThemes: params.THEMETAGS,
+                    selectedSettings: params.SETTINGSTAGS,
+                    selectedEmotions: params.ADDONSTAGS,
                 };
 
-                const apiResponse = await axios.post(`${API_BASE_URL}/api/dreamPosts`, dreamData);
+                    const apiResponse = await axios.post(`${API_BASE_URL}/api/dreamPosts`, dreamData);
+                    await AsyncStorage.setItem('postId', apiResponse.data._id);
+                    const totalDreams = response.data.totalDreams + 1;
+                    const fragDreams = response.data.fragDreams + 1;
 
-                console.log('Dream log submitted:', apiResponse.data);
-                router.push("/logCompletion/detailedLogCompletion");
+                    await axios.put(`${API_BASE_URL}/users/${userId}`, {
+                        totalDreams: totalDreams,
+                        fragDreams: fragDreams,
+                    });
+                    router.push("/logCompletion/fragmentedLogCompletion");                
+
+                
             } catch (error) {
                 console.error('Error submitting dream log:', error);
                 Alert.alert('Error', 'Failed to submit dream log.');
             }
-            return router.push("/logCompletion/detailedLogCompletion");
-        }
-        else {
-            console.log("valid title and text is not true");
-        }
 
-    };
+            
+        } else {
+            setError(true);
+        }  
+        return router.push("/logCompletion/fragmentedLogCompletion");
+        };
 
-    //slicing users tags that got put together as one big string into an array
+    
+
     let arrayOfUsersTags = [];
-    let z = 0;
-    let tagsIndex = 0;
-    for (let i = 0; i < params.tags.length; i++) {
-        if (params.tags[i] == ",") {
-            arrayOfUsersTags[tagsIndex] = params.tags.slice(z, i);
-            z = i + 1;
-            tagsIndex += 1;
-        }
-        else if (i == params.tags.length - 1) {
-            arrayOfUsersTags[tagsIndex] = params.tags.slice(z, i + 1);
-
+    if (params.tags) {
+        let z = 0;
+        let tagsIndex = 0;
+        for (let i = 0; i < params.tags.length; i++) {
+            if (params.tags[i] === ",") {
+                arrayOfUsersTags[tagsIndex] = params.tags.slice(z, i);
+                z = i + 1;
+                tagsIndex += 1;
+            } else if (i === params.tags.length - 1) {
+                arrayOfUsersTags[tagsIndex] = params.tags.slice(z, i + 1);
+            }
         }
     }
 
-    //function that gets todays date!
-    const currentDate = new Date().toLocaleDateString("en-US", {
-        month: "long",
-        day: "numeric",
-        year: "numeric",
-    });
-
-
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
-            <ScrollView contentContainerStyle={{
-                flexGrow: 1,
-                justifyContent: "center",
-            }}>
+        <LinearGradient
+            colors={["#15041D", "#2C123F", "#3B1856"]}
+            style={{ flex: 1 }}
+        >
+            <StatusBar barStyle="light-content" />
 
+            {/* Decorative background elements */}
+            <View style={{ position: "absolute", top: 0, right: 0, opacity: 0.2 }}>
+                <Image
+                    source={require("../../Frontend/images/cloudbackground2.png")}
+                    style={{ maxWidth: "auto", maxHeight: "auto" }}
+                    resizeMode="contain"
+                />
+            </View>
 
-                <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#2D1A54" }}>
-
-
-                    {/* Back Button */}
+            <SafeAreaView style={{ flex: 1 }}>
+                <ScrollView
+                    contentContainerStyle={{
+                        flexGrow: 1,
+                        padding: 20,
+                        paddingTop: 60,
+                        paddingBottom: 40
+                    }}
+                    showsVerticalScrollIndicator={false}
+                >
+                    {/* Back Button with improved shadow and positioning */}
                     <Button
                         onPress={() => router.back()}
                         style={{
                             position: "absolute",
-                            top: 20,
-                            left: 5,
-
+                            top: 15,
+                            left: 10,
                             backgroundColor: "transparent",
+                            zIndex: 10,
                         }}
                     >
                         <Text style={{ fontSize: 24, color: "white" }}>
@@ -147,126 +141,188 @@ export default function fragmentedLogTextScreen() {
                         </Text>
                     </Button>
 
+                    {/* Header with enhanced styling */}
+                    <View style={{ alignItems: "center", marginBottom: 30 }}>
+                        <Text
+                            style={{
+                                fontSize: 26,
+                                fontWeight: "bold",
+                                color: "white",
+                                textAlign: "center",
+                                marginBottom: 8,
+                                textShadowColor: "rgba(0, 191, 255, 0.3)",
+                                textShadowOffset: { width: 0, height: 1 },
+                                textShadowRadius: 5,
+                            }}
+                        >
+                            {currentDate}
+                        </Text>
+                        <Text
+                            style={{
+                                fontSize: 18,
+                                fontWeight: "bold",
+                                color: "#00BFFF",
+                                marginBottom: 5,
+                            }}
+                        >
+                            {name || "Fragmented Capture"}
+                        </Text>
+                        <Text
+                            style={{
+                                fontSize: 16,
+                                color: "#C9B9E2",
+                                opacity: 0.85,
+                                textAlign: "center",
+                                fontStyle: "italic",
+                                marginBottom: 15,
+                            }}
+                        >
+                            Fill in each part of your fragmented log
+                        </Text>
 
-
-                    {/*Date*/}
-                    <Text
-                        style={{
-                            fontSize: 40,
-                            fontWeight: "bold",
-                            color: "white",
-                            textAlign: "center",
-                            marginBottom: 20,
-                            marginTop: 20
-                        }}
-                    >
-                        {currentDate}
-                    </Text>
-
-
-                    {/*Tags*/}
-                    <View style={{ flexDirection: "row", flexWrap: "wrap", marginBottom: 10 }}>
-                        {arrayOfUsersTags.map((item, index) => (
-                            <View
-                                key={index}
-                                style={{
-                                    margin: 2, // Adds spacing between items
-                                    padding: 3,
-                                    backgroundColor: "#0093ED",
-                                    borderRadius: 12,
-                                    borderWidth: 2,
-                                    borderColor: "white",
-
-                                }}
-                            >
-                                <Text style={{ fontSize: 12, fontWeight: "400", color: "white" }}>
-                                    {item}
+                        {error && (
+                            <View style={{
+                                backgroundColor: "rgba(255, 59, 48, 0.15)",
+                                borderRadius: 12,
+                                padding: 12,
+                                marginBottom: 15,
+                                flexDirection: "row",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                width: "100%"
+                            }}>
+                                <Feather name="alert-circle" size={18} color="#FF3B30" />
+                                <Text style={{
+                                    color: "#FF3B30",
+                                    fontSize: 15,
+                                    marginLeft: 8
+                                }}>
+                                    Please fill in all fields
                                 </Text>
                             </View>
-                        ))}
+                        )}
                     </View>
 
-                    {/*Dream Title*/}
-                    <View>
-
-                        <Text style={{ marginBottom: 10, fontWeight: "bold", fontSize: 15, color: "white" }}>
-                            Dream Title: {" "}
-
-                            <TextInput value={inputTitle}
-                                onChangeText={setInputTitle}
-                                onEndEditing={userEndedEditingTitle}
-                                numberOfLines={1}
-                                multiline={false}
 
 
-
-                                placeholder="Enter a title.."
+                    {arrayOfUsersTags.length > 0 && (
+                        <View
+                            style={{
+                                backgroundColor: "rgba(0, 49, 76, 0.3)",
+                                borderRadius: 16,
+                                padding: 16,
+                                marginBottom: 20,
+                                borderLeftWidth: 3,
+                                borderLeftColor: "#00BFFF",
+                            }}
+                        >
+                            <Text
                                 style={{
-                                    height: 25,
-                                    width: 100,
-                                    backgroundColor: "#0093ED",
-                                    backfaceVisibility: "visible",
-                                    borderWidth: 2,
-                                    borderColor: borderColor,
-                                    borderRadius: 10,
-                                    color: "white"
-                                }}>
+                                    fontSize: 16,
+                                    fontWeight: "bold",
+                                    color: "white",
+                                    marginBottom: 10,
+                                }}
+                            >
+                                <Feather name="tag" size={14} color="#00BFFF" /> Selected Tags
+                            </Text>
 
-                            </TextInput>
-                        </Text>
+                            <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
+                                {arrayOfUsersTags.map((item, index) => (
+                                    <View
+                                        key={index}
+                                        style={{
+                                            margin: 4,
+                                            paddingVertical: 6,
+                                            paddingHorizontal: 10,
+                                            backgroundColor: "#00BFFF",
+                                            borderRadius: 12,
+                                            shadowColor: "#000",
+                                            shadowOffset: { width: 0, height: 2 },
+                                            shadowOpacity: 0.2,
+                                            shadowRadius: 2,
+                                            elevation: 2,
+                                        }}
+                                    >
+                                        <Text style={{ fontSize: 14, fontWeight: "500", color: "white" }}>
+                                            {item}
+                                        </Text>
+                                    </View>
+                                ))}
+                            </View>
+                        </View>
+                    )}
 
+                    {/* Generate Input Fields with improved styling */}
+                    {inputFields.map((value, index) => (
+                        <View
+                            key={index}
+                            style={{
+                                marginBottom: 20,
+                                width: "100%",
+                            }}
+                        >
+                            <Text style={{
+                                color: "#00BFFF",
+                                fontSize: 16,
+                                marginBottom: 8,
+                                fontWeight: "500"
+                            }}>
+                                <Feather name="file-text" size={16} /> Fragment {index + 1}
+                            </Text>
+                            <TextInput
+                                value={value}
+                                onChangeText={(text) => handleInputChange(text, index)}
+                                placeholder={`Enter text for part ${index + 1}...`}
+                                placeholderTextColor="rgba(215, 201, 227, 0.6)"
+                                multiline={true}
+                                numberOfLines={4}
+                                style={{
+                                    minHeight: 100,
+                                    width: "100%",
+                                    borderColor: error && value.trim() === "" ? "#FF3B30" : "#00BFFF",
+                                    borderWidth: 1.5,
+                                    backgroundColor: "rgba(0, 49, 76, 0.3)",
+                                    padding: 15,
+                                    color: "white",
+                                    borderRadius: 12,
+                                    textAlignVertical: "top",
+                                    fontSize: 16
+                                }}
+                            />
+                        </View>
+                    ))}
 
-
-                    </View>
-
-
-                    {/*Dream Text*/}
-
-                    <TextInput
-                        value={inputText}
-                        onChangeText={setInputText}
-                        onEndEditing={userEndedEditingText}
-                        multiline={true}
-
-                        placeholderTextColor={"#D7C9E3"}
-                        numberOfLines={1} // Optional: Sets the visible number of lines
-                        placeholder="Begin typing your dream here.."
+                    {/* Submit Button with improved styling */}
+                    <Button
+                        onPress={handlePress}
                         style={{
-                            height: 165,  // Adjust height as needed
-                            width: 325,
-                            borderColor: borderColor,
-                            borderWidth: 0,
-                            backfaceVisibility: "visible",
-                            backgroundColor: "#00314C",
-                            padding: 10,
-                            color: "grey",
-                            marginBottom: 50,
+                            backgroundColor: "#0000ff",
                             borderRadius: 12,
-                            textAlignVertical: 'top', // Ensures text starts from the top
+                            alignItems: "center",
+                            justifyContent: "center",
+                            height: 54,
+                            width: "100%",
+                            marginTop: 15,
+                            shadowColor: "#000",
+                            shadowOffset: { width: 0, height: 3 },
+                            shadowOpacity: 0.27,
+                            shadowRadius: 4.65,
+                            elevation: 6,
                         }}
-                    />
-
-
-
-
-
-                    {/*Complete Log Button*/}
-                    <View style={{ alignItems: "center", backgroundColor: "00314D", width: "100%", borderWidth: 2, borderColor: "#03A4FF" }}>
-                        <Text>
-                            <TouchableOpacity onPress={handlePress} style={{ alignItems: "center", marginTop: 25, marginBottom: 25, justifyContent: "center", width: 200, height: 50, borderColor: "white", borderWidth: 2, borderRadius: 12, backgroundColor: "#0093ED" }}>
-                                <Text style={{ justifyContent: "center", color: "white" }} >
-                                    Submit
-                                </Text>
-                            </TouchableOpacity>
-                        </Text>
-                    </View>
-                </View>
-            </ScrollView>
-        </SafeAreaView>
-
-
-
-
-
+                    >
+                        <ButtonText
+                            style={{
+                                color: "#FFFFFF",
+                                fontSize: 16,
+                                fontWeight: "bold",
+                            }}
+                        >
+                            <Feather name="check" size={16} /> Continue
+                        </ButtonText>
+                    </Button>
+                </ScrollView>
+            </SafeAreaView>
+        </LinearGradient>
     );
 }

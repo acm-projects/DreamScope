@@ -1,14 +1,29 @@
-import React, { useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, Image, Pressable, Dimensions, ScrollView, } from 'react-native';
+import React, { useState, useRef, useEffect } from 'react';
+import {
+    View,
+    Modal,
+    Text,
+    TextInput,
+    StyleSheet,
+    TouchableOpacity,
+    Image,
+    Pressable,
+    Dimensions,
+    ScrollView,
+} from 'react-native';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Fontisto } from '@expo/vector-icons';
 import * as Animatable from 'react-native-animatable';
-import { useUser } from '../context/UserContext';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { A } from '@expo/html-elements';
 
 const { width } = Dimensions.get('window');
 const CIRCLE_SIZE = 100;
+
+const API_BASE_URL = 'http://localhost:5001';
 
 function generatePastDates(count: number) {
     const dates = [];
@@ -27,7 +42,7 @@ function generatePastDates(count: number) {
 
 function DateTimeline() {
     const scrollRef = useRef<ScrollView>(null);
-    const dates = generatePastDates(90);
+    const dates = generatePastDates(30);
     const todayLabel = new Date().toLocaleDateString('en-US', {
         month: 'short',
         day: 'numeric',
@@ -100,14 +115,123 @@ function DateTimeline() {
 
 export default function HomeScreen() {
     const router = useRouter();
+    const [modalVisible, setModalVisible] = useState(false);
+    const [inputText, setInputText] = useState("");
+    const [lastDreamLogged, setLastDreamLogged] = useState<number | null>(null);
+
+    useEffect(() => {
+        const fetchLastDreamLogged = async () => {
+            try {
+                const storedEmail = await AsyncStorage.getItem('userEmail');
+                if (storedEmail) {
+                    const response = await axios.get(`${API_BASE_URL}/users/email/${storedEmail}`);
+                    if (response.data && response.data.lastDreamLogged) {
+                        setLastDreamLogged(response.data.lastDreamLogged);
+                        checkIfMoreThan7Days(response.data.lastDreamLogged);
+                    } else {
+                        setModalVisible(true); //change to false later, dont want for new user
+                    }
+                }
+            } catch (error) {
+                console.error("Error fetching user data:", error);
+            }
+        };
+
+        fetchLastDreamLogged();
+    }, []); 
+
+    const checkIfMoreThan7Days = (lastLoggedTimestamp: number) => {
+        if (lastLoggedTimestamp) {
+            const lastLoggedDate = new Date(lastLoggedTimestamp);
+            const currentDate = new Date();
+            const differenceInMilliseconds = currentDate.getTime() - lastLoggedDate.getTime();
+            const differenceInDays = differenceInMilliseconds / (1000 * 60 * 60 * 24);
+
+            if (differenceInDays >= 7) {
+                setModalVisible(true);
+            } else {
+                setModalVisible(false);
+            }
+        } else {
+            setModalVisible(false);
+        }
+    };
 
     const handleProfilePress = () => {
         router.push("../Settings&ProfilePages/Profile");
     };
 
+    const handleSettingsPress = () => {
+        router.push("../Settings&ProfilePages/Settings");
+    };
+
+    const handleCheckIn = async () => {
+        setModalVisible(false);
+        const storedEmail = await AsyncStorage.getItem('userEmail');
+        try {
+            const response = await axios.get(`${API_BASE_URL}/users/email/${storedEmail}`);
+            const userId = response.data._id;
+            await axios.post(`${API_BASE_URL}/api/checkIn/user/${userId}`, { checkInText: inputText, date: Date.now() });
+    
+            await axios.put(`${API_BASE_URL}/users/${userId}`, { lastDreamLogged: Date.now() });
+            setLastDreamLogged(Date.now()); 
+            setInputText(""); 
+        } catch (error) {
+            console.error("Error handling check-in:", error);
+        }
+    };
+
+    // Function to call when a dream is logged elsewhere in your app
+    const updateLastDreamLogged = async () => {
+        const storedEmail = await AsyncStorage.getItem('userEmail');
+        if (storedEmail) {
+            try {
+                const response = await axios.get(`${API_BASE_URL}/users/email/${storedEmail}`);
+                const userId = response.data._id;
+                await axios.put(`${API_BASE_URL}/users/${userId}`, { lastDreamLogged: Date.now() });
+                setLastDreamLogged(Date.now());
+            } catch (error) {
+                console.error("Error updating last dream logged:", error);
+            }
+        }
+    };
+
     return (
         <LinearGradient colors={['#180723', '#2C123F', '#2C123F', '#3d1865']} style={{ flex: 1 }}>
             <SafeAreaView style={styles.container}>
+                <Modal
+                    animationType="fade"
+                    transparent={true}
+                    visible={modalVisible}
+                    onRequestClose={() => setModalVisible(false)}
+                >
+                    <View style={styles.modalOverlay}>
+                        <View style={styles.modalContainer}>
+                            <Text style={styles.modalText}>Weekly Check-in!</Text>
+                            <Text style={{ color: "white", marginBottom: 25 }}>Is there any updates you like to share from this week?</Text>
+                            <TextInput
+                                value={inputText}
+                                placeholder="Enter an update!"
+                                placeholderTextColor={"grey"}
+                                style={{ fontSize: 20, backgroundColor: "#212121", borderRadius: 12, borderWidth: 4, borderColor: "#212121", color: "white", width: "100%" }}
+                                onChangeText={setInputText}
+                            />
+                            <View style={{
+                                flexDirection: "row",
+                                justifyContent: "space-around",
+                                width: "100%",
+                                marginTop: 45
+                            }}>
+                                <TouchableOpacity onPress={handleCheckIn} style={styles.modalButton}>
+                                    <Text style={styles.modalButtonText}>Complete</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.modalButton}>
+                                    <Text style={styles.modalButtonText}>Skip</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </View>
+                </Modal>
                 <View style={styles.imageContainer}>
                     <Image
                         source={require('../../Frontend/images/treeforeground.png')}
@@ -115,13 +239,11 @@ export default function HomeScreen() {
                         resizeMode="stretch"
                     />
                 </View>
-
                 <View style={styles.profileButtonContainer}>
                     <Pressable onPress={handleProfilePress} style={styles.profileButton}>
                         <Fontisto name="person" size={24} color="#D7C9E3" />
                     </Pressable>
                 </View>
-
                 <DateTimeline />
             </SafeAreaView>
         </LinearGradient>
@@ -139,7 +261,23 @@ const styles = StyleSheet.create({
         right: 20,
         zIndex: 10,
     },
+    settingsButtonContainer: {
+        position: 'absolute',
+        top: 10,
+        left: 20,
+        zIndex: 10,
+    },
     profileButton: {
+        width: 44,
+        height: 44,
+        borderRadius: 22,
+        backgroundColor: '#2C123F',
+        borderWidth: 2,
+        borderColor: '#D7C9E3',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    settingsButton: {
         width: 44,
         height: 44,
         borderRadius: 22,
@@ -204,5 +342,38 @@ const styles = StyleSheet.create({
     },
     centerItem: {
         alignSelf: 'center',
+    },
+    modalOverlay: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
+    },
+    modalContainer: {
+        width: "90%",
+        height: "35%",
+        backgroundColor: "#1E1E1E",
+        padding: 15,
+        borderRadius: 11,
+        alignItems: "center",
+    },
+    modalText: {
+        color: "white",
+        fontSize: 18,
+        marginBottom: 15,
+        textAlign: "center",
+    },
+    modalButton: {
+        backgroundColor: "#00BFFF",
+        alignItems: "center",
+        paddingVertical: 10,
+        width: "45%",
+        paddingHorizontal: 20,
+        borderRadius: 8,
+    },
+    modalButtonText: {
+        color: "white",
+        fontSize: 16,
+        fontWeight: "bold",
     },
 });

@@ -42,6 +42,7 @@ const SignUp = (): JSX.Element => {
             const userCredential = await createUserWithEmailAndPassword(auth, form.email, form.password);
 
             const response = await axios.post(`${API_BASE_URL}/api/users`, { name: form.username, email: form.email });
+            //const createCheckIn = await axios.post(`${API_BASE_URL}/api/checkIn`, {userId: response.data._id, checkInText: " ", date: response.data.joinDate})
            
             await AsyncStorage.setItem("isLoggedIn", JSON.stringify(true));
             await AsyncStorage.setItem("userEmail", form.email);

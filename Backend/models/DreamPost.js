@@ -2,10 +2,9 @@ const mongoose = require("mongoose");
 
 const DreamPost = new mongoose.Schema({
    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-   title: { type: String, required: true },
-   type: { type: String, enum: ["Detailed", "Fragmented"], required: true },
+   title: { type: String },
+   type: { type: String, enum: ["Detailed", "Fragmented", "Empty"], required: true },
    dreamText: { type: String }, 
-   dreamFragments: [{ type: String }],
    analysis: {type: String},
    //Optional user selections
    selectedThemes: [{ type: String }], 

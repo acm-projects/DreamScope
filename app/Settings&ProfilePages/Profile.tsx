@@ -10,20 +10,19 @@ import React from 'react';
 import { getAuth, deleteUser } from "firebase/auth";
 import axios from "axios";
 
-const API_BASE_URL = 'http://localhost:5001'
+const API_BASE_URL = 'http://localhost:5001';
 
 export default function ProfilePage() {
     const [profilePic, setProfilePic] = useState<string | null>(null);
     const [bio, setBio] = useState('');
     const { userData, isLoading } = useUser();
 
-
     if (isLoading) {
         return <Text>Loading...</Text>;
     }
 
     if (!userData) {
-        return <Text>User data not available.</Text>;
+        return <Text>User data not available</Text>;
     }
 
 
@@ -52,7 +51,7 @@ export default function ProfilePage() {
               onPress: async () => {
                 const auth = getAuth();
                 const user = auth.currentUser;
-      
+                
                 if (user) {
                   try {
                     await deleteUser(user);
@@ -112,13 +111,14 @@ export default function ProfilePage() {
                     />
 
                     {/* Stats */}
+                    
                     <View style={styles.statsBox}>
                         <Text style={styles.statsText}>My name: {userData.name} </Text>
                         <Text style={styles.statsText}>My email: {userData.email} </Text>
                         <Text style={styles.statsText}>Joined on: {userData.joinDate}</Text>
                         <Text style={styles.statsText}>Total Dreams: {userData.totalDreams}</Text>
-                        <Text style={styles.statsText}>Detailed Logs: {userData.fragDreams}</Text>
-                        <Text style={styles.statsText}>Fragmented Logs: {userData.detailedDreams}</Text>
+                        <Text style={styles.statsText}>Detailed Logs: {userData.detailedDreams}</Text>
+                        <Text style={styles.statsText}>Fragmented Logs: {userData.fragDreams}</Text>
                     </View>
 
                     {/* Buttons */}

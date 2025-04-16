@@ -2,12 +2,15 @@ import { Tabs } from "expo-router";
 import { Fontisto } from "@expo/vector-icons";
 import { View } from "react-native";
 import { StatusBar } from 'expo-status-bar';
+import { UserProvider } from "../context/UserContext";
+import { AnalysisProvider } from "../context/AnalysisContext";
 
 
 
 export default function RootLayout() {
     return (
-
+<UserProvider>
+    <AnalysisProvider>
         <Tabs
             screenOptions={{
                 tabBarShowLabel: false,
@@ -67,5 +70,7 @@ export default function RootLayout() {
                 }}
             />
         </Tabs>
+        </AnalysisProvider>
+</UserProvider>
     );
 }

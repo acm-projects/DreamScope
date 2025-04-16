@@ -1,105 +1,109 @@
-import { View, Text, Image, TextInput, StyleSheet, ScrollView, SafeAreaView, TouchableOpacity, Alert } from "react-native";
+import { View, Text, Image, TextInput, StyleSheet, ScrollView, SafeAreaView, TouchableOpacity, Alert, StatusBar } from "react-native";
 import { Button, ButtonText } from "../../components/ui/button";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { Feather } from "@expo/vector-icons";
 import React, { useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
-import { useUser } from "../context/UserContext"
+import { LinearGradient } from "expo-linear-gradient"
 
-const API_BASE_URL = 'http://localhost:5001'
+const API_BASE_URL = 'http://localhost:5001';
 
 
-export default function detailedLogTextScreen() {
-
-    //to push onto new pages
+export default function DetailedLogTextScreen() {
+    // To push onto new pages
     const router = useRouter();
-    //to pass data between pages
+    // To pass data between pages
     const params = useLocalSearchParams();
 
+    // Default border color, dynamically setting border color
+    const [titleBorderColor, setTitleBorderColor] = useState("#00BFFF");
+    const [textBorderColor, setTextBorderColor] = useState("#00BFFF");
 
-    //default border color, dynamically setting border color
-    const [borderColor, setBorderColor] = useState("white");
-
-
-
-
-
-    //function that updates when the user finishes editing the text textinput
+    // Text input state and validation
     const [inputText, setInputText] = useState("");
     const [validText, setValidText] = useState(false);
-    const { userData } = useUser();
 
-
-
-    const userEndedEditingText = () => {
-        if (inputText.trim() === "") {
-            console.log("updated valid text to false")
-            setBorderColor("red");
-            setValidText(false);
-        }
-        else {
-            console.log("updated valid text to true")
-            setBorderColor("white");
-            setValidText(true);
-
-        }
-    };
-
-    //function that updates when the user finishes editing the title textinput
+    // Title input state and validation
     const [inputTitle, setInputTitle] = useState("");
     const [validTitle, setValidTitle] = useState(false);
-    const userEndedEditingTitle = () => {
-        if (inputTitle.trim() === "") {
-            setBorderColor("red")
-            setValidTitle(false)
-            console.log("updated valid title to false")
-        }
-        else {
-            console.log("updated valid title to true")
-            setBorderColor("white")
-            setValidTitle(true)
+
+    // Updated handler for text input with immediate validation
+    const handleTextChange = (text: string) => {
+        setInputText(text);
+        setValidText(text.trim() !== "");
+        setTextBorderColor(text.trim() !== "" ? "#00BFFF" : "red");
+    };
+
+    // Handler for when user finishes editing text
+    const userEndedEditingText = () => {
+        if (inputText.trim() === "") {
+            setTextBorderColor("red");
+            setValidText(false);
+        } else {
+            setTextBorderColor("#00BFFF");
+            setValidText(true);
         }
     };
 
+    // Updated handler for title input with immediate validation
+    const handleTitleChange = (text: string) => {
+        setInputTitle(text);
+        setValidTitle(text.trim() !== "");
+        setTitleBorderColor(text.trim() !== "" ? "#00BFFF" : "red");
+    };
 
-    //function that checks if the title and text field both contain text.
+    // Handler for when user finishes editing title
+    const userEndedEditingTitle = () => {
+        if (inputTitle.trim() === "") {
+            setTitleBorderColor("red");
+            setValidTitle(false);
+        } else {
+            setTitleBorderColor("#00BFFF");
+            setValidTitle(true);
+        }
+    };
+
+    // Function that checks if the title and text field both contain text.
     const handlePress = async () => {
+        const isTitleValid = inputTitle.trim() !== "";
+        const isTextValid = inputText.trim() !== "";
+
+        setValidTitle(isTitleValid);
+        setValidText(isTextValid);
+        setTitleBorderColor(isTitleValid ? "#00BFFF" : "red");
+        setTextBorderColor(isTextValid ? "#00BFFF" : "red");
 
         if (validTitle && validText) {
-
-            console.log("valid title and text are both true");
             try {
                 const storedEmail = await AsyncStorage.getItem('userEmail');
                 const response = await axios.get(`${API_BASE_URL}/users/email/${storedEmail}`);
                 const userId = response.data._id;
                 
-                const totalDreams = response.data.totalDreams + 1;
-                const detailedDreams = response.data.detailedDreams + 1;
+                console.log(response.data.name);
+                const dreamData = { 
+                    userId: userId, 
+                    title: inputTitle, 
+                    type: "Detailed", 
+                    dreamText: inputText,  
+                    selectedThemes: params.THEMETAGS, 
+                    selectedSettings: params.SETTINGSTAGS, 
+                    selectedEmotions: params.ADDONSTAGS, };
 
-                const recurringObjects = userData.recurringObjects;
-                const recurringPeople = userData.recurringPeople;
-                const recurringPlaces = userData.recurringPlaces;
-                const recurringThemes = userData.recurringThemes;
+                    const apiResponse = await axios.post(`${API_BASE_URL}/api/dreamPosts`, dreamData);
+                    await AsyncStorage.setItem('postId', apiResponse.data._id);
+                    const totalDreams = response.data.totalDreams + 1;
+                    const detailedDreams = response.data.detailedDreams + 1;
+
 
                 await axios.put(`${API_BASE_URL}/users/${userId}`, {
                     totalDreams: totalDreams,
                     detailedDreams: detailedDreams,
                 });
-
-                console.log(response.data.name);
-                const dreamData = { userId: userId, title: inputTitle, type: "Detailed", dreamText: inputText, dreamFragments: [], themes: [], settings: [], emotions: [], recurringPlaces, recurringObjects, recurringPeople, recurringThemes, };
-
-                const existingPost = await axios.get(`${API_BASE_URL}/api/dreamPosts/user/${userId}/date/${currentDate}`);
-                
-                if(!existingPost){
-                    const apiResponse = await axios.post(`${API_BASE_URL}/api/dreamPosts`, dreamData);
-                    await AsyncStorage.setItem('postId', apiResponse.data._id);
                     router.push('/logCompletion/detailedLogCompletion');
-                }
-                else{
-                    router.replace('./tabs/HomeScreen');
-                }
+
+                
+                
             } catch (error) {
                 console.error('Error submitting dream log:', error);
                 Alert.alert('Error', 'Failed to submit dream log.');
@@ -112,50 +116,48 @@ export default function detailedLogTextScreen() {
 
     };
 
-    //slicing users tags that got put together as one big string into an array
-    let arrayOfUsersTags = [];
-    let z = 0;
-    let tagsIndex = 0;
-    for (let i = 0; i < params.tags.length; i++) {
-        if (params.tags[i] == ",") {
-            arrayOfUsersTags[tagsIndex] = params.tags.slice(z, i);
-            z = i + 1;
-            tagsIndex += 1;
-        }
-        else if (i == params.tags.length - 1) {
-            arrayOfUsersTags[tagsIndex] = params.tags.slice(z, i + 1);
+    // Improved tag parsing
+    const arrayOfUsersTags = params.tags ? params.tags.toString().split(',') : [];
 
-        }
-    }
-
-    //function that gets todays date!
+    // Function that gets today's date!
     const currentDate = new Date().toLocaleDateString("en-US", {
         month: "long",
         day: "numeric",
         year: "numeric",
     });
 
-
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
-            <ScrollView contentContainerStyle={{
-                flexGrow: 1,
-                justifyContent: "center",
-            }}>
+        <LinearGradient
+            colors={["#15041D", "#2C123F", "#3B1856"]}
+            style={{ flex: 1 }}
+        >
+            <StatusBar barStyle="light-content" />
 
+            <View style={{ opacity: 0.2, left: 0, right: 0 }}>
+                <Image
+                    source={require("../../Frontend/images/cloudbackground2.png")}
+                    style={{ position: "absolute", maxWidth: "auto", maxHeight: "auto" }}
+                    resizeMode="contain"
+                />
+            </View>
 
-                <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#2D1A54" }}>
-
-
-                    {/* Back Button */}
+            <SafeAreaView style={{ flex: 1 }}>
+                <ScrollView
+                    contentContainerStyle={{
+                        flexGrow: 1,
+                        padding: 20,
+                    }}
+                    showsVerticalScrollIndicator={false}
+                >
+                    {/* Back Button with improved shadow and positioning */}
                     <Button
                         onPress={() => router.back()}
                         style={{
                             position: "absolute",
-                            top: 20,
-                            left: 5,
-
+                            top: 5,
+                            left: -8,
                             backgroundColor: "transparent",
+                            zIndex: 10,
                         }}
                     >
                         <Text style={{ fontSize: 24, color: "white" }}>
@@ -163,125 +165,231 @@ export default function detailedLogTextScreen() {
                         </Text>
                     </Button>
 
+                    {/* Header with enhanced styling */}
+                    <View style={{ alignItems: "center", marginTop: 40, marginBottom: 25 }}>
+                        <Text
+                            style={{
+                                fontSize: 26,
+                                fontWeight: "bold",
+                                color: "white",
+                                textAlign: "center",
+                                marginBottom: 8,
+                                textShadowColor: "rgba(0, 191, 255, 0.3)",
+                                textShadowOffset: { width: 0, height: 1 },
+                                textShadowRadius: 5,
+                            }}
+                        >
+                            {currentDate}
+                        </Text>
 
+                        <Text
+                            style={{
+                                fontSize: 16,
+                                color: "#C9B9E2",
+                                opacity: 0.85,
+                                textAlign: "center",
+                                fontStyle: "italic",
+                                marginBottom: 15,
+                            }}
+                        >
+                            Describe your experience
+                        </Text>
+                    </View>
 
-                    {/*Date*/}
-                    <Text
-                        style={{
-                            fontSize: 40,
-                            fontWeight: "bold",
-                            color: "white",
-                            textAlign: "center",
-                            marginBottom: 20,
-                            marginTop: 20
-                        }}
-                    >
-                        {currentDate}
-                    </Text>
-
-
-                    {/*Tags*/}
-                    <View style={{ flexDirection: "row", flexWrap: "wrap", marginBottom: 10 }}>
-                        {arrayOfUsersTags.map((item, index) => (
-                            <View
-                                key={index}
+                    {/* Tags Container */}
+                    {arrayOfUsersTags.length > 0 && (
+                        <View
+                            style={{
+                                backgroundColor: "rgba(0, 49, 76, 0.3)",
+                                borderRadius: 16,
+                                padding: 16,
+                                marginBottom: 20,
+                                borderLeftWidth: 3,
+                                borderLeftColor: "#00BFFF",
+                            }}
+                        >
+                            <Text
                                 style={{
-                                    margin: 2, // Adds spacing between items
-                                    padding: 3,
-                                    backgroundColor: "#0093ED",
-                                    borderRadius: 12,
-                                    borderWidth: 2,
-                                    borderColor: "white",
-
+                                    fontSize: 16,
+                                    fontWeight: "bold",
+                                    color: "white",
+                                    marginBottom: 10,
                                 }}
                             >
-                                <Text style={{ fontSize: 12, fontWeight: "400", color: "white" }}>
-                                    {item}
-                                </Text>
+                                <Feather name="tag" size={14} color="#00BFFF" /> Selected Tags
+                            </Text>
+
+                            <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
+                                {arrayOfUsersTags.map((item, index) => (
+                                    <View
+                                        key={index}
+                                        style={{
+                                            margin: 4,
+                                            paddingVertical: 6,
+                                            paddingHorizontal: 10,
+                                            backgroundColor: "#00BFFF",
+                                            borderRadius: 12,
+                                            shadowColor: "#000",
+                                            shadowOffset: { width: 0, height: 2 },
+                                            shadowOpacity: 0.2,
+                                            shadowRadius: 2,
+                                            elevation: 2,
+                                        }}
+                                    >
+                                        <Text style={{ fontSize: 14, fontWeight: "500", color: "white" }}>
+                                            {item}
+                                        </Text>
+                                    </View>
+                                ))}
                             </View>
-                        ))}
-                    </View>
+                        </View>
+                    )}
 
-                    {/*Dream Title*/}
-                    <View>
-
-                        <Text style={{ marginBottom: 10, fontWeight: "bold", fontSize: 15, color: "white" }}>
-                            Dream Title: {" "}
-
-                            <TextInput value={inputTitle}
-                                onChangeText={setInputTitle}
-                                onEndEditing={userEndedEditingTitle}
-                                numberOfLines={1}
-                                multiline={false}
-
-
-
-                                placeholder="Enter a title.."
-                                style={{
-                                    height: 25,
-                                    width: 100,
-                                    backgroundColor: "#0093ED",
-                                    backfaceVisibility: "visible",
-                                    borderWidth: 2,
-                                    borderColor: borderColor,
-                                    borderRadius: 10,
-                                    color: "white"
-                                }}>
-
-                            </TextInput>
-                        </Text>
-
-
-
-                    </View>
-
-
-                    {/*Dream Text*/}
-                    <TextInput
-                        value={inputText}
-                        onChangeText={setInputText}
-                        onEndEditing={userEndedEditingText}
-                        multiline={true}
-
-                        placeholderTextColor={"#D7C9E3"}
-                        numberOfLines={10} // Optional: Sets the visible number of lines
-                        placeholder="Begin typing your dream here.."
+                    {/* Title Input Container */}
+                    <View
                         style={{
-                            height: 375,  // Adjust height as needed
-                            width: 325,
-                            borderColor: borderColor,
-                            borderWidth: 0,
-                            backfaceVisibility: "visible",
-                            backgroundColor: "#00314C",
-                            padding: 10,
-                            color: "grey",
-                            marginBottom: 50,
-                            borderRadius: 12,
-                            textAlignVertical: 'top', // Ensures text starts from the top
+                            backgroundColor: "rgba(0, 49, 76, 0.3)",
+                            borderRadius: 16,
+                            padding: 16,
+                            marginBottom: 20,
+                            borderLeftWidth: 3,
+                            borderLeftColor: "#00BFFF",
                         }}
-                    />
-
-
-
-
-
-                    {/*Complete Log Button*/}
-                    <View style={{ alignItems: "center", backgroundColor: "00314D", width: "100%", borderWidth: 2, borderColor: "#03A4FF" }}>
-                        <Text>
-                            <TouchableOpacity onPress={handlePress} style={{ alignItems: "center", marginTop: 25, marginBottom: 25, justifyContent: "center", width: 200, height: 50, borderColor: "white", borderWidth: 2, borderRadius: 12, backgroundColor: "#0093ED" }}>
-                                <Text style={{ justifyContent: "center", color: "white" }} >
-                                    Submit
-                                </Text>
-                            </TouchableOpacity>
+                    >
+                        <Text
+                            style={{
+                                fontSize: 16,
+                                fontWeight: "bold",
+                                color: "white",
+                                marginBottom: 10,
+                            }}
+                        >
+                            <Feather name="edit-3" size={14} color="#00BFFF" /> Title
                         </Text>
+
+                        <TextInput
+                            value={inputTitle}
+                            onChangeText={handleTitleChange}
+                            onEndEditing={userEndedEditingTitle}
+                            numberOfLines={1}
+                            multiline={false}
+                            placeholder="Enter a title for your experience..."
+                            placeholderTextColor="rgba(201, 185, 226, 0.6)"
+                            style={{
+                                backgroundColor: "#00314C",
+                                borderWidth: 2,
+                                borderColor: titleBorderColor,
+                                borderRadius: 12,
+                                color: "white",
+                                padding: 12,
+                                fontSize: 16,
+                            }}
+                        />
+
+                        {titleBorderColor === 'red' && (
+                            <Text style={{ color: "#FF6B6B", marginTop: 5, fontSize: 12 }}>
+                                <Feather name="alert-circle" size={12} /> Please enter a title
+                            </Text>
+                        )}
                     </View>
-                </View>
-            </ScrollView>
-        </SafeAreaView>
 
+                    {/* Main Text Input Container */}
+                    <View
+                        style={{
+                            backgroundColor: "rgba(0, 49, 76, 0.3)",
+                            borderRadius: 16,
+                            padding: 16,
+                            marginBottom: 30,
+                            borderLeftWidth: 3,
+                            borderLeftColor: "#00BFFF",
+                        }}
+                    >
+                        <Text
+                            style={{
+                                fontSize: 16,
+                                fontWeight: "bold",
+                                color: "white",
+                                marginBottom: 10,
+                            }}
+                        >
+                            <Feather name="book-open" size={14} color="#00BFFF" /> Description
+                        </Text>
 
+                        <TextInput
+                            value={inputText}
+                            onChangeText={handleTextChange}
+                            onEndEditing={userEndedEditingText}
+                            multiline={true}
+                            placeholderTextColor="rgba(201, 185, 226, 0.6)"
+                            placeholder="Begin typing your experience here..."
+                            style={{
+                                height: 200,
+                                backgroundColor: "#00314C",
+                                borderWidth: 2,
+                                borderColor: textBorderColor,
+                                padding: 16,
+                                color: "white",
+                                borderRadius: 12,
+                                textAlignVertical: 'top',
+                                fontSize: 16,
+                            }}
+                        />
 
+                        {textBorderColor === 'red' && (
+                            <Text style={{ color: "#FF6B6B", marginTop: 5, fontSize: 12 }}>
+                                <Feather name="alert-circle" size={12} /> Please enter a description
+                            </Text>
+                        )}
+                    </View>
 
+                    {/* Submit Button */}
+                    <Button
+                        onPress={handlePress}
+                        style={{
+                            backgroundColor: validTitle && validText ? "#0000ff" : "rgba(0, 0, 255, 0.5)",
+                            borderRadius: 12,
+                            alignItems: "center",
+                            justifyContent: "center",
+                            height: 54,
+                            shadowColor: "#000",
+                            shadowOffset: { width: 0, height: 3 },
+                            shadowOpacity: 0.27,
+                            shadowRadius: 4.65,
+                            elevation: 6,
+                            marginBottom: 20,
+                        }}
+                    >
+                        <ButtonText
+                            style={{
+                                color: "#FFFFFF",
+                                fontSize: 16,
+                                fontWeight: "bold",
+                            }}
+                        >
+                            <Feather name="check-circle" size={18} /> Submit Log
+                        </ButtonText>
+                    </Button>
 
+                    {/* Cancel Button */}
+                    <TouchableOpacity
+                        onPress={() => router.push("/tabs/HomeScreen")}
+                        style={{
+                            alignItems: "center",
+                            marginBottom: 30,
+                        }}
+                    >
+                        <Text
+                            style={{
+                                fontSize: 16,
+                                color: "#C9B9E2",
+                                textDecorationLine: "underline",
+                            }}
+                        >
+                            Cancel
+                        </Text>
+                    </TouchableOpacity>
+                </ScrollView>
+            </SafeAreaView>
+        </LinearGradient>
     );
 }

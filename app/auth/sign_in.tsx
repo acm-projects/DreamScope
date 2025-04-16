@@ -24,9 +24,7 @@ const SignIn = (): JSX.Element => {
             return;
         }
         setSubmitting(true);
-        try {
-    
-           
+        try {       
             const userCredential = await signInWithEmailAndPassword(auth, form.email, form.password);
             
             await AsyncStorage.setItem("isLoggedIn", JSON.stringify(true));

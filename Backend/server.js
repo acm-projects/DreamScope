@@ -1,6 +1,7 @@
 //populate/repopulate recurring n dream related places, objects, people, themes arrays 
 //rename selected stuff
 import analyzeDream from "./openAiHelper.js";
+import storeImageAsBlob from "./storeImage.js";
 import dotenv from "dotenv";
 import express from "express";
 import mongoose from "mongoose";
@@ -8,6 +9,8 @@ import cors from "cors";
 
 import User from './models/User.js';
 import DreamPost from './models/DreamPost.js';
+import weeklyCheckIn from "./models/weeklyCheckIn.js";
+import getImages from './visualization.js';
 
 dotenv.config();
 
@@ -25,16 +28,6 @@ mongoose
 
 app.get("/", (req, res) => {
   res.send("Welcome to DreamScope API");
-});
-
-//get all users
-app.get("/users", async (req, res) => { //corrected path to /users
-  try {
-    const users = await User.find();
-    res.status(200).json(users);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
 });
 
 // create a new user
@@ -95,64 +88,125 @@ app.put("/users/:userId", async (req, res) => {
   }
 });
 
-app.delete('/api/deleteUser/:uid', authenticateUser, async (req, res) => {
-    try {
-      const { _id } = req.params;
-      const authenticatedUid = req.user._id;
-  
-      if (_id !== authenticatedUid) {
-        return res.status(403).json({ error: 'Unauthorized' });
-      }
-  
-      await User.deleteOne({ userId: _id });
-      await DreamPost.deleteMany({ userId: _id }); //Assuming you are storing the uid inside the userId field.
-  
-      res.status(200).json({ message: 'User data deleted successfully.' });
-    } catch (error) {
-      console.error('Error deleting user data:', error);
-      res.status(500).json({ error: 'Internal server error.' });
-    }
-  });
-
 //dream post routes
 
 app.post('/api/dreamPosts', async (req, res) => {
   try {
-      const { userId, title, type, dreamText, dreamFragments, themes, settings, emotions, recurringPlaces, recurringObjects, recurringPeople, recurringThemes, } = req.body;
-      const combinedDreamText = type === "Fragmented" ? dreamFragments.join('\n') : dreamText;
+      const { userId, title, type, dreamText, selectedThemes, selectedSettings, selectedEmotions } = req.body;
+      console.log(dreamText);
+
+      const user = await User.findById(userId);
+      //const checkIn = await weeklyCheckIn.findById(userId);
+      // const weeklyCheckIn = await weeklyCheckIn.find ({userId: userId});
+
+      // console.log("got to weekly checkin:", weeklyCheckIn);
 
       const dreamPost = new DreamPost({
           userId,
           title,
           type,
-          dreamText: combinedDreamText,
-          dreamFragments,
-          themes,
-          settings,
-          emotions,
-
+          dreamText,
+          selectedThemes,
+          selectedSettings,
+          selectedEmotions,
       });
-      const analysis = await analyzeDream(
+
+      const analysisResult = await analyzeDream(
           dreamPost.dreamText,
-          dreamPost.themes,
-          dreamPost.settings,
-          dreamPost.emotions,
-          recurringPlaces, 
-          recurringObjects, 
-          recurringPeople, 
-          recurringThemes,
+          dreamPost.selectedThemes,
+          dreamPost.selectedSettings,
+          dreamPost.selectedEmotions,
+          user.recurringPeople,
+          user.recurringObjects,
+          user.recurringPlaces,
+          user.recurringThemes,
+          //checkIn.checkInArray,
       );
-      dreamPost.analysis = analysis;
-      //populate/repopulate recurring n dream related places, objects, people, themes arrays 
-      //make sure to update userdata based on recurring stuff
+
+      dreamPost.analysis = analysisResult.analysis;
+      dreamPost.dreamPeople = analysisResult.people;
+      dreamPost.dreamObjects = analysisResult.objects;
+      dreamPost.dreamPlaces = analysisResult.places;
+      dreamPost.dreamThemes = analysisResult.themes;
+
+      const imageUrls = await getImages(dreamText);
+
+
+    const s3Keys = [];
+    for (let i = 0; i < imageUrls.length; i++) {
+      const imageUrl = imageUrls[i];
+      const key = await storeImageAsBlob(
+        dreamPost._id,
+        imageUrl,
+        dreamPost.userId,
+        i + 1 // index starting from 1
+      );
+      if (key) {
+        s3Keys.push(
+          `https://${process.env.S3_BUCKET_NAME}.s3.amazonaws.com/${key}`
+        );
+      }}
+
+      dreamPost.visualizations = s3Keys;
+
       await dreamPost.save();
+
+      //recurring stuff update === not working as intended yet
+      if (user) {
+          console.log("Found user:", user);
+
+          // Call updateRecurringEntities for each entity type, passing the user's current recurring array and the new dream's entities.
+          user.recurringPeople = updateRecurringEntities(user.recurringPeople, dreamPost.dreamPeople);
+          user.recurringObjects = updateRecurringEntities(user.recurringObjects, dreamPost.dreamObjects);
+          user.recurringPlaces = updateRecurringEntities(user.recurringPlaces, dreamPost.dreamPlaces);
+          user.recurringThemes = updateRecurringEntities(user.recurringThemes, dreamPost.dreamThemes);
+
+          console.log("Recurring entities after update:", {
+              people: user.recurringPeople,
+              objects: user.recurringObjects,
+              places: user.recurringPlaces,
+              themes: user.recurringThemes,
+          });
+
+          await user.save();
+      } else {
+          console.log("User not found with ID:", userId);
+      }
 
       res.status(201).json(dreamPost);
   } catch (error) {
+      console.error("Error processing dream post:", error);
       res.status(400).json({ error: error.message });
   }
 });
 
+function updateRecurringEntities(recurringArray, newEntities) {
+  const updatedArray = [...recurringArray];
+
+  // Check if newEntities is a valid array before processing.
+
+  if (newEntities && Array.isArray(newEntities)) {
+
+      newEntities.forEach(entity => {
+
+          // Trim any leading/trailing whitespace from the entity.
+
+          const trimmedEntity = entity ? entity.trim() : '';
+
+          // Check if the trimmed entity is not empty and doesn't already exist in the recurringArray (case-insensitive comparison).
+
+          if (trimmedEntity && !updatedArray.some(recurring => recurring.trim().toLowerCase() === trimmedEntity.toLowerCase())) {
+
+              updatedArray.push(trimmedEntity);
+
+          }
+
+      });
+
+  }
+
+  return updatedArray;
+}
 // get dream posts by user ID
 app.get('/api/dreamPosts/user/:userId', async (req, res) => {
   try {
@@ -168,15 +222,58 @@ app.get('/api/dreamPosts/user/:userId', async (req, res) => {
 });
 
 // update a dream post
-app.put('/api/dreamPosts/:postId', async (req, res) => {
+app.put("/api/dreamPosts/:postId", async (req, res) => {
   try {
-      const updatedDreamPost = await DreamPost.findByIdAndUpdate(req.params.postId, req.body, { new: true });
-      if (!updatedDreamPost) {
-          return res.status(404).json({ error: "Dream post not found." });
+    // Step 1: Fetch the current post
+    const dreamPost = await DreamPost.findById(req.params.postId);
+    if (!dreamPost) {
+      return res.status(404).json({ error: "Dream post not found." });
+    }
+
+
+    const dreamText = dreamPost.dreamText;
+    if (!dreamText) {
+      return res
+        .status(400)
+        .json({ error: "dreamText is required to generate visualizations." });
+    }
+
+
+    // Step 2: Generate DALL·E image URLs
+    const imageUrls = await getImages(dreamText);
+
+
+    const s3Keys = [];
+    for (let i = 0; i < imageUrls.length; i++) {
+      const imageUrl = imageUrls[i];
+      const key = await storeImageAsBlob(
+        dreamPost._id,
+        imageUrl,
+        dreamPost.userId,
+        i + 1 // index starting from 1
+      );
+      if (key) {
+        s3Keys.push(
+          `https://${process.env.S3_BUCKET_NAME}.s3.amazonaws.com/${key}`
+        );
       }
-      res.status(200).json(updatedDreamPost);
+    }
+
+
+    dreamPost.visualizations = s3Keys;
+
+
+    const updatedDreamPost = await DreamPost.findByIdAndUpdate(
+      req.params.postId,
+      dreamPost,
+      { new: true }
+    );
+
+
+    res.status(200).json(updatedDreamPost);
   } catch (error) {
-      res.status(400).json({ error: error.message });
+    console.error(error);
+    res.status(400).json({ error: error.message });
   }
 });
 
@@ -229,34 +326,106 @@ app.delete('/api/dreamPosts/user/:userId', async (req, res) => {
   });
 
 //user, date
-app.get('/api/dreamPosts/user/:userId/date/:date', async (req, res) => {
+app.get("/api/dreamPosts/users/:userId/date/:date", async (req, res) => {
+  try {
+    const { userId, date } = req.params;
+    let userIdObj;
     try {
-        const { userId, date } = req.params;
-        const parsedDate = new Date(date);
-        parsedDate.setHours(0, 0, 0, 0);
-
-        const endDate = new Date(parsedDate);
-        endDate.setDate(endDate.getDate() + 1);
-        endDate.setHours(0, 0, 0, 0);
-
-        const dreamPost = await DreamPost.findOne({
-            userId: userId,
-            date: {
-                $gte: parsedDate,
-                $lt: endDate,
-            },
-        });
-
-        if (!dreamPost) {
-            return res.status(404).json({ error: "No dream post found for this user on the specified date." });
-        }
-
-        res.status(200).json(dreamPost);
+      userIdObj = new mongoose.Types.ObjectId(userId);
     } catch (error) {
-        console.error("Error fetching dream post by date:", error);
-        res.status(500).json({ error: error.message });
+      return res.status(400).json({ error: "Invalid user ID format" });
     }
+
+    const parsedDate = new Date(date);
+    if (isNaN(parsedDate)) {
+      return res
+        .status(400)
+        .json({ error: "Invalid date format. Use YYYY-MM-DD." });
+    }
+
+    const startOfDay = new Date(parsedDate);
+    startOfDay.setUTCHours(0, 0, 0, 0); // Use UTC to avoid timezone issues
+
+    const endOfDay = new Date(startOfDay);
+    endOfDay.setUTCDate(endOfDay.getUTCDate() + 1);
+
+    const dreamPost = await DreamPost.findOne({
+      userId: userIdObj,
+      date: {
+        $gte: startOfDay, 
+        $lt: endOfDay, 
+      },
+    }).select("_id");
+
+    if (!dreamPost) {
+      return res.status(404).json({
+        error: "No dream post found for this user on the specified date.",
+      });
+    }
+
+    res.status(200).json(dreamPost);
+  } catch (error) {
+    console.error("Error fetching dream post:", error);
+    res.status(500).json({ error: error.message });
+  }
 });
 
-const PORT = process.env.PORT || 5001;
+app.post('/api/checkIn/user/:userId', async (req, res) => {
+  const { checkInText, date } = req.body;
+  const { userId } = req.params;
+
+  try {
+    const checkIn = new weeklyCheckIn({
+      userId: userId,
+      checkInArray: [checkInText],
+      dateArray: [date],
+    });
+    const savedCheckIn = await checkIn.save();
+    res.status(201).json(savedCheckIn);
+  } catch (error) {
+    console.error("Error creating check-in:", error);
+    res.status(500).json({ error: "Failed to create check-in" });
+  }
+});
+
+app.put('/api/checkIn/user/:userId', async (req, res) => {
+  const { userId } = req.params;
+  const { checkInText, date } = req.body;
+
+  try {
+    const checkInDocument = await weeklyCheckIn.findOne({ userId: userId });
+
+    if (!checkInDocument) {
+      return res.status(404).json({ error: "Weekly check-in data not found for this user" });
+    }
+
+    checkInDocument.checkInArray.push(checkInText);
+    checkInDocument.dateArray.push(date);
+
+    const updatedCheckIn = await checkInDocument.save();
+    res.status(200).json(updatedCheckIn);
+  } catch (error) {
+    console.error("Error updating check-in:", error);
+    res.status(500).json({ error: "Failed to update check-in" });
+  }
+});
+
+app.get('/api/allcheckIns/user/:userId', async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const checkIns = await weeklyCheckIn.findOne({ userId: userId });
+
+    if (!checkIns) {
+      return res.status(404).json({ error: "No check-in data found for this user" });
+    }
+
+    res.status(200).json(checkIns.checkInArray);
+  } catch (error) {
+    console.error("Error fetching check-ins:", error);
+    res.status(500).json({ error: "Failed to fetch check-ins" });
+  }
+});
+
+const PORT = process.env.PORT;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
