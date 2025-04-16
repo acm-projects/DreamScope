@@ -6,26 +6,26 @@
     "jsEngine": "hermes",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "../../Frontend/images/icon2.png",
-    "userInterfaceStyle": "light",
+    "icon": "Frontend/images/icon.png",
+    "userInterfaceStyle": "dark",
     "newArchEnabled": true,
     "splash": {
-      "image": "../../Frontend/images/splash-icon.png",
+      "image": "Frontend/images/logo-trans.png",
       "resizeMode": "contain",
-      "backgroundColor": "#044468"
+      "backgroundColor": "#2C123F"
     },
     "ios": {
       "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "../../Frontend/images/adaptive-icon.png",
-        "backgroundColor": "#044468"
+        "foregroundImage": "Frontend/images/icon.png",
+        "backgroundColor": "#2C123F"
       }
     },
     "web": {
       "bundler": "metro",
-      "favicon": "../../Frontend/images/favicon.png"
+      "favicon": "Frontend/images/favicon.png"
     },
     "plugins": [
       "expo-router"

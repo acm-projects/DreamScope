@@ -120,14 +120,48 @@ export default function DetailedLogCompletion() {
                         textAlign: "center",
                         marginBottom: 10
                     }}>
-                        Empty Log Captured.
+                        Your log has been saved successfully.
                     </Text>
 
-
+                    <Text style={{
+                        fontSize: 16,
+                        color: "#C9B9E2",
+                        opacity: 0.8,
+                        textAlign: "center",
+                        fontStyle: "italic",
+                    }}>
+                        Would you like to analyze your dream or return home?
+                    </Text>
                 </View>
 
                 {/* Action buttons with improved styling */}
-
+                <Button
+                    onPress={() => router.push("/logs/AIAnalysisPage")}
+                    style={{
+                        backgroundColor: "#0000ff",
+                        borderRadius: 12,
+                        alignItems: "center",
+                        justifyContent: "center",
+                        height: 54,
+                        width: "100%",
+                        marginBottom: 15,
+                        shadowColor: "#000",
+                        shadowOffset: { width: 0, height: 3 },
+                        shadowOpacity: 0.27,
+                        shadowRadius: 4.65,
+                        elevation: 6,
+                    }}
+                >
+                    <ButtonText
+                        style={{
+                            color: "#FFFFFF",
+                            fontSize: 16,
+                            fontWeight: "bold",
+                        }}
+                    >
+                        <Feather name="star" size={16} /> Continue to Dream Analysis
+                    </ButtonText>
+                </Button>
 
                 <Button
                     onPress={() => router.push("/tabs")}
@@ -138,7 +172,6 @@ export default function DetailedLogCompletion() {
                         borderRadius: 12,
                         alignItems: "center",
                         justifyContent: "center",
-                        marginTop: 100,
                         height: 54,
                         width: "100%",
                     }}

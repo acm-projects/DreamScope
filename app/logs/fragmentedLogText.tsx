@@ -1,116 +1,288 @@
-import { View, Text } from "react-native";
-import { Textarea, TextareaInput } from "@/components/ui/textarea";
+import { useState } from "react";
+import { View, Text, TextInput, ScrollView, SafeAreaView, TouchableOpacity, StatusBar, Image } from "react-native";
 import { Button, ButtonText } from "@/components/ui/button";
 import { useRouter, useLocalSearchParams } from "expo-router";
+import { Feather } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 
-import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
-import { FlatList } from "react-native-reanimated/lib/typescript/Animated";
-export default function fragmentedLogTextScreen() {
+export default function FragmentedLogTextScreen() {
     const router = useRouter();
     const params = useLocalSearchParams();
+    const numParts = Number(params.parts) || 1; // Default to 1 if not provided
+    const { name } = params;
 
-
-
-    //slicing users tags that got put together as one big string into an array
-    let arrayOfUsersTags = [];
-    let z = 0;
-    let tagsIndex = 0;
-    for (let i = 0; i < params.tags.length; i++) {
-        if (params.tags[i] == ",") {
-            arrayOfUsersTags[tagsIndex] = params.tags.slice(z, i);
-            z = i + 1;
-            tagsIndex += 1;
-        }
-        else if (i == params.tags.length - 1) {
-            arrayOfUsersTags[tagsIndex] = params.tags.slice(z, i + 1);
-
-        }
-    }
-
-
+    // Current date formatting
     const currentDate = new Date().toLocaleDateString("en-US", {
         month: "long",
         day: "numeric",
         year: "numeric",
     });
 
+    // Manage multiple input fields dynamically
+    const [inputFields, setInputFields] = useState(Array(numParts).fill(""));
+    const [error, setError] = useState(false);
+
+    // Handle text input changes
+    const handleInputChange = (text: string, index: number) => {
+        const newFields = [...inputFields];
+        newFields[index] = text;
+        setInputFields(newFields);
+        if (error) setError(false);
+    };
+
+    // Check if all input fields are filled before submission
+    const handlePress = () => {
+        if (inputFields.every(field => field.trim() !== "")) {
+            // Join all fragments and pass as a parameter
+            const allText = inputFields.join(" ||| ");
+            router.push({
+                pathname: "/logCompletion/fragmentedLogCompletion",
+                params: { name: name || "Fragmented Capture", text: allText }
+            });
+        } else {
+            setError(true);
+        }
+    };
+
+    let arrayOfUsersTags = [];
+    if (params.tags) {
+        let z = 0;
+        let tagsIndex = 0;
+        for (let i = 0; i < params.tags.length; i++) {
+            if (params.tags[i] === ",") {
+                arrayOfUsersTags[tagsIndex] = params.tags.slice(z, i);
+                z = i + 1;
+                tagsIndex += 1;
+            } else if (i === params.tags.length - 1) {
+                arrayOfUsersTags[tagsIndex] = params.tags.slice(z, i + 1);
+            }
+        }
+    }
 
     return (
+        <LinearGradient
+            colors={["#15041D", "#2C123F", "#3B1856"]}
+            style={{ flex: 1 }}
+        >
+            <StatusBar barStyle="light-content" />
 
-        <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#2D1A54" }}>
+            {/* Decorative background elements */}
+            <View style={{ position: "absolute", top: 0, right: 0, opacity: 0.2 }}>
+                <Image
+                    source={require("../../Frontend/images/cloudbackground2.png")}
+                    style={{ maxWidth: "auto", maxHeight: "auto" }}
+                    resizeMode="contain"
+                />
+            </View>
+
+            <SafeAreaView style={{ flex: 1 }}>
+                <ScrollView
+                    contentContainerStyle={{
+                        flexGrow: 1,
+                        padding: 20,
+                        paddingTop: 60,
+                        paddingBottom: 40
+                    }}
+                    showsVerticalScrollIndicator={false}
+                >
+                    {/* Back Button with improved shadow and positioning */}
+                    <Button
+                        onPress={() => router.back()}
+                        style={{
+                            position: "absolute",
+                            top: 15,
+                            left: 10,
+                            backgroundColor: "transparent",
+                            zIndex: 10,
+                        }}
+                    >
+                        <Text style={{ fontSize: 24, color: "white" }}>
+                            <Feather name="arrow-left" size={30} />
+                        </Text>
+                    </Button>
+
+                    {/* Header with enhanced styling */}
+                    <View style={{ alignItems: "center", marginBottom: 30 }}>
+                        <Text
+                            style={{
+                                fontSize: 26,
+                                fontWeight: "bold",
+                                color: "white",
+                                textAlign: "center",
+                                marginBottom: 8,
+                                textShadowColor: "rgba(0, 191, 255, 0.3)",
+                                textShadowOffset: { width: 0, height: 1 },
+                                textShadowRadius: 5,
+                            }}
+                        >
+                            {currentDate}
+                        </Text>
+                        <Text
+                            style={{
+                                fontSize: 18,
+                                fontWeight: "bold",
+                                color: "#00BFFF",
+                                marginBottom: 5,
+                            }}
+                        >
+                            {name || "Fragmented Capture"}
+                        </Text>
+                        <Text
+                            style={{
+                                fontSize: 16,
+                                color: "#C9B9E2",
+                                opacity: 0.85,
+                                textAlign: "center",
+                                fontStyle: "italic",
+                                marginBottom: 15,
+                            }}
+                        >
+                            Fill in each part of your fragmented log
+                        </Text>
+
+                        {error && (
+                            <View style={{
+                                backgroundColor: "rgba(255, 59, 48, 0.15)",
+                                borderRadius: 12,
+                                padding: 12,
+                                marginBottom: 15,
+                                flexDirection: "row",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                width: "100%"
+                            }}>
+                                <Feather name="alert-circle" size={18} color="#FF3B30" />
+                                <Text style={{
+                                    color: "#FF3B30",
+                                    fontSize: 15,
+                                    marginLeft: 8
+                                }}>
+                                    Please fill in all fields
+                                </Text>
+                            </View>
+                        )}
+                    </View>
 
 
-            {/* Back Button */}
-            <Button
-                onPress={() => router.back()}
-                style={{
-                    position: "absolute",
-                    top: 10,
-                    left: 10,
-                    backgroundColor: "transparent",
-                }}
-            >
-                <Text style={{ fontSize: 24, color: "white" }}>✖</Text>
-            </Button>
 
+                    {arrayOfUsersTags.length > 0 && (
+                        <View
+                            style={{
+                                backgroundColor: "rgba(0, 49, 76, 0.3)",
+                                borderRadius: 16,
+                                padding: 16,
+                                marginBottom: 20,
+                                borderLeftWidth: 3,
+                                borderLeftColor: "#00BFFF",
+                            }}
+                        >
+                            <Text
+                                style={{
+                                    fontSize: 16,
+                                    fontWeight: "bold",
+                                    color: "white",
+                                    marginBottom: 10,
+                                }}
+                            >
+                                <Feather name="tag" size={14} color="#00BFFF" /> Selected Tags
+                            </Text>
 
+                            <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
+                                {arrayOfUsersTags.map((item, index) => (
+                                    <View
+                                        key={index}
+                                        style={{
+                                            margin: 4,
+                                            paddingVertical: 6,
+                                            paddingHorizontal: 10,
+                                            backgroundColor: "#00BFFF",
+                                            borderRadius: 12,
+                                            shadowColor: "#000",
+                                            shadowOffset: { width: 0, height: 2 },
+                                            shadowOpacity: 0.2,
+                                            shadowRadius: 2,
+                                            elevation: 2,
+                                        }}
+                                    >
+                                        <Text style={{ fontSize: 14, fontWeight: "500", color: "white" }}>
+                                            {item}
+                                        </Text>
+                                    </View>
+                                ))}
+                            </View>
+                        </View>
+                    )}
 
-            {/*Date*/}
-            <Text
-                style={{
-                    fontSize: 24,
-                    fontWeight: "bold",
-                    color: "white",
-                    textAlign: "center",
-                    marginBottom: 20,
-                }}
-            >
-                {currentDate}
+                    {/* Generate Input Fields with improved styling */}
+                    {inputFields.map((value, index) => (
+                        <View
+                            key={index}
+                            style={{
+                                marginBottom: 20,
+                                width: "100%",
+                            }}
+                        >
+                            <Text style={{
+                                color: "#00BFFF",
+                                fontSize: 16,
+                                marginBottom: 8,
+                                fontWeight: "500"
+                            }}>
+                                <Feather name="file-text" size={16} /> Fragment {index + 1}
+                            </Text>
+                            <TextInput
+                                value={value}
+                                onChangeText={(text) => handleInputChange(text, index)}
+                                placeholder={`Enter text for part ${index + 1}...`}
+                                placeholderTextColor="rgba(215, 201, 227, 0.6)"
+                                multiline={true}
+                                numberOfLines={4}
+                                style={{
+                                    minHeight: 100,
+                                    width: "100%",
+                                    borderColor: error && value.trim() === "" ? "#FF3B30" : "#00BFFF",
+                                    borderWidth: 1.5,
+                                    backgroundColor: "rgba(0, 49, 76, 0.3)",
+                                    padding: 15,
+                                    color: "white",
+                                    borderRadius: 12,
+                                    textAlignVertical: "top",
+                                    fontSize: 16
+                                }}
+                            />
+                        </View>
+                    ))}
 
-            </Text>
-
-            <Text>
-
-                {arrayOfUsersTags.map((item, index) => (
-                    <Text style={{ color: "white", backgroundColor: "blue" }} key={index}>{item}{" "}
-
-                    </Text>
-                ))}
-
-
-            </Text>
-
-
-
-
-
-
-            <Textarea style={{ marginBottom: 22, padding: 55, borderWidth: 2, borderRadius: 12, backgroundColor: "#00314C" }}
-                size="lg"
-                isReadOnly={false}
-                isInvalid={true}
-                isDisabled={false}
-                className="w-64"
-
-
-            >
-                <TextareaInput placeholder="Begin logging your dream..." />
-            </Textarea>
-
-
-
-
-
-            <Button onPress={() => router.push({ pathname: "logCompletion/detailedLogCompletion" })} style={{ borderWidth: 2, borderRadius: 12, backgroundColor: "blue" }} >
-                <ButtonText >
-                    Complete log
-                </ButtonText>
-            </Button>
-        </View>
-
-
-
-
-
+                    {/* Submit Button with improved styling */}
+                    <Button
+                        onPress={handlePress}
+                        style={{
+                            backgroundColor: "#0000ff",
+                            borderRadius: 12,
+                            alignItems: "center",
+                            justifyContent: "center",
+                            height: 54,
+                            width: "100%",
+                            marginTop: 15,
+                            shadowColor: "#000",
+                            shadowOffset: { width: 0, height: 3 },
+                            shadowOpacity: 0.27,
+                            shadowRadius: 4.65,
+                            elevation: 6,
+                        }}
+                    >
+                        <ButtonText
+                            style={{
+                                color: "#FFFFFF",
+                                fontSize: 16,
+                                fontWeight: "bold",
+                            }}
+                        >
+                            <Feather name="check" size={16} /> Continue
+                        </ButtonText>
+                    </Button>
+                </ScrollView>
+            </SafeAreaView>
+        </LinearGradient>
     );
 }

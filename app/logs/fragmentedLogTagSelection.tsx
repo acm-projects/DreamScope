@@ -6,15 +6,14 @@ import { useRouter } from "expo-router";
 import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
 import tags from "../../Frontend/assets/dummyJson/tagsHolder.json";
 import Feather from '@expo/vector-icons/Feather';
-import { AntDesign } from "@expo/vector-icons";
+import { AntDesign, Fontisto } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 
-export default function FragmentedLogPartSelectionScreen() {
+export default function FragmentedTagSelectionScreen() {
     const router = useRouter();
-    let parts = ["2", "3", "4"];
-    const { name } = useLocalSearchParams();
+    const { name, parts } = useLocalSearchParams();
     const params = useSearchParams();
-    const [selectedPart, setSelectedPart] = useState<string[]>([]);
+    const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
     // Function for today's date
     const currentDate = new Date().toLocaleDateString("en-US", {
@@ -23,22 +22,20 @@ export default function FragmentedLogPartSelectionScreen() {
         year: "numeric",
     });
 
+    // Tags sections
     const sections: { title: string; data: string[] }[] = [
-        { title: "Number of Parts", data: parts },
+        { title: "Themes", data: tags.themes },
+        { title: "Settings", data: tags.settings },
+        { title: "Add-ons", data: tags.addons },
     ];
 
-    // Function to toggle part selection
+    // Function to toggle tag selection
     const handleTagPress = (tag: string) => {
-        setSelectedPart([tag]); // Only allow one selection
-    };
-
-    const handleContinuePress = () => {
-        if (selectedPart.length > 0) {
-            router.push({
-                pathname: "/logs/fragmentedLogTagSelection",
-                params: { parts: selectedPart[0], name: name }
-            });
-        }
+        setSelectedTags((prevTags) =>
+            prevTags.includes(tag)
+                ? prevTags.filter((t) => t !== tag)
+                : [...prevTags, tag]
+        );
     };
 
     return (
@@ -56,8 +53,6 @@ export default function FragmentedLogPartSelectionScreen() {
                 />
             </View>
 
-
-
             <FlatList
                 data={sections}
                 keyExtractor={(item) => item.title}
@@ -65,9 +60,9 @@ export default function FragmentedLogPartSelectionScreen() {
                 showsVerticalScrollIndicator={false}
                 ListHeaderComponent={() => (
                     <View>
-                        {/* Back Button */}
+                        {/* Back Button with improved shadow and positioning */}
                         <Button
-                            onPress={() => router.push("/tabs/DreamLogging")}
+                            onPress={() => router.back()}
                             style={{
                                 position: "absolute",
                                 top: 5,
@@ -116,12 +111,12 @@ export default function FragmentedLogPartSelectionScreen() {
                                     fontStyle: "italic",
                                 }}
                             >
-                                How many parts will your log have?
+                                Add some tags for your log!
                             </Text>
                         </View>
 
-                        {/* Selected part indicator */}
-                        {selectedPart.length > 0 && (
+                        {/* Selected tags count indicator */}
+                        {selectedTags.length > 0 && (
                             <View style={{
                                 backgroundColor: "rgba(0, 191, 255, 0.15)",
                                 borderRadius: 12,
@@ -131,13 +126,13 @@ export default function FragmentedLogPartSelectionScreen() {
                                 alignItems: "center",
                                 justifyContent: "center"
                             }}>
-                                <Feather name="layers" size={18} color="#00BFFF" />
+                                <Feather name="tag" size={18} color="#00BFFF" />
                                 <Text style={{
                                     color: "white",
                                     fontSize: 15,
                                     marginLeft: 8
                                 }}>
-                                    {selectedPart[0]} parts selected
+                                    {selectedTags.length} tag{selectedTags.length !== 1 ? "s" : ""} selected
                                 </Text>
                             </View>
                         )}
@@ -151,7 +146,6 @@ export default function FragmentedLogPartSelectionScreen() {
                         padding: 16,
                         borderLeftWidth: 3,
                         borderLeftColor: "#00BFFF",
-
                     }}>
                         <Text
                             style={{
@@ -161,66 +155,59 @@ export default function FragmentedLogPartSelectionScreen() {
                                 marginBottom: 15,
                             }}
                         >
-                            <Feather name="layers" size={16} color="#00BFFF" /> {item.title}
+                            <Feather
+                                name={
+                                    item.title === "Themes" ? "layout" :
+                                        item.title === "Settings" ? "settings" : "plus-circle"
+                                }
+                                size={16}
+                                color="#00BFFF"
+                            /> {item.title}
                         </Text>
 
                         <FlatList
                             data={item.data}
                             keyExtractor={(tag) => tag}
-                            horizontal={false}
-                            showsHorizontalScrollIndicator={false}
+                            numColumns={3}
+                            scrollEnabled={false}
+                            columnWrapperStyle={{ justifyContent: "flex-start" }}
                             renderItem={({ item: tag }) => (
                                 <Pressable
                                     onPress={() => handleTagPress(tag)}
                                     style={({ pressed }) => ({
                                         opacity: pressed ? 0.8 : 1,
                                         transform: [{ scale: pressed ? 0.98 : 1 }],
-                                        shadowColor: selectedPart.includes(tag) ? "#00BFFF" : "transparent",
+                                        shadowColor: selectedTags.includes(tag) ? "#00BFFF" : "transparent",
                                         shadowOffset: { width: 0, height: 2 },
                                         shadowOpacity: 0.5,
                                         shadowRadius: 4,
-
-                                        elevation: selectedPart.includes(tag) ? 3 : 0,
-                                        marginRight: 12,
-
-
-
+                                        elevation: selectedTags.includes(tag) ? 3 : 0,
                                     })}
                                 >
                                     <View
                                         style={{
-                                            width: "100%",
-                                            height: 150,
-                                            marginBottom: 10,
-                                            justifyContent: "center",
-                                            alignItems: "center",
-                                            borderRadius: 16,
-                                            backgroundColor: selectedPart.includes(tag)
+                                            paddingVertical: 10,
+                                            paddingHorizontal: 12,
+                                            borderRadius: 12,
+                                            backgroundColor: selectedTags.includes(tag)
                                                 ? "#00BFFF"
                                                 : "#00314C",
                                             borderColor: "#00BFFF",
-                                            borderWidth: selectedPart.includes(tag) ? 0 : 1.5,
+                                            borderWidth: selectedTags.includes(tag) ? 0 : 1.5,
+                                            margin: 5,
+                                            minWidth: 90,
+                                            alignItems: "center",
                                         }}
                                     >
                                         <Text
                                             style={{
-                                                fontSize: 48,
+                                                fontSize: 14,
                                                 fontWeight: "bold",
-                                                color: selectedPart.includes(tag) ? "white" : "#E4D7F4",
+                                                color: selectedTags.includes(tag) ? "white" : "#E4D7F4",
                                                 textAlign: "center",
                                             }}
                                         >
                                             {tag}
-                                        </Text>
-                                        <Text
-                                            style={{
-                                                fontSize: 14,
-                                                color: selectedPart.includes(tag) ? "white" : "#C9B9E2",
-                                                textAlign: "center",
-                                                marginTop: 6,
-                                            }}
-                                        >
-                                            parts
                                         </Text>
                                     </View>
                                 </Pressable>
@@ -229,12 +216,15 @@ export default function FragmentedLogPartSelectionScreen() {
                     </View>
                 )}
                 ListFooterComponent={() => (
-                    <View style={{ marginTop: 10, marginBottom: 20 }}>
+                    <View style={{ marginTop: 10, marginBottom: 5 }}>
                         {/* Continue Button with improved styling */}
                         <Button
-                            onPress={handleContinuePress}
+                            onPress={() => router.push({
+                                pathname: "logs/fragmentedLogText",
+                                params: { parts: parts, tags: selectedTags.join(",") }
+                            })}
                             style={{
-                                backgroundColor: selectedPart.length > 0 ? "#0000ff" : "rgba(0, 0, 255, 0.5)",
+                                backgroundColor: selectedTags.length > 0 ? "#0000ff" : "rgba(0, 0, 255, 0.5)",
                                 borderRadius: 12,
                                 alignItems: "center",
                                 justifyContent: "center",
@@ -245,7 +235,7 @@ export default function FragmentedLogPartSelectionScreen() {
                                 shadowRadius: 4.65,
                                 elevation: 6,
                             }}
-                            disabled={selectedPart.length === 0}
+                            disabled={selectedTags.length === 0}
                         >
                             <ButtonText
                                 style={{
@@ -254,25 +244,16 @@ export default function FragmentedLogPartSelectionScreen() {
                                     fontWeight: "bold",
                                 }}
                             >
-                                Continue {selectedPart.length > 0 ? `with ${selectedPart[0]} parts` : ""}
+                                Continue {selectedTags.length > 0 ? `with ${selectedTags.length} tag${selectedTags.length !== 1 ? "s" : ""}` : ""}
                             </ButtonText>
                         </Button>
 
-                        <TouchableOpacity
-                            onPress={() => router.push("/tabs")}
-                            style={{
-                                alignItems: "center",
-                                marginTop: 15,
-                            }}
-                        >
-                            <Text
-                                style={{
-                                    fontSize: 16,
-                                    color: "#C9B9E2",
-                                    textDecorationLine: "underline",
-                                }}
-                            >
-                                Cancel
+                        <TouchableOpacity style={{ alignItems: "center" }} onPress={() => router.push({
+                            pathname: "logs/fragmentedLogText",
+                            params: { parts: parts, tags: "" }
+                        })}>
+                            <Text style={{ fontSize: 20, marginTop: 35, color: "white", opacity: .50, shadowColor: "white" }}>
+                                Skip
                             </Text>
                         </TouchableOpacity>
                     </View>

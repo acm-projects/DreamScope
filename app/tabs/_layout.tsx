@@ -1,17 +1,87 @@
-import { Tabs, Stack } from "expo-router";
+import { Tabs } from "expo-router";
 import { Fontisto } from "@expo/vector-icons";
+import { View } from "react-native";
+import { StatusBar } from 'expo-status-bar';
+
+
+
+
 export default function RootLayout() {
     return (
 
+        <Tabs
+            screenOptions={{
+                tabBarShowLabel: false,
+                headerShown: false,
+                tabBarActiveTintColor: "#94C9A9",
+                tabBarInactiveTintColor: "#7B718B",
+                tabBarAllowFontScaling: true,
 
-        // <GluestackUIProvider>
-        <Tabs screenOptions={{ tabBarInactiveBackgroundColor: "#273952", tabBarActiveBackgroundColor: "#405674", headerShown: false, animation: 'shift', }}>
-            <Tabs.Screen name="DreamLogging" options={{ title: "Dream Logging", tabBarIcon: ({ color, size }) => <Fontisto name="cloudy" color={"white"} /> }} />
-            <Tabs.Screen name="HomeScreen" options={{ title: "HomeScreen", tabBarIcon: ({ color, size }) => <Fontisto name="home" color={"white"} /> }} />
-            <Tabs.Screen name="DreamTimeline" options={{ title: "Dream Timeline", tabBarIcon: ({ size, color }) => <Fontisto name="stopwatch" color={"white"} /> }} />
-            <Tabs.Screen name="DreamVisualization" options={{ title: "Dream Visualization", tabBarIcon: ({ size, color }) => <Fontisto name="picture" color="white" /> }} />
+
+
+
+
+                tabBarStyle: {
+
+                    borderTopWidth: 0.1,
+
+                    height: 55,
+
+                    paddingBottom: 15,
+
+                    backgroundColor: "#180723",
+
+
+                },
+            }}
+        >
+            <Tabs.Screen
+                name="HomeScreen"
+
+                options={{
+                    title: "HomeScreen",
+                    tabBarIcon: ({ color, size }) => (
+                        <View style={{ marginTop: 6 }} >
+                            <Fontisto name="home" color={color} size={size} />
+                        </View>
+                    ),
+                }}
+            />
+            <Tabs.Screen
+                name="DreamLogging"
+                options={{
+                    title: "Dream Logging",
+
+                    tabBarIcon: ({ color, size }) => (
+                        <View style={{ marginTop: 6 }}>
+                            <Fontisto name="cloudy" color={color} size={size} />
+                        </View>
+                    ),
+                }}
+            />
+
+            <Tabs.Screen
+                name="DreamTimeline"
+                options={{
+                    title: "Dream Timeline",
+                    tabBarIcon: ({ color, size }) => (
+                        <View style={{ marginTop: 6 }}>
+                            <Fontisto name="stopwatch" color={color} size={size * 0.8} />
+                        </View>
+                    ),
+                }}
+            />
+            <Tabs.Screen
+                name="DreamVisualization"
+                options={{
+                    title: "Dream Visualization",
+                    tabBarIcon: ({ color, size }) => (
+                        <View style={{ marginTop: 6 }}>
+                            <Fontisto name="picture" color={color} size={size * 0.8} />
+                        </View>
+                    ),
+                }}
+            />
         </Tabs>
-        // </GluestackUIProvider>
     );
 }
-
