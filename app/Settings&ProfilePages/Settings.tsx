@@ -5,7 +5,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import axios from "axios";
-import {useUser} from "../context/UserContext"
+import { useUser } from "../context/UserContext"
 
 
 const API_BASE_URL = 'http://localhost:5001';
@@ -16,17 +16,17 @@ export default function SettingsPage() {
     const [feedback, setFeedback] = useState('');
     const { userData } = useUser();
 
-    const userId = userData._id;
+    // const userId = userData._id;
 
-    const handleClearData = () => {
-        Alert.alert('Confirmation', 'Are you sure you want to clear your dream data?', [
-            { text: 'Cancel', style: 'cancel' },
-            { text: 'Yes', onPress: async () => {
-                await axios.delete(`${API_BASE_URL}/api/dreamPosts/user/${userId}`, userId)
-                Alert.alert('Data Cleared!')
-            }  }
-        ]);
-    };
+    // const handleClearData = () => {
+    //     Alert.alert('Confirmation', 'Are you sure you want to clear your dream data?', [
+    //         { text: 'Cancel', style: 'cancel' },
+    //         { text: 'Yes', onPress: async () => {
+    //             await axios.delete(`${API_BASE_URL}/api/dreamPosts/user/${userId}`, userId)
+    //             Alert.alert('Data Cleared!')
+    //         }  }
+    //     ]);
+    // };
 
     const handleFeedbackSubmit = () => {
         if (feedback.trim() === '') {
@@ -40,9 +40,11 @@ export default function SettingsPage() {
     const handleLogout = () => {
         Alert.alert('Logout', 'Are you sure you want to log out?', [
             { text: 'Cancel', style: 'cancel' },
-            { text: 'Yes', onPress: () => {
-                AsyncStorage.setItem('isLoggedIn', JSON.stringify(false));
-                router.push('../auth/sign_in') }
+            {
+                text: 'Yes', onPress: () => {
+                    AsyncStorage.setItem('isLoggedIn', JSON.stringify(false));
+                    router.push('../auth/sign_in')
+                }
             }
         ]);
     };
@@ -86,7 +88,7 @@ export default function SettingsPage() {
                     </TouchableOpacity>
 
                     {/* Data Management */}
-                    <TouchableOpacity style={styles.logoutButton} onPress={handleClearData}>
+                    <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
                         <Text style={styles.logoutButtonText}>Clear Dream Data</Text>
                     </TouchableOpacity>
 

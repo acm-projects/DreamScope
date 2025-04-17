@@ -103,7 +103,7 @@ export default function DreamTimelineScreen() {
 
     const navigateToDreamPage = (item: any) => {
         router.push({
-            pathname: `/TimelinePages/${item._id}`,//will have to work on that
+            pathname: `../TimelinePages/${item._id}`,//will have to work on that
             params: {
                 DreamNumber: item._id,
                 DreamTitle: item.title,
@@ -117,7 +117,7 @@ export default function DreamTimelineScreen() {
                 Objects: item.dreamObjects,
                 Places: item.dreamPlaces,
                 Themes: item.dreamThemes,
-                RecurringPeople: userData.recurringPeople, 
+                RecurringPeople: userData.recurringPeople,
                 RecurringPlaces: userData.recurringPlaces,
                 RecurringThemes: userData.recurringThemes,
                 RecurringObjects: userData.recurringObjects,

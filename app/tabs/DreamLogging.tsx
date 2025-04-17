@@ -76,7 +76,7 @@ export default function DreamLogScreen() {
                     showsVerticalScrollIndicator={false}
                     renderItem={({ item }) => (
                         <TouchableOpacity
-                            onPress={() => router.push({ pathname: `/logs/${item.name}`, params: { name: item.name } })}
+                            onPress={() => router.push({ pathname: `../logs/${item.name}`, params: { name: item.name } })}
                             style={{
                                 marginBottom: 20,
                                 padding: 24,

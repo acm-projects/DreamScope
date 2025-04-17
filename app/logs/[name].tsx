@@ -41,7 +41,7 @@ export default function TagsScreen() {
         if (isNavigating) return;
 
         if (name === "Empty Capture") {
-            
+
             setIsNavigating(true);
             router.push({
                 pathname: "/logCompletion/emptyLogCompletion", params: {
@@ -306,7 +306,7 @@ export default function TagsScreen() {
                         {/* Continue Button with improved styling */}
                         <Button
                             onPress={() => router.push({
-                                pathname: "logs/detailedLogText",
+                                pathname: "/logs/detailedLogText",
                                 params: { monthDayYear: currentDateNumFormat, name: name, tags: selectedTags.join(","), THEMETAGS: selectedThemesTags.join(","), ADDONTAGS: selectedAddonsTags.join(","), SETTINGSTAGS: selectedSettingsTags.join(",") }
                             })}
                             style={{
@@ -335,7 +335,7 @@ export default function TagsScreen() {
                         </Button>
 
                         <TouchableOpacity style={{ alignItems: "center" }} onPress={() => router.push({
-                            pathname: "logs/detailedLogText",
+                            pathname: "/logs/detailedLogText",
                             params: { monthDayYear: currentDateNumFormat, name: name, tags: selectedTags.join(","), THEMETAGS: selectedThemesTags.join(","), ADDONTAGS: selectedAddonsTags.join(","), SETTINGSTAGS: selectedSettingsTags.join(",") }
                         })}>
                             <Text style={{ fontSize: 20, marginTop: 35, color: "white", opacity: .50, shadowColor: "white" }}>
