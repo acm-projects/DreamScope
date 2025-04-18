@@ -88,9 +88,6 @@ export default function ProfilePage() {
             <SafeAreaView style={styles.container}>
                 <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
                     <Text style={styles.headerText}>MY PROFILE</Text>
-                    <TouchableOpacity style={styles.button} onPress={() => router.push('./Settings')}>
-                        <Text style={styles.buttonText}>Settings</Text>
-                    </TouchableOpacity>
                     {/* Profile Picture */}
                     <TouchableOpacity style={styles.profilePicContainer} onPress={handleProfilePicChange}>
                         {profilePic ? (

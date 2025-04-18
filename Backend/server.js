@@ -343,13 +343,10 @@ app.get("/api/dreamPosts/users/:userId/date/:date", async (req, res) => {
         .json({ error: "Invalid date format. Use YYYY-MM-DD." });
     }
 
-    const startOfDay = new Date(parsedDate);
-    startOfDay.setUTCHours(0, 0, 0, 0); // Use UTC to avoid timezone issues
+    const startOfDay = new Date(parsedDate.setUTCHours(0, 0, 0, 0));
+    const endOfDay = new Date(new Date(parsedDate).setUTCDate(parsedDate.getUTCDate() + 1));
 
-    const endOfDay = new Date(startOfDay);
-    endOfDay.setUTCDate(endOfDay.getUTCDate() + 1);
-
-    const dreamPost = await DreamPost.findOne({
+    const dreamPost = await DreamPost.find({
       userId: userIdObj,
       date: {
         $gte: startOfDay, 

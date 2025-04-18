@@ -5,7 +5,7 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../Backend/firebaseConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { LinearGradient } from 'expo-linear-gradient';
-import axios from 'axios'; 
+import axios from 'axios';
 
 const SignIn = (): JSX.Element => {
     const [form, setForm] = useState<{ email: string; password: string }>({
@@ -14,7 +14,7 @@ const SignIn = (): JSX.Element => {
     });
     const [focusedField, setFocusedField] = useState<"email" | "password" | null>(null);
     const [isSubmitting, setSubmitting] = useState<boolean>(false);
-    
+
 
     const API_BASE_URL = 'http://localhost:5001';
 
@@ -24,9 +24,11 @@ const SignIn = (): JSX.Element => {
             return;
         }
         setSubmitting(true);
-        try {       
+        try {
+
+
             const userCredential = await signInWithEmailAndPassword(auth, form.email, form.password);
-            
+
             await AsyncStorage.setItem("isLoggedIn", JSON.stringify(true));
             await AsyncStorage.setItem("userEmail", form.email);
 
@@ -44,13 +46,21 @@ const SignIn = (): JSX.Element => {
         }
         setSubmitting(false);
     };
-    
+
 
     return (
         <LinearGradient
             colors={['#180723', '#2C123F', '#2C123F', '#3d1865']}
             style={{ flex: 1 }}
         >
+            <View style={{ position: "absolute", bottom: 0, top: 0, opacity: 0.75 }}>
+                <Image
+                    source={require("../../Frontend/images/cloudedLoginSignin.png")}
+                    style={{ maxWidth: "auto", maxHeight: "auto" }}
+                    resizeMode="contain"
+                />
+            </View>
+
             <SafeAreaView style={styles.container}>
                 <ScrollView contentContainerStyle={styles.scrollContainer}>
                     <View style={styles.innerContainer}>
@@ -61,7 +71,7 @@ const SignIn = (): JSX.Element => {
                             <Text style={styles.highlight}>cope</Text>
                         </Text>
 
-                        <Image source={require("../../Frontend/images/logo-final.png")} style={styles.logo} resizeMode="contain" />
+                        <Image source={require("../../Frontend/images/logo-trans.png")} style={styles.logo} resizeMode="contain" />
 
                         <TextInput
                             style={[

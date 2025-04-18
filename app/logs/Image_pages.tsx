@@ -4,9 +4,13 @@ import { Button, ButtonText } from "../../components/ui/button";
 import { useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import { Feather } from '@expo/vector-icons';
+import { useLocalSearchParams } from 'expo-router';
 import { useAnalysis } from "../context/AnalysisContext";
 import { useUser } from "../context/UserContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
+
+const API_BASE_URL = 'http://localhost:5001';
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -15,20 +19,52 @@ export default function AIAnalysisPage() {
     const { analysisData, loading, error, fetchDreamPostById } = useAnalysis();
     const { userData, isLoading } = useUser();
     const [postId, setPostId] = useState<string | null>(null);
-    const [images, setImages] = useState<string[]>([]); // Initialize as an empty array
+    const [images, setImages] = useState<string[]>([]);
+    const { date } = useLocalSearchParams(); // Retrieve the date parameter from the route
+
+    // // Fetch postId from AsyncStorage on component mount
+    // useEffect(() => {
+    //     const fetchPostId = async () => {
+    //         try {
+    //             const storedEmail = await AsyncStorage.getItem('useremail');
+    //             if (storedEmail) {
+    //                 const userResponse = await axios.get(`${API_BASE_URL}/users/email/${storedEmail}`);
+    //                 console.log("got email");
+    //                 if (userResponse.data) {
+    //                     const userId = userResponse.data._id;
+    //                     console.log("got user id")
+    //                     const dreamPostResponse = await axios.get(`${API_BASE_URL}/api/dreamPosts/users/${userId}/date/${date}`);
+    //                     if (dreamPostResponse.data) {
+    //                         setPostId(dreamPostResponse.data._id);
+    //                         console.log("got post id");
+    //                     } else {
+    //                         console.log("No dream post found for this user on the specified date.");
+    //                         setPostId(null);
+    //                     }
+    //                 } else {
+    //                     console.log("User not found with this email.");
+    //                     setPostId(null);
+    //                 }
+    //             }
+    //         } catch (error) {
+    //             console.error("Error fetching postId:", error);
+    //         }
+    //     };
+    //     fetchPostId();
+    // }, [date]);
 
     // Fetch postId from AsyncStorage on component mount
-    useEffect(() => {
-        const fetchPostId = async () => {
-            try {
-                const storedPostId = await AsyncStorage.getItem("postId");
-                setPostId(storedPostId);
-            } catch (error) {
-                console.error("Error fetching postId:", error);
-            }
-        };
-        fetchPostId();
-    }, []);
+   useEffect(() => {
+    const fetchPostId = async () => {
+        try {
+            const storedPostId = await AsyncStorage.getItem("postId");
+            setPostId(storedPostId);
+        } catch (error) {
+            console.error("Error fetching postId:", error);
+        }
+    };
+    fetchPostId();
+}, []);
 
     // Fetch dream post data when postId is available
     useEffect(() => {

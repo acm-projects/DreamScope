@@ -132,8 +132,8 @@ export default function DreamTimelineScreen() {
         >
             <StatusBar barStyle="light-content" />
 
-            {/*modal stuff for empty log*/}
-            <Modal
+           {/*modal stuff for empty log*/}
+           <Modal
                 animationType="fade"
                 transparent={true}
                 visible={modalVisible}
@@ -141,7 +141,7 @@ export default function DreamTimelineScreen() {
             >
                 <View style={styles.modalOverlay}>
                     <View style={styles.modalContainer}>
-                        <Text style={styles.modalText}>Empty Captures hold little to no information, Proceed?</Text>
+                        <Text style={styles.modalText}>The only thing here is an eerie description, proceed?</Text>
                         <View style={styles.modalButtonsContainer}>
                             <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.modalButton}>
                                 <Text style={styles.modalButtonText}>No</Text>
@@ -405,8 +405,8 @@ const styles = StyleSheet.create({
         bottom: 0,
         left: 0,
         right: 0,
-        height: '100%',
-        zIndex: -1,
+        height: '100%', // Change to full height
+        zIndex: -1,     // Change from 0 to -1
     },
     image: {
         width: '100%',
