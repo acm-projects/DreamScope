@@ -16,14 +16,14 @@ const EmptyType = "Empty Capture"
 const checkDreamType = (dreamType: any) => {
 
     if (dreamType == "Fragmented Capture") {
-        return "#8A2BE2";
+        return "#C9B9E2";
 
     }
     else if (dreamType == "Empty Capture") {
-        return "#A81B53";
+        return "#eadb8c";
     }
     else {
-        return "#F7F7FF";
+        return "#fc77a6";
     }
 
 }
@@ -124,7 +124,7 @@ export default function DreamLogScreen() {
                                     style={{
                                         fontSize: 36,
                                         fontWeight: "bold",
-                                        color: "white",
+                                        color: "#fc77a6",                                        
                                         marginBottom: 5,
                                     }}
                                 >
@@ -135,7 +135,8 @@ export default function DreamLogScreen() {
                                     style={{
                                         fontSize: 26,
                                         fontWeight: "bold",
-                                        color: "#F9ECB3",
+                                        color: "#eadb8c",
+                                        
                                         textAlign: "center",
                                         marginBottom: 8,
                                         textShadowColor: "rgba(0, 191, 255, 0.3)",
@@ -179,17 +180,17 @@ export default function DreamLogScreen() {
                                 shadowColor: checkDreamType(item.name),
 
                                 shadowOffset: { width: 0, height: 6 },
-                                shadowOpacity: 0.2,
+                                shadowOpacity: 0.4,
                                 shadowRadius: 12,
                                 elevation: 5,
 
                             }}
                         >
                             <Text style={{
-                                fontSize: 20,
+                                fontSize: 25,
                                 marginTop: 50,
                                 fontWeight: "600",
-                                color: "#E4D7F4",
+                                color: "#fedde8",
                                 textAlign: "center",
                                 marginBottom: 6,
                                 textTransform: "capitalize",

@@ -181,30 +181,33 @@ export default function DreamTimelineScreen() {
                     <View>
                         {/* Header with enhanced styling */}
                         <View style={{ alignItems: "center", marginTop: 40, marginBottom: 25 }}>
+
+                        <Text
+                                style={{
+                                    fontSize: 36,
+                                    fontWeight: "bold",
+                                    color: "#fc77a6",
+                                    marginBottom: 5,
+                                }}
+                            >
+                                DREAM TIMELINE
+                            </Text>
+
                             <Text
                                 style={{
                                     fontSize: 26,
                                     fontWeight: "bold",
-                                    color: "#A5E3B7",
+                                    color: "#eadb8c",
                                     textAlign: "center",
                                     marginBottom: 8,
-                                    textShadowColor: "rgba(0, 191, 255, 0.3)",
+                                    textShadowColor: "#2C123F",
                                     textShadowOffset: { width: 0, height: 1 },
                                     textShadowRadius: 5,
                                 }}
                             >
                                 {currentDate}
                             </Text>
-                            <Text
-                                style={{
-                                    fontSize: 36,
-                                    fontWeight: "bold",
-                                    color: "#00BFFF",
-                                    marginBottom: 5,
-                                }}
-                            >
-                                DREAM TIMELINE
-                            </Text>
+                            
                             <Text
                                 style={{
                                     fontSize: 16,
@@ -235,7 +238,7 @@ export default function DreamTimelineScreen() {
                                 <Feather
                                     name={getDreamTypeIcon(item.type)}
                                     size={24}
-                                    color="#00BFFF"
+                                    color="#fc77a6"
                                 />
                             </View>
                             <View style={styles.dreamContent}>
@@ -252,7 +255,8 @@ export default function DreamTimelineScreen() {
                                 </View>
                             </View>
                             <View style={styles.chevronContainer}>
-                                <Feather name="chevron-right" size={24} color="#00BFFF" />
+                                <Feather name="chevron-right" size={24} color="#eadb8c
+                                " />
                             </View>
                         </View>
                     </TouchableOpacity>
@@ -282,19 +286,19 @@ const styles = StyleSheet.create({
     },
     dreamCard: {
         flexDirection: 'row',
-        backgroundColor: "rgba(0, 49, 76, 0.3)",
+        backgroundColor: "#180723",
         borderRadius: 16,
         marginBottom: 15,
         padding: 16,
         borderLeftWidth: 3,
-        shadowColor: "#000",
+        shadowColor: "#3d1865",
         shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.25,
+        shadowOpacity: 0.8,
         shadowRadius: 3.84,
         elevation: 5,
     },
     detailedCapture: {
-        borderLeftColor: "#00cf91",
+        borderLeftColor: "#eadb8c",
     },
     emptyCapture: {
         borderLeftColor: "#ff0a9d",
@@ -319,19 +323,20 @@ const styles = StyleSheet.create({
     dreamTitle: {
         fontSize: 18,
         fontWeight: "bold",
-        color: "white",
+        color: "#fedde8",
+
         marginBottom: -2,
     },
     dreamTypeTag: {
         marginTop: 8,
         alignSelf: 'flex-start',
-        backgroundColor: "rgba(0, 191, 255, 0.15)",
+        backgroundColor: "#8663a1",
         borderRadius: 10,
         paddingVertical: 3,
         paddingHorizontal: 10,
     },
     dreamTypeText: {
-        color: "#00BFFF",
+        color: "#fedde8",
         fontSize: 12,
         fontWeight: "bold",
     },
@@ -340,7 +345,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     newDreamButton: {
-        backgroundColor: "#0000ff",
+        backgroundColor: "#eadb8c",
         borderRadius: 12,
         alignItems: "center",
         justifyContent: "center",
@@ -353,7 +358,8 @@ const styles = StyleSheet.create({
         elevation: 6,
     },
     newDreamButtonText: {
-        color: "#FFFFFF",
+        color: "#2C123F",
+
         fontSize: 16,
         fontWeight: "bold",
     },

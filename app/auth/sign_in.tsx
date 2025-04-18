@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     highlight: {
-        color: "#FFD700",
+        color: "#eadb8c",
     },
     logo: {
         width: 100,
@@ -158,7 +158,7 @@ const styles = StyleSheet.create({
         borderColor: "#FFD700", // Highlight color when focused
     },
     button: {
-        backgroundColor: "#FFD700",
+        backgroundColor: "#eadb8c",
         paddingVertical: 12,
         paddingHorizontal: 20,
         borderRadius: 8,
@@ -181,7 +181,7 @@ const styles = StyleSheet.create({
     linkText: {
         fontSize: 16,
         fontWeight: "bold",
-        color: "#FFD700",
+        color: "#eadb8c",
         marginLeft: 5,
     },
 });

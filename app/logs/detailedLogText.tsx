@@ -75,6 +75,7 @@ export default function DetailedLogTextScreen() {
         setTextBorderColor(isTextValid ? "#00BFFF" : "red");
 
         if (validTitle && validText) {
+            router.push('/logCompletion/detailedLogCompletion');
             try {
                 const storedEmail = await AsyncStorage.getItem('userEmail');
                 const response = await axios.get(`${API_BASE_URL}/users/email/${storedEmail}`);
@@ -100,15 +101,14 @@ export default function DetailedLogTextScreen() {
                     totalDreams: totalDreams,
                     detailedDreams: detailedDreams,
                 });
-                    router.push('/logCompletion/detailedLogCompletion');
-
+                
+                console.log("done");
                 
                 
             } catch (error) {
                 console.error('Error submitting dream log:', error);
                 Alert.alert('Error', 'Failed to submit dream log.');
             }
-            return router.push("/logCompletion/detailedLogCompletion");
         }
         else {
             console.log("valid title and text is not true");
