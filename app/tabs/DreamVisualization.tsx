@@ -25,7 +25,7 @@ const getMarkedDates = (selectedDate: string, today: string) => {
             dotColor: 'transparent',
             customStyles: {
                 container: {
-                    backgroundColor: '#E2CF65', // Yellow solid circle
+                    backgroundColor: '#eadb8c', // Yellow solid circle
                     borderRadius: 20,
                 },
                 text: {
@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     headerText: {
-        color: "#D7C9E3",
+        color: "#fc77a6",
         fontSize: 35,
         fontWeight: "bold",
         marginBottom: 50,
@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     visualizeDreamButton: {
-        backgroundColor: "#E2CF65",
+        backgroundColor: "#eadb8c",
         borderRadius: 12,
         alignItems: "center",
         justifyContent: "center",

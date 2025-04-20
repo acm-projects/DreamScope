@@ -5,7 +5,7 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../Backend/firebaseConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { LinearGradient } from 'expo-linear-gradient';
-import axios from 'axios'; 
+import axios from 'axios';
 
 const SignIn = (): JSX.Element => {
     const [form, setForm] = useState<{ email: string; password: string }>({
@@ -14,9 +14,9 @@ const SignIn = (): JSX.Element => {
     });
     const [focusedField, setFocusedField] = useState<"email" | "password" | null>(null);
     const [isSubmitting, setSubmitting] = useState<boolean>(false);
-    
 
-    const API_BASE_URL = 'http://localhost:5001';
+
+    const API_BASE_URL = 'http://10.0.2.2:5001';
 
     const submit = async () => {
         if (!form.email || !form.password) {
@@ -24,9 +24,9 @@ const SignIn = (): JSX.Element => {
             return;
         }
         setSubmitting(true);
-        try {       
+        try {
             const userCredential = await signInWithEmailAndPassword(auth, form.email, form.password);
-            
+
             await AsyncStorage.setItem("isLoggedIn", JSON.stringify(true));
             await AsyncStorage.setItem("userEmail", form.email);
 
@@ -44,7 +44,7 @@ const SignIn = (): JSX.Element => {
         }
         setSubmitting(false);
     };
-    
+
 
     return (
         <LinearGradient

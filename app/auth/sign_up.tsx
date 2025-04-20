@@ -7,14 +7,14 @@ import { LinearGradient } from 'expo-linear-gradient';
 import axios from 'axios';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const API_BASE_URL = 'http://localhost:5001';
+const API_BASE_URL = 'http://10.0.2.2:5001';
 
 const SignUp = (): JSX.Element => {
     const [form, setForm] = useState<{
         username: string;
         email: string;
         password: string;
-        confirmPassword: string; 
+        confirmPassword: string;
     }>({
         username: "",
         email: "",
@@ -43,7 +43,7 @@ const SignUp = (): JSX.Element => {
 
             const response = await axios.post(`${API_BASE_URL}/api/users`, { name: form.username, email: form.email });
             //const createCheckIn = await axios.post(`${API_BASE_URL}/api/checkIn`, {userId: response.data._id, checkInText: " ", date: response.data.joinDate})
-           
+
             await AsyncStorage.setItem("isLoggedIn", JSON.stringify(true));
             await AsyncStorage.setItem("userEmail", form.email);
             console.log("User registered successfully!");

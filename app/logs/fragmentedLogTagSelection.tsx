@@ -252,7 +252,7 @@ export default function FragmentedTagSelectionScreen() {
                         {/* Continue Button with improved styling */}
                         <Button
                             onPress={() => router.push({
-                                pathname: "/logs/fragmentedLogText",
+                                pathname: "logs/fragmentedLogText",
                                 params: { parts: parts, monthDayYear: params.monthDayYear, dreamtype: name, tags: selectedTags.join(","), THEMETAGS: selectedThemesTags, ADDONTAGS: selectedAddonsTags, SETTINGSTAGS: selectedSettingsTags }
                             })}
                             style={{
@@ -281,7 +281,7 @@ export default function FragmentedTagSelectionScreen() {
                         </Button>
 
                         <TouchableOpacity style={{ alignItems: "center" }} onPress={() => router.push({
-                            pathname: "/logs/fragmentedLogText",
+                            pathname: "logs/fragmentedLogText",
                             params: { parts: parts, dreamtype: params.name, tags: selectedTags.join(","), monthDayYear: params.monthDayYear, SETTINGSTAGS: selectedSettingsTags.join(","), THEMESTAGS: selectedThemesTags.join(","), ADDONSTAGS: selectedAddonsTags.join(",") }
                         })}>
                             <Text style={{ fontSize: 20, marginTop: 35, color: "white", opacity: .50, shadowColor: "white" }}>

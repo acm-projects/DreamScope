@@ -1,40 +1,67 @@
 import React, { useState, useEffect } from "react";
-import { View, SafeAreaView, Modal, Text, FlatList, TouchableOpacity, StatusBar, Image, StyleSheet } from "react-native";
+import {
+    View,
+    SafeAreaView,
+    Modal,
+    Text,
+    FlatList,
+    TouchableOpacity,
+    StatusBar,
+    Image,
+    StyleSheet,
+} from "react-native";
 import { useRouter } from "expo-router";
 import { Button } from "../../components/ui/button";
-import Feather from '@expo/vector-icons/Feather';
+import Feather from "@expo/vector-icons/Feather";
 import { LinearGradient } from "expo-linear-gradient";
 import { useUser } from "../context/UserContext";
-import axios from 'axios';
+import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const API_BASE_URL = 'http://localhost:5001';
+const API_BASE_URL = "http://10.0.2.2:5001";
+
+// 💡 Define the shape of a dream log entry
+type DreamLog = {
+    _id: string;
+    title: string;
+    type: string;
+    date: string;
+    dreamText: string;
+    selectedThemes: string[];
+    analysis: string;
+    dreamPeople: string[];
+    dreamObjects: string[];
+    dreamPlaces: string[];
+    dreamThemes: string[];
+};
 
 export default function DreamTimelineScreen() {
     const router = useRouter();
     const { userData, isLoading } = useUser();
-    const [dreamLogs, setDreamLogs] = useState([]);
+
+    const [dreamLogs, setDreamLogs] = useState<DreamLog[]>([]); // ✅ typed state
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // Function for today's date
+    const [modalVisible, setModalVisible] = useState(false);
+    const [currentItem, setCurrentItem] = useState<DreamLog | null>(null);
+
     const currentDate = new Date().toLocaleDateString("en-US", {
         month: "long",
         day: "numeric",
         year: "numeric",
     });
 
-    const [modalVisible, setModalVisible] = useState(false);
-    const [currentItem, setCurrentItem] = useState(null);
-
     useEffect(() => {
         const fetchDreamLogs = async () => {
             setLoading(true);
             setError(null);
             try {
-                const storedEmail = await AsyncStorage.getItem('userEmail');
+                const storedEmail = await AsyncStorage.getItem("userEmail");
                 if (storedEmail && userData?._id) {
-                    const response = await axios.get(`${API_BASE_URL}/api/dreamPosts/user/${userData._id}`);
+                    const response = await axios.get(
+                        `${API_BASE_URL}/api/dreamPosts/user/${userData._id}`
+                    );
                     setDreamLogs(response.data);
                 } else if (!storedEmail) {
                     console.log("User email not found");
@@ -43,7 +70,7 @@ export default function DreamTimelineScreen() {
                 }
             } catch (error) {
                 setError(error);
-                console.error('Error fetching dream logs:', error);
+                console.error("Error fetching dream logs:", error);
             } finally {
                 setLoading(false);
             }
@@ -55,14 +82,21 @@ export default function DreamTimelineScreen() {
     }, [userData._id, isLoading]);
 
     if (loading) {
-        return <Text style={{ color: 'white', flex: 1, textAlign: 'center', marginTop: 50 }}>Loading Dream Timeline...</Text>;
+        return (
+            <Text style={{ color: "white", flex: 1, textAlign: "center", marginTop: 50 }}>
+                Loading Dream Timeline...
+            </Text>
+        );
     }
 
     if (error) {
-        return <Text style={{ color: 'red', flex: 1, textAlign: 'center', marginTop: 50 }}>Error loading dream timeline: {error}</Text>;
+        return (
+            <Text style={{ color: "red", flex: 1, textAlign: "center", marginTop: 50 }}>
+                Error loading dream timeline: {error as string}
+            </Text>
+        );
     }
 
-    // Helper function to determine dream type styling
     const determineDreamTypeStyle = (dreamType: string) => {
         switch (dreamType) {
             case "Detailed":
@@ -76,7 +110,6 @@ export default function DreamTimelineScreen() {
         }
     };
 
-    // Helper function to determine icon for each dream type
     const getDreamTypeIcon = (dreamType: string) => {
         switch (dreamType) {
             case "Detailed":
@@ -90,20 +123,18 @@ export default function DreamTimelineScreen() {
         }
     };
 
-    const checkDreamTypeOnPressed = (item: any) => {
-        if (item.type == "Empty") {
-            // Save the current item and show modal
+    const checkDreamTypeOnPressed = (item: DreamLog) => {
+        if (item.type === "Empty") {
             setCurrentItem(item);
             setModalVisible(true);
-        }
-        else {
+        } else {
             navigateToDreamPage(item);
         }
     };
 
-    const navigateToDreamPage = (item: any) => {
+    const navigateToDreamPage = (item: DreamLog) => {
         router.push({
-            pathname: `../TimelinePages/${item._id}`,//will have to work on that
+            pathname: `/TimelinePages/${item._id}`,
             params: {
                 DreamNumber: item._id,
                 DreamTitle: item.title,
@@ -111,7 +142,7 @@ export default function DreamTimelineScreen() {
                 DreamDescription: item.dreamText,
                 DayMonthYear: new Date(item.date).toLocaleDateString(),
                 TimeOfCapture: new Date(item.date).toLocaleTimeString(),
-                SelectedTags: item.selectedThemes, //adjust for all tags
+                SelectedTags: item.selectedThemes,
                 AiAnalysis: item.analysis,
                 People: item.dreamPeople,
                 Objects: item.dreamObjects,
@@ -126,13 +157,10 @@ export default function DreamTimelineScreen() {
     };
 
     return (
-        <LinearGradient
-            colors={["#15041D", "#2C123F", "#3B1856"]}
-            style={{ flex: 1 }}
-        >
+        <LinearGradient colors={["#15041D", "#2C123F", "#3B1856"]} style={{ flex: 1 }}>
             <StatusBar barStyle="light-content" />
 
-            {/*modal stuff for empty log*/}
+            {/* Modal for "Empty" dream logs */}
             <Modal
                 animationType="fade"
                 transparent={true}
@@ -141,9 +169,14 @@ export default function DreamTimelineScreen() {
             >
                 <View style={styles.modalOverlay}>
                     <View style={styles.modalContainer}>
-                        <Text style={styles.modalText}>Empty Captures hold little to no information, Proceed?</Text>
+                        <Text style={styles.modalText}>
+                            The only thing here is an eerie description, proceed?
+                        </Text>
                         <View style={styles.modalButtonsContainer}>
-                            <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.modalButton}>
+                            <TouchableOpacity
+                                onPress={() => setModalVisible(false)}
+                                style={styles.modalButton}
+                            >
                                 <Text style={styles.modalButtonText}>No</Text>
                             </TouchableOpacity>
 
@@ -163,109 +196,81 @@ export default function DreamTimelineScreen() {
                 </View>
             </Modal>
 
-            {/* Decorative background elements */}
-            <View style={{ position: "absolute", top: 0, right: 0, opacity: 0.2 }}>
-                <Image
-                    source={require("../../Frontend/images/cloudbackground.png")}
-                    style={{ maxWidth: "auto", maxHeight: "auto" }}
-                    resizeMode="contain"
-                />
-            </View>
-
+            {/* List of dream logs */}
             <FlatList
                 data={dreamLogs}
                 keyExtractor={(item) => item._id}
                 contentContainerStyle={{ padding: 20, paddingBottom: 80 }}
                 showsVerticalScrollIndicator={false}
                 ListHeaderComponent={() => (
-                    <View>
-                        {/* Header with enhanced styling */}
-                        <View style={{ alignItems: "center", marginTop: 40, marginBottom: 25 }}>
-                            <Text
-                                style={{
-                                    fontSize: 26,
-                                    fontWeight: "bold",
-                                    color: "#A5E3B7",
-                                    textAlign: "center",
-                                    marginBottom: 8,
-                                    textShadowColor: "rgba(0, 191, 255, 0.3)",
-                                    textShadowOffset: { width: 0, height: 1 },
-                                    textShadowRadius: 5,
-                                }}
-                            >
-                                {currentDate}
+                    <View style={{ alignItems: "center", marginTop: 40, marginBottom: 25 }}>
+                        <Text
+                            style={{
+                                fontSize: 36,
+                                fontWeight: "bold",
+                                color: "#fc77a6",
+                                marginBottom: 5,
+                            }}
+                        >
+                            DREAM TIMELINE
+                        </Text>
+
+                        <Text
+                            style={{
+                                fontSize: 26,
+                                fontWeight: "bold",
+                                color: "#eadb8c",
+                                textAlign: "center",
+                                marginBottom: 8,
+                                textShadowColor: "#2C123F",
+                                textShadowOffset: { width: 0, height: 1 },
+                                textShadowRadius: 5,
+                            }}
+                        >
+                            {currentDate}
+                        </Text>
+
+                        <Text
+                            style={{
+                                fontSize: 16,
+                                color: "#C9B9E2",
+                                opacity: 0.85,
+                                textAlign: "center",
+                                fontStyle: "italic",
+                            }}
+                        >
+                            Your journey through dreams
+                            <Text style={{ fontSize: 12 }}>
+                                {"\n"}  *Select a capture to view its information*
                             </Text>
-                            <Text
-                                style={{
-                                    fontSize: 36,
-                                    fontWeight: "bold",
-                                    color: "#00BFFF",
-                                    marginBottom: 5,
-                                }}
-                            >
-                                DREAM TIMELINE
-                            </Text>
-                            <Text
-                                style={{
-                                    fontSize: 16,
-                                    color: "#C9B9E2",
-                                    opacity: 0.85,
-                                    textAlign: "center",
-                                    fontStyle: "italic",
-                                }}
-                            >
-                                Your journey through dreams
-                                <Text style={{ fontSize: 12 }}>
-                                    {"\n"}  *Select a capture to view its information*
-                                </Text>
-                            </Text>
-                        </View>
+                        </Text>
                     </View>
                 )}
                 renderItem={({ item }) => (
-                    <TouchableOpacity
-                        onPress={() => checkDreamTypeOnPressed(item)}
-                        key={item._id} // Add key here as well for proper rendering
-                    >
-                        <View style={[
-                            styles.dreamCard,
-                            determineDreamTypeStyle(item.type)
-                        ]}>
+                    <TouchableOpacity onPress={() => checkDreamTypeOnPressed(item)}>
+                        <View style={[styles.dreamCard, determineDreamTypeStyle(item.type)]}>
                             <View style={styles.dreamIconContainer}>
-                                <Feather
-                                    name={getDreamTypeIcon(item.type)}
-                                    size={24}
-                                    color="#00BFFF"
-                                />
+                                <Feather name={getDreamTypeIcon(item.type)} size={24} color="#fc77a6" />
                             </View>
                             <View style={styles.dreamContent}>
                                 <Text style={styles.dreamDate}>
                                     {new Date(item.date).toLocaleDateString()}
                                 </Text>
-                                <Text style={styles.dreamTitle}>
-                                    {item.title || "no title provided"}
-                                </Text>
+                                <Text style={styles.dreamTitle}>{item.title || "no title provided"}</Text>
                                 <View style={styles.dreamTypeTag}>
-                                    <Text style={styles.dreamTypeText}>
-                                        {item.type}
-                                    </Text>
+                                    <Text style={styles.dreamTypeText}>{item.type}</Text>
                                 </View>
                             </View>
                             <View style={styles.chevronContainer}>
-                                <Feather name="chevron-right" size={24} color="#00BFFF" />
+                                <Feather name="chevron-right" size={24} color="#eadb8c" />
                             </View>
                         </View>
                     </TouchableOpacity>
                 )}
                 ListFooterComponent={() => (
                     <View style={{ marginTop: 20, marginBottom: 5 }}>
-                        <Button
-                            onPress={() => router.push("/tabs/DreamLogging")}
-                            style={styles.newDreamButton}
-                        >
-                            <Text style={styles.newDreamButtonText}>
-                                Capture New Dream
-                            </Text>
+                        <Button onPress={() => router.push("/tabs/DreamLogging")} style={styles.newDreamButton}>
+                            <Text style={styles.newDreamButtonText}>Capture New Dream</Text>
                             <Feather name="plus" size={18} color="white" style={{ marginLeft: 8 }} />
                         </Button>
                     </View>
@@ -275,72 +280,41 @@ export default function DreamTimelineScreen() {
     );
 }
 
+// Styles (same as yours — unchanged)
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        position: 'relative',
-    },
+    container: { flex: 1, position: "relative" },
     dreamCard: {
-        flexDirection: 'row',
-        backgroundColor: "rgba(0, 49, 76, 0.3)",
+        flexDirection: "row",
+        backgroundColor: "#180723",
         borderRadius: 16,
         marginBottom: 15,
         padding: 16,
         borderLeftWidth: 3,
-        shadowColor: "#000",
+        shadowColor: "#3d1865",
         shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.25,
+        shadowOpacity: 0.8,
         shadowRadius: 3.84,
         elevation: 5,
     },
-    detailedCapture: {
-        borderLeftColor: "#00cf91",
-    },
-    emptyCapture: {
-        borderLeftColor: "#ff0a9d",
-    },
-    fragmentedCapture: {
-        borderLeftColor: "#8A2BE2",
-    },
-    dreamIconContainer: {
-        justifyContent: 'center',
-        alignItems: 'center',
-        width: 40,
-        marginRight: 12,
-    },
-    dreamContent: {
-        flex: 1,
-    },
-    dreamDate: {
-        fontSize: 14,
-        color: "#C9B9E2",
-        marginBottom: 4,
-    },
-    dreamTitle: {
-        fontSize: 18,
-        fontWeight: "bold",
-        color: "white",
-        marginBottom: -2,
-    },
+    detailedCapture: { borderLeftColor: "#eadb8c" },
+    emptyCapture: { borderLeftColor: "#ff0a9d" },
+    fragmentedCapture: { borderLeftColor: "#8A2BE2" },
+    dreamIconContainer: { justifyContent: "center", alignItems: "center", width: 40, marginRight: 12 },
+    dreamContent: { flex: 1 },
+    dreamDate: { fontSize: 14, color: "#C9B9E2", marginBottom: 4 },
+    dreamTitle: { fontSize: 18, fontWeight: "bold", color: "#fedde8", marginBottom: -2 },
     dreamTypeTag: {
         marginTop: 8,
-        alignSelf: 'flex-start',
-        backgroundColor: "rgba(0, 191, 255, 0.15)",
+        alignSelf: "flex-start",
+        backgroundColor: "#8663a1",
         borderRadius: 10,
         paddingVertical: 3,
         paddingHorizontal: 10,
     },
-    dreamTypeText: {
-        color: "#00BFFF",
-        fontSize: 12,
-        fontWeight: "bold",
-    },
-    chevronContainer: {
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
+    dreamTypeText: { color: "#fedde8", fontSize: 12, fontWeight: "bold" },
+    chevronContainer: { justifyContent: "center", alignItems: "center" },
     newDreamButton: {
-        backgroundColor: "#0000ff",
+        backgroundColor: "#eadb8c",
         borderRadius: 12,
         alignItems: "center",
         justifyContent: "center",
@@ -352,17 +326,8 @@ const styles = StyleSheet.create({
         shadowRadius: 4.65,
         elevation: 6,
     },
-    newDreamButtonText: {
-        color: "#FFFFFF",
-        fontSize: 16,
-        fontWeight: "bold",
-    },
-
-    modalButtonsContainer: {
-        flexDirection: "row",
-        justifyContent: "space-around",
-        width: "100%",
-    },
+    newDreamButtonText: { color: "#2C123F", fontSize: 16, fontWeight: "bold" },
+    modalButtonsContainer: { flexDirection: "row", justifyContent: "space-around", width: "100%" },
     modalOverlay: {
         flex: 1,
         justifyContent: "center",
@@ -395,22 +360,5 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: "#D7C9E3",
     },
-    modalButtonText: {
-        color: "#D7C9E3",
-        fontSize: 16,
-        fontWeight: "bold",
-    },
-    imageContainer: {
-        position: "absolute",
-        bottom: 0,
-        left: 0,
-        right: 0,
-        height: '100%',
-        zIndex: -1,
-    },
-    image: {
-        width: '100%',
-        height: '100%',
-        opacity: .1
-    },
+    modalButtonText: { color: "#D7C9E3", fontSize: 16, fontWeight: "bold" },
 });

@@ -10,20 +10,20 @@ import React from 'react';
 import { getAuth, deleteUser } from "firebase/auth";
 import axios from "axios";
 
-const API_BASE_URL = 'http://localhost:5001';
+const API_BASE_URL = 'http://10.0.2.2:5001';
 
 export default function ProfilePage() {
     const [profilePic, setProfilePic] = useState<string | null>(null);
     const [bio, setBio] = useState('');
     const { userData, isLoading } = useUser();
 
-    // if (isLoading) {
-    //     return <Text>Loading...</Text>;
-    // }
+    if (isLoading) {
+        return <Text>Loading...</Text>;
+    }
 
-    // if (!userData) {
-    //     return <Text>User data not available</Text>;
-    // }
+    if (!userData) {
+        return <Text>User data not available</Text>;
+    }
 
 
 
@@ -88,9 +88,6 @@ export default function ProfilePage() {
             <SafeAreaView style={styles.container}>
                 <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
                     <Text style={styles.headerText}>MY PROFILE</Text>
-                    <TouchableOpacity style={styles.button} onPress={() => router.push('./Settings')}>
-                        <Text style={styles.buttonText}>Settings</Text>
-                    </TouchableOpacity>
                     {/* Profile Picture */}
                     <TouchableOpacity style={styles.profilePicContainer} onPress={handleProfilePicChange}>
                         {profilePic ? (
@@ -112,14 +109,14 @@ export default function ProfilePage() {
 
                     {/* Stats */}
 
-                    {/* <View style={styles.statsBox}>
+                    <View style={styles.statsBox}>
                         <Text style={styles.statsText}>My name: {userData.name} </Text>
                         <Text style={styles.statsText}>My email: {userData.email} </Text>
                         <Text style={styles.statsText}>Joined on: {userData.joinDate}</Text>
                         <Text style={styles.statsText}>Total Dreams: {userData.totalDreams}</Text>
                         <Text style={styles.statsText}>Detailed Logs: {userData.detailedDreams}</Text>
                         <Text style={styles.statsText}>Fragmented Logs: {userData.fragDreams}</Text>
-                    </View> */}
+                    </View>
 
                     {/* Buttons */}
                     <TouchableOpacity style={styles.button} onPress={() => router.push('../tabs/DreamTimeline')}>

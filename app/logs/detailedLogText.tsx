@@ -7,7 +7,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { LinearGradient } from "expo-linear-gradient"
 
-const API_BASE_URL = 'http://localhost:5001';
+const API_BASE_URL = 'http://10.0.2.2:5001';
 
 
 export default function DetailedLogTextScreen() {
@@ -75,40 +75,41 @@ export default function DetailedLogTextScreen() {
         setTextBorderColor(isTextValid ? "#00BFFF" : "red");
 
         if (validTitle && validText) {
+            router.push('/logCompletion/detailedLogCompletion');
             try {
                 const storedEmail = await AsyncStorage.getItem('userEmail');
                 const response = await axios.get(`${API_BASE_URL}/users/email/${storedEmail}`);
                 const userId = response.data._id;
-                
-                console.log(response.data.name);
-                const dreamData = { 
-                    userId: userId, 
-                    title: inputTitle, 
-                    type: "Detailed", 
-                    dreamText: inputText,  
-                    selectedThemes: params.THEMETAGS, 
-                    selectedSettings: params.SETTINGSTAGS, 
-                    selectedEmotions: params.ADDONSTAGS, };
 
-                    const apiResponse = await axios.post(`${API_BASE_URL}/api/dreamPosts`, dreamData);
-                    await AsyncStorage.setItem('postId', apiResponse.data._id);
-                    const totalDreams = response.data.totalDreams + 1;
-                    const detailedDreams = response.data.detailedDreams + 1;
+                console.log(response.data.name);
+                const dreamData = {
+                    userId: userId,
+                    title: inputTitle,
+                    type: "Detailed",
+                    dreamText: inputText,
+                    selectedThemes: params.THEMETAGS,
+                    selectedSettings: params.SETTINGSTAGS,
+                    selectedEmotions: params.ADDONSTAGS,
+                };
+
+                const apiResponse = await axios.post(`${API_BASE_URL}/api/dreamPosts`, dreamData);
+                await AsyncStorage.setItem('postId', apiResponse.data._id);
+                const totalDreams = response.data.totalDreams + 1;
+                const detailedDreams = response.data.detailedDreams + 1;
 
 
                 await axios.put(`${API_BASE_URL}/users/${userId}`, {
-                    totalDreams: totalDreams,
-                    detailedDreams: detailedDreams,
+                    totalDreams: totalDreams + 1,
+                    detailedDreams: detailedDreams + 1,
                 });
-                    router.push('/logCompletion/detailedLogCompletion');
 
-                
-                
+                console.log("done");
+
+
             } catch (error) {
                 console.error('Error submitting dream log:', error);
                 Alert.alert('Error', 'Failed to submit dream log.');
             }
-            return router.push("/logCompletion/detailedLogCompletion");
         }
         else {
             console.log("valid title and text is not true");

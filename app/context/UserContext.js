@@ -7,7 +7,7 @@ const UserContext = createContext();
 export const UserProvider = ({ children }) => {
     const [userData, setUserData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
-    const API_BASE_URL = 'http://localhost:5001';
+    const API_BASE_URL = 'http://10.0.2.2:5001';
 
     const fetchUserData = async (email) => {
         try {

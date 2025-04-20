@@ -8,7 +8,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 
-const API_BASE_URL = 'http://localhost:5001';
+const API_BASE_URL = 'http://10.0.2.2:5001';
 
 export default function fragmentedLogTextScreen() {
 
@@ -58,31 +58,31 @@ export default function fragmentedLogTextScreen() {
                     selectedEmotions: params.ADDONSTAGS,
                 };
 
-                    const apiResponse = await axios.post(`${API_BASE_URL}/api/dreamPosts`, dreamData);
-                    await AsyncStorage.setItem('postId', apiResponse.data._id);
-                    const totalDreams = response.data.totalDreams + 1;
-                    const fragDreams = response.data.fragDreams + 1;
+                const apiResponse = await axios.post(`${API_BASE_URL}/api/dreamPosts`, dreamData);
+                await AsyncStorage.setItem('postId', apiResponse.data._id);
+                const totalDreams = response.data.totalDreams + 1;
+                const fragDreams = response.data.fragDreams + 1;
 
-                    await axios.put(`${API_BASE_URL}/users/${userId}`, {
-                        totalDreams: totalDreams,
-                        fragDreams: fragDreams,
-                    });
-                    router.push("/logCompletion/fragmentedLogCompletion");                
+                await axios.put(`${API_BASE_URL}/users/${userId}`, {
+                    totalDreams: totalDreams,
+                    fragDreams: fragDreams,
+                });
+                router.push("/logCompletion/fragmentedLogCompletion");
 
-                
+
             } catch (error) {
                 console.error('Error submitting dream log:', error);
                 Alert.alert('Error', 'Failed to submit dream log.');
             }
 
-            
+
         } else {
             setError(true);
-        }  
+        }
         return router.push("/logCompletion/fragmentedLogCompletion");
-        };
+    };
 
-    
+
 
     let arrayOfUsersTags = [];
     if (params.tags) {

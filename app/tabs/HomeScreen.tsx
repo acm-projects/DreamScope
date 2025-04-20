@@ -16,76 +16,190 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Fontisto } from '@expo/vector-icons';
 import * as Animatable from 'react-native-animatable';
-import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { A } from '@expo/html-elements';
 
 const { width } = Dimensions.get('window');
 const CIRCLE_SIZE = 100;
 
-const API_BASE_URL = 'http://localhost:5001';
+// Moon phases in order
+const moonPhases = [
+    'NewMoon',           // 1-4
+    'WaxingCrescent',    // 5-8
+    'FirstQuarter',      // 9-12
+    'WaxingGibbous',     // 13-16
+    'FullMoon',          // 17-20
+    'WaningGibbous',     // 21-24
+    'ThirdQuarter',      // 25-28
+    'WaningCrescent',    // 29-31
+];
 
-function generatePastDates(count: number) {
+// Function to get moon phase for a specific day of the month
+function getMoonPhaseForDay(day) {
+    const normalizedDay = (day - 1) % 31 + 1; // Handle months with different days
+
+    if (normalizedDay <= 4) return moonPhases[0];
+    if (normalizedDay <= 8) return moonPhases[1];
+    if (normalizedDay <= 12) return moonPhases[2];
+    if (normalizedDay <= 16) return moonPhases[3];
+    if (normalizedDay <= 20) return moonPhases[4];
+    if (normalizedDay <= 24) return moonPhases[5];
+    if (normalizedDay <= 28) return moonPhases[6];
+    return moonPhases[7]; // 29-31
+}
+
+function generateCurrentMonthDates() {
     const dates = [];
     const now = new Date();
-    for (let i = count - 1; i >= 0; i--) {
-        const d = new Date();
-        d.setDate(now.getDate() - i);
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth();
+    const currentDay = now.getDate();
+
+    // Get the number of days in the current month
+    const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+    // Generate all days in the current month
+    for (let i = 1; i <= daysInMonth - 2; i++) {
+        const d = new Date(currentYear, currentMonth, i);
         const label = d.toLocaleDateString('en-US', {
             month: 'short',
             day: 'numeric',
         });
-        dates.push(label);
+        const dayOfMonth = d.getDate();
+        const moonPhase = getMoonPhaseForDay(dayOfMonth);
+
+        dates.push({
+            label,
+            moonPhase,
+            dayOfMonth,
+            isFuture: i > currentDay, // Mark days after today as future days
+            // Use dayOfMonth as the unique identifier for each day
+            uniqueId: dayOfMonth
+        });
     }
+
     return dates;
 }
 
 function DateTimeline() {
-    const scrollRef = useRef<ScrollView>(null);
-    const dates = generatePastDates(30);
-    const todayLabel = new Date().toLocaleDateString('en-US', {
+    // Generate one set of current month dates initially
+    const monthDates = generateCurrentMonthDates();
+    const [allDates, setAllDates] = useState([...monthDates]);
+    const [cyclePosition, setCyclePosition] = useState(0); // Track position of cycles (0 = original)
+    const scrollRef = useRef(null);
+
+    const now = new Date();
+    const todayLabel = now.toLocaleDateString('en-US', {
         month: 'short',
         day: 'numeric',
     });
 
+    // Function to add another set of the current month's dates at the end
+    const addCycleToBottom = () => {
+        setAllDates(currentDates => {
+            const newCycle = [...monthDates];
+            return [...currentDates, ...newCycle];
+        });
+    };
+
+    // Function to add another set of the current month's dates at the beginning
+    const addCycleToTop = () => {
+        setAllDates(currentDates => {
+            const newCycle = [...monthDates];
+            setCyclePosition(prevPosition => prevPosition + 1);
+
+            // After adding to the top, maintain scroll position
+            setTimeout(() => {
+                const itemHeight = CIRCLE_SIZE + 80; // Approximate height of each item with margins
+                scrollRef.current?.scrollTo({
+                    y: monthDates.length * itemHeight,
+                    animated: false,
+                });
+            }, 10);
+
+            return [...newCycle, ...currentDates];
+        });
+    };
+
     useEffect(() => {
+        // Initial scroll to today's date
         setTimeout(() => {
-            scrollRef.current?.scrollToEnd({ animated: false });
+            const todayIndex = allDates.findIndex(date => date.label === todayLabel && !date.isFuture);
+            if (todayIndex !== -1) {
+                scrollRef.current?.scrollTo({
+                    y: todayIndex * (CIRCLE_SIZE + 80),
+                    animated: true,
+                });
+            }
         }, 300);
     }, []);
+
+    const handleScroll = (event) => {
+        // Get the scroll position
+        const offsetY = event.nativeEvent.contentOffset.y;
+        const contentHeight = event.nativeEvent.contentSize.height;
+        const containerHeight = event.nativeEvent.layoutMeasurement.height;
+
+        // Check if we're near the bottom of the ScrollView
+        if (offsetY + containerHeight > contentHeight - 200) {
+            addCycleToBottom();
+        }
+
+        // Check if we're near the top of the ScrollView
+        if (offsetY < 100) {
+            addCycleToTop();
+        }
+    };
+
+    // Function to get the appropriate image source based on moon phase
+    const getMoonPhaseImage = (moonPhase) => {
+        switch (moonPhase) {
+            case 'NewMoon':
+                return require('../../Frontend/images/NewMoon.png');
+            case 'WaxingCrescent':
+                return require('../../Frontend/images/WaxingCrescent.png');
+            case 'FirstQuarter':
+                return require('../../Frontend/images/FirstQuarter.png');
+            case 'WaxingGibbous':
+                return require('../../Frontend/images/WaxingGibbous.png');
+            case 'FullMoon':
+                return require('../../Frontend/images/FullMoon.png');
+            case 'WaningGibbous':
+                return require('../../Frontend/images/WaningGibbous.png');
+            case 'ThirdQuarter':
+                return require('../../Frontend/images/ThirdQuarter.png');
+            case 'WaningCrescent':
+                return require('../../Frontend/images/WaningCrescent.png');
+            default:
+                return require('../../Frontend/images/NewMoon.png');
+        }
+    };
 
     return (
         <ScrollView
             ref={scrollRef}
             contentContainerStyle={styles.timelineContainer}
             showsVerticalScrollIndicator={false}
+            onScroll={handleScroll}
+            scrollEventThrottle={16}
         >
-            {dates.map((date, index) => {
-                const isToday = date === todayLabel;
-                const reverseIndex = dates.length - 1 - index;
+            {allDates.map((dateInfo, index) => {
+                const isToday = dateInfo.label === todayLabel;
+                const isFuture = dateInfo.isFuture;
 
-                let alignmentStyle;
-                if (isToday) {
-                    alignmentStyle = styles.centerItem;
-                } else if (reverseIndex % 4 === 1) {
-                    alignmentStyle = styles.leftItem;
-                } else if (reverseIndex % 4 === 2) {
-                    alignmentStyle = styles.centerItem;
-                } else if (reverseIndex % 4 === 3) {
-                    alignmentStyle = styles.rightItem;
-                } else {
-                    alignmentStyle = styles.centerItem;
-                }
+                // Use center alignment for consistent pattern
+                const alignmentStyle = styles.centerItem;
 
                 const animationType = isToday ? 'pulse' : 'fadeInUp';
-                const animationDelay = isToday ? 0 : index * 10;
+                const animationDelay = isToday ? 0 : Math.min(index, 20) * 10; // Cap delay for better performance
 
                 // Add size variation for organic layout
                 const sizeVariation = isToday ? 2.0 : 0.85 + Math.random() * 0.3;
 
+                // Create a key using uniqueId (day of month) and index to prevent React key warnings
+                const itemKey = `day-${dateInfo.uniqueId}-pos-${index}`;
+
                 return (
                     <Animatable.View
-                        key={index}
+                        key={itemKey}
                         animation={animationType}
                         delay={animationDelay}
                         duration={300}
@@ -99,11 +213,26 @@ function DateTimeline() {
                             style={[
                                 styles.circle,
                                 isToday && styles.todayCircle,
+                                isFuture && styles.futureCircle,
                                 { transform: [{ scale: sizeVariation }] },
                             ]}
                         >
-                            <Text style={[styles.dateText, isToday && styles.todayText]}>
-                                {date}
+                            <Image
+                                source={getMoonPhaseImage(dateInfo.moonPhase)}
+                                style={[
+                                    styles.moonImage,
+                                    isFuture && styles.futureMoonImage
+                                ]}
+                                resizeMode="contain"
+                            />
+                            <Text
+                                style={[
+                                    styles.dateText,
+                                    isToday && styles.todayText,
+                                    isFuture && styles.futureText
+                                ]}
+                            >
+                                {dateInfo.label}
                             </Text>
                         </View>
                     </Animatable.View>
@@ -116,46 +245,23 @@ function DateTimeline() {
 export default function HomeScreen() {
     const router = useRouter();
     const [modalVisible, setModalVisible] = useState(false);
-    const [inputText, setInputText] = useState("");
-    const [lastDreamLogged, setLastDreamLogged] = useState<number | null>(null);
+
+    const checkIfDayIsDivisibleBy7 = () => {
+        const justTheDay = new Date().toLocaleDateString('en-US', {
+            day: 'numeric'
+        });
+
+        if (Number(justTheDay) % 17 == 0) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
 
     useEffect(() => {
-        const fetchLastDreamLogged = async () => {
-            try {
-                const storedEmail = await AsyncStorage.getItem('userEmail');
-                if (storedEmail) {
-                    const response = await axios.get(`${API_BASE_URL}/users/email/${storedEmail}`);
-                    if (response.data && response.data.lastDreamLogged) {
-                        setLastDreamLogged(response.data.lastDreamLogged);
-                        checkIfMoreThan7Days(response.data.lastDreamLogged);
-                    } else {
-                        setModalVisible(true); //change to false later, dont want for new user
-                    }
-                }
-            } catch (error) {
-                console.error("Error fetching user data:", error);
-            }
-        };
-
-        fetchLastDreamLogged();
-    }, []); 
-
-    const checkIfMoreThan7Days = (lastLoggedTimestamp: number) => {
-        if (lastLoggedTimestamp) {
-            const lastLoggedDate = new Date(lastLoggedTimestamp);
-            const currentDate = new Date();
-            const differenceInMilliseconds = currentDate.getTime() - lastLoggedDate.getTime();
-            const differenceInDays = differenceInMilliseconds / (1000 * 60 * 60 * 24);
-
-            if (differenceInDays >= 7) {
-                setModalVisible(true);
-            } else {
-                setModalVisible(false);
-            }
-        } else {
-            setModalVisible(false);
-        }
-    };
+        setModalVisible(checkIfDayIsDivisibleBy7);
+    }, []);
 
     const handleProfilePress = () => {
         router.push("../Settings&ProfilePages/Profile");
@@ -163,37 +269,6 @@ export default function HomeScreen() {
 
     const handleSettingsPress = () => {
         router.push("../Settings&ProfilePages/Settings");
-    };
-
-    const handleCheckIn = async () => {
-        setModalVisible(false);
-        const storedEmail = await AsyncStorage.getItem('userEmail');
-        try {
-            const response = await axios.get(`${API_BASE_URL}/users/email/${storedEmail}`);
-            const userId = response.data._id;
-            await axios.post(`${API_BASE_URL}/api/checkIn/user/${userId}`, { checkInText: inputText, date: Date.now() });
-    
-            await axios.put(`${API_BASE_URL}/users/${userId}`, { lastDreamLogged: Date.now() });
-            setLastDreamLogged(Date.now()); 
-            setInputText(""); 
-        } catch (error) {
-            console.error("Error handling check-in:", error);
-        }
-    };
-
-    // Function to call when a dream is logged elsewhere in your app
-    const updateLastDreamLogged = async () => {
-        const storedEmail = await AsyncStorage.getItem('userEmail');
-        if (storedEmail) {
-            try {
-                const response = await axios.get(`${API_BASE_URL}/users/email/${storedEmail}`);
-                const userId = response.data._id;
-                await axios.put(`${API_BASE_URL}/users/${userId}`, { lastDreamLogged: Date.now() });
-                setLastDreamLogged(Date.now());
-            } catch (error) {
-                console.error("Error updating last dream logged:", error);
-            }
-        }
     };
 
     return (
@@ -209,22 +284,20 @@ export default function HomeScreen() {
                         <View style={styles.modalContainer}>
                             <Text style={styles.modalText}>Weekly Check-in!</Text>
                             <Text style={{ color: "white", marginBottom: 25 }}>Is there any updates you like to share from this week?</Text>
-                            <TextInput
-                                value={inputText}
-                                placeholder="Enter an update!"
-                                placeholderTextColor={"grey"}
-                                style={{ fontSize: 20, backgroundColor: "#212121", borderRadius: 12, borderWidth: 4, borderColor: "#212121", color: "white", width: "100%" }}
-                                onChangeText={setInputText}
-                            />
+
+                            <TextInput placeholder="Enter an update!" placeholderTextColor={"grey"} style={{ fontSize: 20, backgroundColor: "#212121", borderRadius: 12, borderWidth: 4, borderColor: "#212121", color: "white", width: "100%" }}>
+                            </TextInput>
+
                             <View style={{
                                 flexDirection: "row",
                                 justifyContent: "space-around",
                                 width: "100%",
                                 marginTop: 45
                             }}>
-                                <TouchableOpacity onPress={handleCheckIn} style={styles.modalButton}>
+                                <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.modalButton}>
                                     <Text style={styles.modalButtonText}>Complete</Text>
                                 </TouchableOpacity>
+
                                 <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.modalButton}>
                                     <Text style={styles.modalButtonText}>Skip</Text>
                                 </TouchableOpacity>
@@ -232,18 +305,21 @@ export default function HomeScreen() {
                         </View>
                     </View>
                 </Modal>
+
                 <View style={styles.imageContainer}>
                     <Image
-                        source={require('../../Frontend/images/treeforeground.png')}
+                        source={require('../../Frontend/images/pine-tree-background.png')}
                         style={styles.image}
                         resizeMode="stretch"
                     />
                 </View>
+
                 <View style={styles.profileButtonContainer}>
                     <Pressable onPress={handleProfilePress} style={styles.profileButton}>
                         <Fontisto name="person" size={24} color="#D7C9E3" />
                     </Pressable>
                 </View>
+
                 <DateTimeline />
             </SafeAreaView>
         </LinearGradient>
@@ -299,6 +375,17 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
     },
+    moonImage: {
+        width: '70%',
+        height: '70%',
+        borderWidth: 0.25,
+        borderColor: "#e9f59d",
+        borderStyle: "dotted",
+        borderRadius: 50
+    },
+    futureMoonImage: {
+        opacity: 0.5,
+    },
     timelineContainer: {
         paddingVertical: 100,
         position: 'relative',
@@ -311,15 +398,17 @@ const styles = StyleSheet.create({
         width: CIRCLE_SIZE,
         height: CIRCLE_SIZE,
         borderRadius: CIRCLE_SIZE / 2,
+        borderColor: "black",
+        borderWidth: 2,
         backgroundColor: '#D7C9E3',
         justifyContent: 'center',
         alignItems: 'center',
-        zIndex: 2,
+        zIndex: 22,
     },
     dateText: {
         fontSize: 14,
         fontWeight: 'bold',
-        color: '#2C123F',
+        color: 'black',
     },
     todayCircle: {
         backgroundColor: '#94C9A9',
@@ -329,8 +418,15 @@ const styles = StyleSheet.create({
         shadowRadius: 20,
     },
     todayText: {
-        color: '#180723',
+        color: 'black',
         fontSize: 16,
+    },
+    futureCircle: {
+        backgroundColor: '#D7C9E3',
+        opacity: 0.5,
+    },
+    futureText: {
+        color: 'black',
     },
     leftItem: {
         alignSelf: 'flex-start',
@@ -347,32 +443,36 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "rgba(0, 0, 0, 0.5)",
+        backgroundColor: "rgba(31, 7, 63, 0.5)",
     },
     modalContainer: {
         width: "90%",
         height: "35%",
-        backgroundColor: "#1E1E1E",
+        backgroundColor: "#180723",
         padding: 15,
         borderRadius: 11,
         alignItems: "center",
+        borderWidth: 2,
+        borderColor: "#D7C9E3",
     },
     modalText: {
-        color: "white",
+        color: "#D7C9E3",
         fontSize: 18,
         marginBottom: 15,
         textAlign: "center",
     },
     modalButton: {
-        backgroundColor: "#00BFFF",
+        backgroundColor: "#2C123F",
         alignItems: "center",
         paddingVertical: 10,
         width: "45%",
         paddingHorizontal: 20,
         borderRadius: 8,
+        borderWidth: 1,
+        borderColor: "#D7C9E3",
     },
     modalButtonText: {
-        color: "white",
+        color: "#D7C9E3",
         fontSize: 16,
         fontWeight: "bold",
     },

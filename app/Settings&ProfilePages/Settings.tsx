@@ -8,7 +8,7 @@ import axios from "axios";
 import { useUser } from "../context/UserContext"
 
 
-const API_BASE_URL = 'http://localhost:5001';
+const API_BASE_URL = 'http://10.0.2.2:5001';
 
 export default function SettingsPage() {
     const [isDarkMode, setIsDarkMode] = useState(false);
@@ -16,17 +16,19 @@ export default function SettingsPage() {
     const [feedback, setFeedback] = useState('');
     const { userData } = useUser();
 
-    // const userId = userData._id;
+    const userId = userData._id;
 
-    // const handleClearData = () => {
-    //     Alert.alert('Confirmation', 'Are you sure you want to clear your dream data?', [
-    //         { text: 'Cancel', style: 'cancel' },
-    //         { text: 'Yes', onPress: async () => {
-    //             await axios.delete(`${API_BASE_URL}/api/dreamPosts/user/${userId}`, userId)
-    //             Alert.alert('Data Cleared!')
-    //         }  }
-    //     ]);
-    // };
+    const handleClearData = () => {
+        Alert.alert('Confirmation', 'Are you sure you want to clear your dream data?', [
+            { text: 'Cancel', style: 'cancel' },
+            {
+                text: 'Yes', onPress: async () => {
+                    await axios.delete(`${API_BASE_URL}/api/dreamPosts/user/${userId}`, userId)
+                    Alert.alert('Data Cleared!')
+                }
+            }
+        ]);
+    };
 
     const handleFeedbackSubmit = () => {
         if (feedback.trim() === '') {
@@ -88,7 +90,7 @@ export default function SettingsPage() {
                     </TouchableOpacity>
 
                     {/* Data Management */}
-                    <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+                    <TouchableOpacity style={styles.logoutButton} onPress={handleClearData}>
                         <Text style={styles.logoutButtonText}>Clear Dream Data</Text>
                     </TouchableOpacity>
 

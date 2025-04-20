@@ -22,7 +22,7 @@ export default function Entry() {
                 }
             } catch (error) {
                 console.error('Error reading login status:', error);
-            } 
+            }
         };
 
         checkLoginStatus();

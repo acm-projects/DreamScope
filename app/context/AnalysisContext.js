@@ -1,7 +1,7 @@
 import React, { createContext, useState, useContext, useCallback } from 'react';
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:5001';
+const API_BASE_URL = 'http://10.0.2.2:5001';
 
 const AnalysisContext = createContext();
 
@@ -22,7 +22,7 @@ export const AnalysisProvider = ({ children }) => {
         } finally {
             setLoading(false);
         }
-    }, []); 
+    }, []);
 
     const fetchDreamPostsByUserAndDate = useCallback(async (userId, date) => {
         setLoading(true);
