@@ -88,6 +88,7 @@ const MonthViewCalendar = () => {
 
     const checkValidDate = () => {
         if (validDate == true) {
+            console.log(selectedDate)
             return router.push({
                 pathname: '/logs/Image_pages',
                 params: { date: selectedDate },

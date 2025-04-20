@@ -124,7 +124,7 @@ export default function DreamLogScreen() {
                                     style={{
                                         fontSize: 36,
                                         fontWeight: "bold",
-                                        color: "#fc77a6",
+                                        color: "white",
                                         marginBottom: 5,
                                     }}
                                 >

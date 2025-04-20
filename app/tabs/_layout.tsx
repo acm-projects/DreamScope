@@ -1,76 +1,85 @@
 import { Tabs } from "expo-router";
-import { Fontisto } from "@expo/vector-icons";
-import { View } from "react-native";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { View, Platform } from "react-native";
 import { StatusBar } from 'expo-status-bar';
 import { UserProvider } from "../context/UserContext";
 import { AnalysisProvider } from "../context/AnalysisContext";
 
-
-
 export default function RootLayout() {
+    // Get proper status bar style based on platform
+    const statusBarStyle = Platform.OS === 'ios' ? 'light' : 'auto';
+
     return (
-<UserProvider>
-    <AnalysisProvider>
-        <Tabs
-            screenOptions={{
-                tabBarShowLabel: false,
-                headerShown: false,
-                tabBarActiveTintColor: "#94C9A9",
-                tabBarInactiveTintColor: "#7B718B",
-                tabBarStyle: {
-                    borderTopWidth: 0.2,
-                    borderColor: "#1c092a",
-                    height: 50,
-                    backgroundColor: "#2C123F",
-                },
-            }}
-        >
-            <Tabs.Screen
-                name="HomeScreen"
-                options={{
-                    title: "HomeScreen",
-                    tabBarIcon: ({ color, size }) => (
-                        <View style={{ marginTop: 6 }}>
-                            <Fontisto name="home" color={color} size={size} />
-                        </View>
-                    ),
-                }}
-            />
-            <Tabs.Screen
-                name="DreamLogging"
-                options={{
-                    title: "Dream Logging",
-                    tabBarIcon: ({ color, size }) => (
-                        <View style={{ marginTop: 6 }}>
-                            <Fontisto name="cloudy" color={color} size={size} />
-                        </View>
-                    ),
-                }}
-            />
-            <Tabs.Screen
-                name="DreamTimeline"
-                options={{
-                    title: "Dream Timeline",
-                    tabBarIcon: ({ color, size }) => (
-                        <View style={{ marginTop: 6 }}>
-                            <Fontisto name="stopwatch" color={color} size={size * 0.8} />
-                        </View>
-                    ),
-                }}
-            />
-            <Tabs.Screen
-                name="DreamVisualization"
-                options={{
-                    title: "Dream Visualization",
-                    tabBarIcon: ({ color, size }) => (
-                        <View style={{ marginTop: 6 }}>
-                            <Fontisto name="picture" color={color} size={size * 0.8} />
-                        </View>
-                    ),
-                }}
-            />
-        </Tabs>
-        </AnalysisProvider>
-</UserProvider>
+        <UserProvider>
+            <AnalysisProvider>
+                {/* Status bar with proper styling */}
+                <StatusBar style={statusBarStyle} backgroundColor="#273952" />
+
+                <Tabs
+                    screenOptions={{
+                        tabBarActiveBackgroundColor: "#273459",
+                        tabBarShowLabel: true,
+                        headerShown: false,
+                        tabBarActiveTintColor: "#0093ED",
+                        tabBarInactiveTintColor: "#7B718B",
+                        animation: "fade",
+                        tabBarLabelStyle: {
+                            fontSize: 10,
+                            marginBottom: 5,
+                        },
+                        tabBarStyle: {
+                            borderTopWidth: 0.5,
+                            borderColor: "#273952",
+                            height: 60,
+                            backgroundColor: "#273952",
+                            paddingBottom: Platform.OS === 'ios' ? 20 : 10,
+                            paddingTop: 5,
+                            elevation: 8,
+                            shadowColor: "#000",
+                            shadowOffset: { width: 0, height: -2 },
+                            shadowOpacity: 0.1,
+                            shadowRadius: 3,
+                        },
+                    }}
+                >
+                    <Tabs.Screen
+                        name="HomeScreen"
+                        options={{
+                            title: "Home",
+                            tabBarIcon: ({ color, size }) => (
+                                <Ionicons name="home" color={color} size={size} />
+                            ),
+                        }}
+                    />
+                    <Tabs.Screen
+                        name="DreamLogging"
+                        options={{
+                            title: "Log Dream",
+                            tabBarIcon: ({ color, size }) => (
+                                <MaterialCommunityIcons name="pencil-plus" color={color} size={size} />
+                            ),
+                        }}
+                    />
+                    <Tabs.Screen
+                        name="DreamTimeline"
+                        options={{
+                            title: "Timeline",
+                            tabBarIcon: ({ color, size }) => (
+                                <MaterialCommunityIcons name="timeline-clock" color={color} size={size} />
+                            ),
+                        }}
+                    />
+                    <Tabs.Screen
+                        name="DreamVisualization"
+                        options={{
+                            title: "Insights",
+                            tabBarIcon: ({ color, size }) => (
+                                <Ionicons name="eye" color={color} size={size} />
+                            ),
+                        }}
+                    />
+                </Tabs>
+            </AnalysisProvider>
+        </UserProvider>
     );
 }

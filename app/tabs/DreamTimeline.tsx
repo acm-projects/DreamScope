@@ -177,7 +177,7 @@ export default function DreamTimelineScreen() {
                 <View style={styles.modalOverlay}>
                     <View style={styles.modalContainer}>
                         <Text style={styles.modalText}>
-                            The only thing here is an eerie description, proceed?
+                            Empty Captures hold little to no information, Proceed?
                         </Text>
                         <View style={styles.modalButtonsContainer}>
                             <TouchableOpacity
@@ -210,47 +210,56 @@ export default function DreamTimelineScreen() {
                 contentContainerStyle={{ padding: 20, paddingBottom: 80 }}
                 showsVerticalScrollIndicator={false}
                 ListHeaderComponent={() => (
-                    <View style={{ alignItems: "center", marginTop: 40, marginBottom: 25 }}>
-                        <Text style={{ fontSize: 36, fontWeight: "bold", color: "#fc77a6", marginBottom: 5 }}>
-                            DREAM TIMELINE
-                        </Text>
-
-                        <Text
-                            style={{
-                                fontSize: 26,
-                                fontWeight: "bold",
-                                color: "#eadb8c",
-                                textAlign: "center",
-                                marginBottom: 8,
-                                textShadowColor: "#2C123F",
-                                textShadowOffset: { width: 0, height: 1 },
-                                textShadowRadius: 5,
-                            }}
-                        >
-                            {currentDate}
-                        </Text>
-
-                        <Text
-                            style={{
-                                fontSize: 16,
-                                color: "#C9B9E2",
-                                opacity: 0.85,
-                                textAlign: "center",
-                                fontStyle: "italic",
-                            }}
-                        >
-                            Your journey through dreams
-                            <Text style={{ fontSize: 12 }}>
-                                {"\n"}  *Select a capture to view its information*
+                    <View>
+                        {/* Header with enhanced styling */}
+                        <View style={{ alignItems: "center", marginTop: 40, marginBottom: 25 }}>
+                            <Text
+                                style={{
+                                    fontSize: 36,
+                                    fontWeight: "bold",
+                                    color: "white",
+                                    marginBottom: 5,
+                                }}
+                            >
+                                DREAM TIMELINE
                             </Text>
-                        </Text>
+                            <Text
+                                style={{
+                                    fontSize: 26,
+                                    fontWeight: "bold",
+                                    color: "#eadb8c",
+                                    textAlign: "center",
+                                    marginBottom: 8,
+                                    textShadowColor: "rgba(0, 191, 255, 0.3)",
+                                    textShadowOffset: { width: 0, height: 1 },
+                                    textShadowRadius: 5,
+                                }}
+                            >
+                                {currentDate}
+                            </Text>
+
+                            <Text
+                                style={{
+                                    fontSize: 16,
+                                    color: "#C9B9E2",
+                                    opacity: 0.85,
+                                    textAlign: "center",
+                                    fontStyle: "italic",
+                                }}
+                            >
+                                Your journey through dreams
+                                <Text style={{ fontSize: 12 }}>
+                                    {"\n"}  *Select a capture to view its information*
+                                </Text>
+                            </Text>
+                        </View>
                     </View>
                 )}
                 renderItem={({ item }) => (
                     <TouchableOpacity onPress={() => checkDreamTypeOnPressed(item)}>
                         <View style={[styles.dreamCard, determineDreamTypeStyle(item.type)]}>
                             <View style={styles.dreamIconContainer}>
-                                <Feather name={getDreamTypeIcon(item.type)} size={24} color="#fc77a6" />
+                                <Feather name={getDreamTypeIcon(item.type)} size={24} color="#00BFFF" />
                             </View>
                             <View style={styles.dreamContent}>
                                 <Text style={styles.dreamDate}>
@@ -262,7 +271,7 @@ export default function DreamTimelineScreen() {
                                 </View>
                             </View>
                             <View style={styles.chevronContainer}>
-                                <Feather name="chevron-right" size={24} color="#eadb8c" />
+                                <Feather name="chevron-right" size={24} color="#00BFFF" />
                             </View>
                         </View>
                     </TouchableOpacity>
@@ -280,41 +289,72 @@ export default function DreamTimelineScreen() {
     );
 }
 
-// Styles stay the same as before
 const styles = StyleSheet.create({
-    container: { flex: 1, position: "relative" },
+    container: {
+        flex: 1,
+        position: 'relative',
+    },
     dreamCard: {
-        flexDirection: "row",
-        backgroundColor: "#180723",
+        flexDirection: 'row',
+        backgroundColor: "rgba(0, 49, 76, 0.3)",
         borderRadius: 16,
         marginBottom: 15,
         padding: 16,
         borderLeftWidth: 3,
-        shadowColor: "#3d1865",
+        shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.8,
+        shadowOpacity: 0.25,
         shadowRadius: 3.84,
         elevation: 5,
     },
-    detailedCapture: { borderLeftColor: "#eadb8c" },
-    emptyCapture: { borderLeftColor: "#ff0a9d" },
-    fragmentedCapture: { borderLeftColor: "#8A2BE2" },
-    dreamIconContainer: { justifyContent: "center", alignItems: "center", width: 40, marginRight: 12 },
-    dreamContent: { flex: 1 },
-    dreamDate: { fontSize: 14, color: "#C9B9E2", marginBottom: 4 },
-    dreamTitle: { fontSize: 18, fontWeight: "bold", color: "#fedde8", marginBottom: -2 },
+    detailedCapture: {
+        borderLeftColor: "#00cf91",
+    },
+    emptyCapture: {
+        borderLeftColor: "#ff0a9d",
+    },
+    fragmentedCapture: {
+        borderLeftColor: "#8A2BE2",
+    },
+    dreamIconContainer: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: 40,
+        marginRight: 12,
+    },
+    dreamContent: {
+        flex: 1,
+    },
+    dreamDate: {
+        fontSize: 14,
+        color: "#C9B9E2",
+        marginBottom: 4,
+    },
+    dreamTitle: {
+        fontSize: 18,
+        fontWeight: "bold",
+        color: "white",
+        marginBottom: -2,
+    },
     dreamTypeTag: {
         marginTop: 8,
-        alignSelf: "flex-start",
-        backgroundColor: "#8663a1",
+        alignSelf: 'flex-start',
+        backgroundColor: "rgba(0, 191, 255, 0.15)",
         borderRadius: 10,
         paddingVertical: 3,
         paddingHorizontal: 10,
     },
-    dreamTypeText: { color: "#fedde8", fontSize: 12, fontWeight: "bold" },
-    chevronContainer: { justifyContent: "center", alignItems: "center" },
+    dreamTypeText: {
+        color: "#00BFFF",
+        fontSize: 12,
+        fontWeight: "bold",
+    },
+    chevronContainer: {
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
     newDreamButton: {
-        backgroundColor: "#eadb8c",
+        backgroundColor: "#0000ff",
         borderRadius: 12,
         alignItems: "center",
         justifyContent: "center",
@@ -326,39 +366,58 @@ const styles = StyleSheet.create({
         shadowRadius: 4.65,
         elevation: 6,
     },
-    newDreamButtonText: { color: "#2C123F", fontSize: 16, fontWeight: "bold" },
-    modalButtonsContainer: { flexDirection: "row", justifyContent: "space-around", width: "100%" },
+    newDreamButtonText: {
+        color: "#FFFFFF",
+        fontSize: 16,
+        fontWeight: "bold",
+    },
     modalOverlay: {
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "rgba(31, 7, 63, 0.5)",
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
     },
     modalContainer: {
-        width: "90%",
-        height: "20%",
-        backgroundColor: "#180723",
-        padding: 15,
+        width: "80%",
+        backgroundColor: "#1E1E1E",
+        padding: 20,
         borderRadius: 11,
         alignItems: "center",
-        borderWidth: 2,
-        borderColor: "#D7C9E3",
     },
     modalText: {
-        color: "#D7C9E3",
+        color: "white",
         fontSize: 18,
         marginBottom: 15,
         textAlign: "center",
     },
+    modalButtonsContainer: {
+        flexDirection: "row",
+        justifyContent: "space-around",
+        width: "100%",
+    },
     modalButton: {
-        backgroundColor: "#2C123F",
-        alignItems: "center",
+        backgroundColor: "#00BFFF",
         paddingVertical: 10,
-        width: "45%",
         paddingHorizontal: 20,
         borderRadius: 8,
-        borderWidth: 1,
-        borderColor: "#D7C9E3",
+        margin: 10,
     },
-    modalButtonText: { color: "#D7C9E3", fontSize: 16, fontWeight: "bold" },
+    modalButtonText: {
+        color: "white",
+        fontSize: 16,
+        fontWeight: "bold",
+    },
+    imageContainer: {
+        position: "absolute",
+        bottom: 0,
+        left: 0,
+        right: 0,
+        height: '100%',
+        zIndex: -1,
+    },
+    image: {
+        width: '100%',
+        height: '100%',
+        opacity: .1
+    },
 });
