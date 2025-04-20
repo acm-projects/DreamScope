@@ -20,7 +20,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const API_BASE_URL = "http://10.0.2.2:5001";
 
-// 💡 Define the shape of a dream log entry
 type DreamLog = {
     _id: string;
     title: string;
@@ -39,7 +38,7 @@ export default function DreamTimelineScreen() {
     const router = useRouter();
     const { userData, isLoading } = useUser();
 
-    const [dreamLogs, setDreamLogs] = useState<DreamLog[]>([]); // ✅ typed state
+    const [dreamLogs, setDreamLogs] = useState<DreamLog[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -58,16 +57,16 @@ export default function DreamTimelineScreen() {
             setError(null);
             try {
                 const storedEmail = await AsyncStorage.getItem("userEmail");
-                if (storedEmail && userData?._id) {
-                    const response = await axios.get(
-                        `${API_BASE_URL}/api/dreamPosts/user/${userData._id}`
-                    );
-                    setDreamLogs(response.data);
-                } else if (!storedEmail) {
-                    console.log("User email not found");
-                } else if (!userData?._id) {
+
+                if (!storedEmail || !userData || !userData._id) {
+                    console.log("User not ready yet.");
                     return;
                 }
+
+                const response = await axios.get(
+                    `${API_BASE_URL}/api/dreamPosts/user/${userData._id}`
+                );
+                setDreamLogs(response.data);
             } catch (error) {
                 setError(error);
                 console.error("Error fetching dream logs:", error);
@@ -76,10 +75,10 @@ export default function DreamTimelineScreen() {
             }
         };
 
-        if (!isLoading && userData._id) {
+        if (!isLoading && userData && userData._id) {
             fetchDreamLogs();
         }
-    }, [userData._id, isLoading]);
+    }, [userData, isLoading]);
 
     if (loading) {
         return (
@@ -134,7 +133,7 @@ export default function DreamTimelineScreen() {
 
     const navigateToDreamPage = (item: DreamLog) => {
         router.push({
-            pathname: `/TimelinePages/${item._id}`,
+            pathname: `/TimelinePages/[DreamNumber]`,
             params: {
                 DreamNumber: item._id,
                 DreamTitle: item.title,
@@ -148,10 +147,10 @@ export default function DreamTimelineScreen() {
                 Objects: item.dreamObjects,
                 Places: item.dreamPlaces,
                 Themes: item.dreamThemes,
-                RecurringPeople: userData.recurringPeople,
-                RecurringPlaces: userData.recurringPlaces,
-                RecurringThemes: userData.recurringThemes,
-                RecurringObjects: userData.recurringObjects,
+                RecurringPeople: userData?.recurringPeople,
+                RecurringPlaces: userData?.recurringPlaces,
+                RecurringThemes: userData?.recurringThemes,
+                RecurringObjects: userData?.recurringObjects,
             },
         });
     };
@@ -159,6 +158,14 @@ export default function DreamTimelineScreen() {
     return (
         <LinearGradient colors={["#15041D", "#2C123F", "#3B1856"]} style={{ flex: 1 }}>
             <StatusBar barStyle="light-content" />
+
+            <View style={{ position: "absolute", top: 0, right: 0, opacity: 0.2 }}>
+                <Image
+                    source={require("../../Frontend/images/cloudbackground.png")}
+                    style={{ maxWidth: "auto", maxHeight: "auto" }}
+                    resizeMode="contain"
+                />
+            </View>
 
             {/* Modal for "Empty" dream logs */}
             <Modal
@@ -204,14 +211,7 @@ export default function DreamTimelineScreen() {
                 showsVerticalScrollIndicator={false}
                 ListHeaderComponent={() => (
                     <View style={{ alignItems: "center", marginTop: 40, marginBottom: 25 }}>
-                        <Text
-                            style={{
-                                fontSize: 36,
-                                fontWeight: "bold",
-                                color: "#fc77a6",
-                                marginBottom: 5,
-                            }}
-                        >
+                        <Text style={{ fontSize: 36, fontWeight: "bold", color: "#fc77a6", marginBottom: 5 }}>
                             DREAM TIMELINE
                         </Text>
 
@@ -280,7 +280,7 @@ export default function DreamTimelineScreen() {
     );
 }
 
-// Styles (same as yours — unchanged)
+// Styles stay the same as before
 const styles = StyleSheet.create({
     container: { flex: 1, position: "relative" },
     dreamCard: {

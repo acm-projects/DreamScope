@@ -1,16 +1,18 @@
 import React from 'react';
 import { Stack } from 'expo-router';
 import { AnalysisProvider } from '../context/AnalysisContext';
-import {UserProvider} from '../context/UserContext'
+import { UserProvider } from '../context/UserContext'
+import { Header } from '@expo/html-elements';
+import { headingStyle } from '../../components/ui/heading/styles';
 
 export default function AnalysisLayout() {
     return (
         <UserProvider>
-        <AnalysisProvider>
-            <Stack>
-            <Stack.Screen name="AIAnalysisPage" />
-            </Stack>
-        </AnalysisProvider>
+            <AnalysisProvider >
+                <Stack>
+                    <Stack.Screen name="AIAnalysisPage" />
+                </Stack>
+            </AnalysisProvider>
         </UserProvider>
     );
 }

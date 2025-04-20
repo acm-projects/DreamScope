@@ -185,7 +185,7 @@ export default function AIAnalysisPage() {
 
 
                         {section.data?.length > 0 ? (
-                            section.data.map((item, idx) => (
+                            section.data.map((item: any, idx: any) => (
                                 <Text
                                     key={idx}
                                     style={{

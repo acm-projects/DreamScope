@@ -264,7 +264,7 @@ export default function FragmentedLogPartSelectionScreen() {
                         </Button>
 
                         <TouchableOpacity
-                            onPress={() => router.push("/tabs")}
+                            onPress={() => router.push("/tabs/DreamLogging")}
                             style={{
                                 alignItems: "center",
                                 marginTop: 15,

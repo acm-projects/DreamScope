@@ -65,6 +65,13 @@ const SignUp = (): JSX.Element => {
 
     return (
         <LinearGradient colors={['#180723', '#2C123F', '#2C123F', '#3d1865']} style={{ flex: 1 }}>
+            <View style={{ position: "absolute", top: 0, right: 0, opacity: 0.2 }}>
+                <Image
+                    source={require("../../Frontend/images/cloudedLoginSignin2.png")}
+                    style={{ maxWidth: "auto", maxHeight: "auto" }}
+                    resizeMode="contain"
+                />
+            </View>
             <SafeAreaView style={styles.container}>
                 <ScrollView contentContainerStyle={styles.scrollContainer}>
                     <View style={styles.innerContainer}>

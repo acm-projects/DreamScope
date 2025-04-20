@@ -14,8 +14,6 @@ export default function FragmentedTagSelectionScreen() {
     const params = useLocalSearchParams();
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
-
-
     const [selectedThemesTags, setSelectedThemesTags] = useState<string[]>([]);
     const [selectedSettingsTags, setSelectedSettingsTags] = useState<string[]>([]);
     const [selectedAddonsTags, setSelectedAddonsTags] = useState<string[]>([]);
@@ -34,6 +32,22 @@ export default function FragmentedTagSelectionScreen() {
         { title: "Add-ons", data: tags.addons },
     ];
 
+    // Function to navigate to the next screen
+    const navigateToLogText = () => {
+        router.push({
+            pathname: "/logs/fragmentedLogText",
+            params: {
+                parts: parts,
+                monthDayYear: params.monthDayYear,
+                dreamtype: name,
+                tags: selectedTags.join(","),
+                THEMETAGS: selectedThemesTags.join(","),
+                ADDONTAGS: selectedAddonsTags.join(","),
+                SETTINGSTAGS: selectedSettingsTags.join(",")
+            }
+        });
+    };
+
     // Function to toggle tag selection
     const handleTagPress = (tagType: string, tag: string) => {
         {/*This if statement is to check what type of tag it is theme,setting,addon*/ }
@@ -43,14 +57,12 @@ export default function FragmentedTagSelectionScreen() {
                     ? prevThemeTags.filter((T) => T !== tag)
                     : [...prevThemeTags, tag]
             )
-
         }
         else if (tagType == "Settings") {
             setSelectedSettingsTags((prevSettingTags) =>
                 prevSettingTags.includes(tag)
                     ? prevSettingTags.filter((S) => S !== tag)
                     : [...prevSettingTags, tag]
-
             )
         }
         else {
@@ -58,7 +70,6 @@ export default function FragmentedTagSelectionScreen() {
                 prevAddonTags.includes(tag)
                     ? prevAddonTags.filter((A) => A !== tag)
                     : [...prevAddonTags, tag]
-
             )
         }
 
@@ -67,6 +78,49 @@ export default function FragmentedTagSelectionScreen() {
             prevTags.includes(tag)
                 ? prevTags.filter((t) => t !== tag)
                 : [...prevTags, tag]
+        );
+    };
+
+    // Render a tag item with flexible width
+    const renderTagItem = (tag: string, tagType: string) => {
+        const isSelected = selectedTags.includes(tag);
+
+        return (
+            <Pressable
+                onPress={() => handleTagPress(tagType, tag)}
+                style={({ pressed }) => ({
+                    opacity: pressed ? 0.8 : 1,
+                    transform: [{ scale: pressed ? 0.98 : 1 }],
+                    shadowColor: isSelected ? "#00BFFF" : "transparent",
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.5,
+                    shadowRadius: 4,
+                    elevation: isSelected ? 3 : 0,
+                    margin: 5,
+                })}
+            >
+                <View
+                    style={{
+                        paddingVertical: 10,
+                        paddingHorizontal: 12,
+                        borderRadius: 12,
+                        backgroundColor: isSelected ? "#00BFFF" : "#00314C",
+                        borderColor: "#00BFFF",
+                        borderWidth: isSelected ? 0 : 1.5,
+                    }}
+                >
+                    <Text
+                        style={{
+                            fontSize: 14,
+                            fontWeight: "bold",
+                            color: isSelected ? "white" : "#E4D7F4",
+                            textAlign: "center",
+                        }}
+                    >
+                        {tag}
+                    </Text>
+                </View>
+            </Pressable>
         );
     };
 
@@ -92,24 +146,61 @@ export default function FragmentedTagSelectionScreen() {
                 showsVerticalScrollIndicator={false}
                 ListHeaderComponent={() => (
                     <View>
-                        {/* Back Button with improved shadow and positioning */}
-                        <Button
-                            onPress={() => router.back()}
-                            style={{
-                                position: "absolute",
-                                top: 5,
-                                left: -8,
-                                backgroundColor: "transparent",
-                                zIndex: 10,
-                            }}
-                        >
-                            <Text style={{ fontSize: 24, color: "white" }}>
-                                <Feather name="arrow-left" size={30} />
-                            </Text>
-                        </Button>
+                        {/* Navigation controls: Back Button (left) and Skip Button (right) */}
+                        <View style={{
+                            flexDirection: 'row',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            marginBottom: 10,
+                            width: '100%',
+                            paddingTop: 5
+                        }}>
+                            {/* Back Button */}
+                            <Button
+                                onPress={() => router.back()}
+                                style={{
+                                    backgroundColor: "transparent",
+                                }}
+                            >
+                                <Text style={{ fontSize: 24, color: "white" }}>
+                                    <Feather name="arrow-left" size={30} />
+                                </Text>
+                            </Button>
+
+                            {/* Skip Button */}
+                            <TouchableOpacity
+                                onPress={() => router.push({
+                                    pathname: "/logs/fragmentedLogText",
+                                    params: {
+                                        parts: parts,
+                                        monthDayYear: params.monthDayYear,
+                                        dreamtype: name,
+                                        tags: "",
+                                        THEMETAGS: "",
+                                        ADDONTAGS: "",
+                                        SETTINGSTAGS: ""
+                                    }
+                                })}
+                                style={{
+                                    paddingHorizontal: 15,
+                                    paddingVertical: 8,
+                                    marginTop: 15,
+                                    borderRadius: 20,
+                                    backgroundColor: 'rgba(255, 255, 255, 0.15)'
+                                }}
+                            >
+                                <Text style={{
+                                    fontSize: 16,
+                                    color: "white",
+                                    fontWeight: '500'
+                                }}>
+                                    Skip
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
 
                         {/* Header with enhanced styling */}
-                        <View style={{ alignItems: "center", marginTop: 40, marginBottom: 25 }}>
+                        <View style={{ alignItems: "center", marginTop: 20, marginBottom: 25 }}>
                             <Text
                                 style={{
                                     fontSize: 26,
@@ -197,64 +288,25 @@ export default function FragmentedTagSelectionScreen() {
                             /> {item.title}
                         </Text>
 
-                        <FlatList
-                            data={item.data}
-                            keyExtractor={(tag) => tag}
-                            numColumns={3}
-                            scrollEnabled={false}
-                            columnWrapperStyle={{ justifyContent: "flex-start" }}
-                            renderItem={({ item: tag }) => (
-                                <Pressable
-                                    onPress={() => handleTagPress(item.title, tag)}
-                                    style={({ pressed }) => ({
-                                        opacity: pressed ? 0.8 : 1,
-                                        transform: [{ scale: pressed ? 0.98 : 1 }],
-                                        shadowColor: selectedTags.includes(tag) ? "#00BFFF" : "transparent",
-                                        shadowOffset: { width: 0, height: 2 },
-                                        shadowOpacity: 0.5,
-                                        shadowRadius: 4,
-                                        elevation: selectedTags.includes(tag) ? 3 : 0,
-                                    })}
-                                >
-                                    <View
-                                        style={{
-                                            paddingVertical: 10,
-                                            paddingHorizontal: 12,
-                                            borderRadius: 12,
-                                            backgroundColor: selectedTags.includes(tag)
-                                                ? "#00BFFF"
-                                                : "#00314C",
-                                            borderColor: "#00BFFF",
-                                            borderWidth: selectedTags.includes(tag) ? 0 : 1.5,
-                                            margin: 5,
-                                            minWidth: 90,
-                                            alignItems: "center",
-                                        }}
-                                    >
-                                        <Text
-                                            style={{
-                                                fontSize: 14,
-                                                fontWeight: "bold",
-                                                color: selectedTags.includes(tag) ? "white" : "#E4D7F4",
-                                                textAlign: "center",
-                                            }}
-                                        >
-                                            {tag}
-                                        </Text>
-                                    </View>
-                                </Pressable>
-                            )}
-                        />
+                        {/* Flexbox View for tag layout */}
+                        <View style={{
+                            flexDirection: 'row',
+                            flexWrap: 'wrap',
+                            justifyContent: 'flex-start',
+                        }}>
+                            {item.data.map((tag) => (
+                                <View key={tag} style={{ flexDirection: 'row' }}>
+                                    {renderTagItem(tag, item.title)}
+                                </View>
+                            ))}
+                        </View>
                     </View>
                 )}
                 ListFooterComponent={() => (
                     <View style={{ marginTop: 10, marginBottom: 5 }}>
                         {/* Continue Button with improved styling */}
                         <Button
-                            onPress={() => router.push({
-                                pathname: "logs/fragmentedLogText",
-                                params: { parts: parts, monthDayYear: params.monthDayYear, dreamtype: name, tags: selectedTags.join(","), THEMETAGS: selectedThemesTags, ADDONTAGS: selectedAddonsTags, SETTINGSTAGS: selectedSettingsTags }
-                            })}
+                            onPress={navigateToLogText}
                             style={{
                                 backgroundColor: selectedTags.length > 0 ? "#0000ff" : "rgba(0, 0, 255, 0.5)",
                                 borderRadius: 12,
@@ -279,15 +331,6 @@ export default function FragmentedTagSelectionScreen() {
                                 Continue {selectedTags.length > 0 ? `with ${selectedTags.length} tag${selectedTags.length !== 1 ? "s" : ""}` : ""}
                             </ButtonText>
                         </Button>
-
-                        <TouchableOpacity style={{ alignItems: "center" }} onPress={() => router.push({
-                            pathname: "logs/fragmentedLogText",
-                            params: { parts: parts, dreamtype: params.name, tags: selectedTags.join(","), monthDayYear: params.monthDayYear, SETTINGSTAGS: selectedSettingsTags.join(","), THEMESTAGS: selectedThemesTags.join(","), ADDONSTAGS: selectedAddonsTags.join(",") }
-                        })}>
-                            <Text style={{ fontSize: 20, marginTop: 35, color: "white", opacity: .50, shadowColor: "white" }}>
-                                Skip
-                            </Text>
-                        </TouchableOpacity>
                     </View>
                 )}
             />
