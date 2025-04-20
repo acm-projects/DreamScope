@@ -234,7 +234,7 @@ export default function FragmentedLogPartSelectionScreen() {
                     </View>
                 )}
                 ListFooterComponent={() => (
-                    <View style={{ marginTop: 10, marginBottom: 20 }}>
+                    <View style={{ marginTop: 50, marginBottom: 20 }}>
                         {/* Continue Button with improved styling */}
                         <Button
                             onPress={handleContinuePress}

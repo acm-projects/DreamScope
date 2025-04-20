@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { View, Text, FlatList, TouchableOpacity, Pressable, StatusBar, Image } from "react-native";
+import { View, Text, FlatList, TouchableOpacity, Pressable, Alert, StatusBar, Image } from "react-native";
 import { Button, ButtonText } from "../../components/ui/button";
 import { useSearchParams, useLocalSearchParams } from "expo-router/build/hooks";
 import { useRouter } from "expo-router";
@@ -8,6 +8,11 @@ import tags from "../../Frontend/assets/dummyJson/tagsHolder.json";
 import Feather from '@expo/vector-icons/Feather';
 import { AntDesign, Fontisto } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
+
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
+
+const API_BASE_URL = 'http://10.0.2.2:5001';
 
 export default function TagsScreen() {
 
@@ -35,6 +40,8 @@ export default function TagsScreen() {
         year: "2-digit",
     })
 
+
+
     // Use useEffect for navigation based on conditions
     useEffect(() => {
         // Prevent unnecessary navigation if we're already handling it
@@ -56,6 +63,7 @@ export default function TagsScreen() {
 
                 }
             });
+
         } else if (name === "Fragmented Capture") {
             setIsNavigating(true);
             router.push({
@@ -208,10 +216,10 @@ export default function TagsScreen() {
                                     params: {
                                         monthDayYear: currentDateNumFormat,
                                         name: name,
-                                        tags: "",
-                                        THEMETAGS: "",
-                                        ADDONTAGS: "",
-                                        SETTINGSTAGS: ""
+                                        tags: [],
+                                        THEMETAGS: [],
+                                        ADDONTAGS: [],
+                                        SETTINGSTAGS: []
                                     }
                                 })}
                                 style={{

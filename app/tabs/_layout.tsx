@@ -13,13 +13,15 @@ export default function RootLayout() {
         <UserProvider>
             <AnalysisProvider>
                 {/* Status bar with proper styling */}
-                <StatusBar style={statusBarStyle} backgroundColor="#273952" />
+
+                <StatusBar style={statusBarStyle} backgroundColor="#273952" translucent={true} />
 
                 <Tabs
                     screenOptions={{
                         tabBarActiveBackgroundColor: "#273459",
                         tabBarShowLabel: true,
                         headerShown: false,
+
                         tabBarActiveTintColor: "#0093ED",
                         tabBarInactiveTintColor: "#7B718B",
                         animation: "fade",
@@ -32,9 +34,10 @@ export default function RootLayout() {
                             borderColor: "#273952",
                             height: 60,
                             backgroundColor: "#273952",
-                            paddingBottom: Platform.OS === 'ios' ? 20 : 10,
+                            paddingBottom: Platform.OS === 'ios' ? 0 : 0,
                             paddingTop: 5,
                             elevation: 8,
+                            borderRadius: 1,
                             shadowColor: "#000",
                             shadowOffset: { width: 0, height: -2 },
                             shadowOpacity: 0.1,
@@ -50,6 +53,7 @@ export default function RootLayout() {
                                 <Ionicons name="home" color={color} size={size} />
                             ),
                         }}
+
                     />
                     <Tabs.Screen
                         name="DreamLogging"

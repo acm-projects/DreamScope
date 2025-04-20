@@ -155,8 +155,8 @@ export default function DetailedLogTextScreen() {
                         onPress={() => router.back()}
                         style={{
                             position: "absolute",
-                            top: 5,
-                            left: -8,
+                            top: "3%",
+                            left: "2%",
                             backgroundColor: "transparent",
                             zIndex: 10,
                         }}
@@ -331,6 +331,7 @@ export default function DetailedLogTextScreen() {
                                 padding: 16,
                                 color: "white",
                                 borderRadius: 12,
+                                marginBottom: 25,
                                 textAlignVertical: 'top',
                                 fontSize: 16,
                             }}
