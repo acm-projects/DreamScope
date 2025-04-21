@@ -125,7 +125,7 @@ export default function TagsScreen() {
     // Function to render tags in a flexbox layout that properly wraps
     const renderTagsGrid = (tags: string[], sectionTitle: string) => {
         return (
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', flexGrow: 5 }}>
                 {tags.map((tag) => (
                     <Pressable
                         key={tag}

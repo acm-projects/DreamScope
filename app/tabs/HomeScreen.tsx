@@ -9,16 +9,31 @@ import {
     Image,
     Pressable,
     Dimensions,
-    ScrollView,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Fontisto } from '@expo/vector-icons';
-import * as Animatable from 'react-native-animatable';
+import Animated, {
+    useSharedValue,
+    useAnimatedStyle,
+    useAnimatedScrollHandler,
+    withTiming,
+    withRepeat,
+    withSequence,
+    withDelay,
+    Easing,
+    FadeIn,
+    interpolate,
+    Extrapolate,
+    runOnJS,
+} from 'react-native-reanimated';
+import { ScrollView, GestureHandlerRootView } from 'react-native-gesture-handler';
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 const CIRCLE_SIZE = 100;
+// Fixed item height for precise snapping
+const ITEM_HEIGHT = 200;
 
 // Moon phases in order
 const moonPhases = [
@@ -70,84 +85,104 @@ function generateCurrentMonthDates() {
             label,
             moonPhase,
             dayOfMonth,
-            isFuture: i > currentDay, // Mark days after today as future days
-            // Use dayOfMonth as the unique identifier for each day
-            uniqueId: dayOfMonth
+            isFuture: i > currentDay,
+            isToday: i === currentDay,
+            uniqueId: `${currentMonth}-${dayOfMonth}`
         });
     }
 
     return dates;
 }
 
-function DateTimeline() {
-    // Generate one set of current month dates initially
+function DateCarousel() {
+    // Generate dates with padding for infinite scroll effect
     const monthDates = generateCurrentMonthDates();
-    const [allDates, setAllDates] = useState([...monthDates]);
-    const [cyclePosition, setCyclePosition] = useState(0); // Track position of cycles (0 = original)
-    const scrollRef = useRef(null);
-
-    const now = new Date();
-    const todayLabel = now.toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
+    const [allDates, setAllDates] = useState(() => {
+        // Add previous and next month dates for continuous scrolling experience
+        return [...monthDates, ...monthDates, ...monthDates];
     });
 
-    // Function to add another set of the current month's dates at the end
-    const addCycleToBottom = () => {
-        setAllDates(currentDates => {
-            const newCycle = [...monthDates];
-            return [...currentDates, ...newCycle];
-        });
-    };
+    const scrollRef = useRef(null);
+    const scrollY = useSharedValue(0);
+    const activeIndex = useSharedValue(0);
+    const [currentDateIndex, setCurrentDateIndex] = useState(0);
 
-    // Function to add another set of the current month's dates at the beginning
-    const addCycleToTop = () => {
-        setAllDates(currentDates => {
-            const newCycle = [...monthDates];
-            setCyclePosition(prevPosition => prevPosition + 1);
+    // Find today's index in the original month dates
+    const todayIndex = monthDates.findIndex(date => date.isToday);
 
-            // After adding to the top, maintain scroll position
-            setTimeout(() => {
-                const itemHeight = CIRCLE_SIZE + 80; // Approximate height of each item with margins
-                scrollRef.current?.scrollTo({
-                    y: monthDates.length * itemHeight,
-                    animated: false,
-                });
-            }, 10);
+    // Calculate the starting index including the padding month
+    const initialScrollIndex = monthDates.length + todayIndex;
 
-            return [...newCycle, ...currentDates];
-        });
+    // Function to handle index changes for custom effects
+    const handleIndexChange = (index) => {
+        setCurrentDateIndex(index);
     };
 
     useEffect(() => {
-        // Initial scroll to today's date
-        setTimeout(() => {
-            const todayIndex = allDates.findIndex(date => date.label === todayLabel && !date.isFuture);
-            if (todayIndex !== -1) {
-                scrollRef.current?.scrollTo({
-                    y: todayIndex * (CIRCLE_SIZE + 80),
-                    animated: true,
+        // Scroll to today's date initially with the middle set of data
+        // This allows scrolling backward and forward
+        if (scrollRef.current) {
+            const initialOffset = initialScrollIndex * ITEM_HEIGHT;
+
+            // Small delay to ensure layout is complete
+            setTimeout(() => {
+                scrollRef.current.scrollTo({
+                    y: initialOffset,
+                    animated: false
                 });
-            }
-        }, 300);
+
+                // Set the active index
+                activeIndex.value = initialScrollIndex;
+                setCurrentDateIndex(initialScrollIndex);
+            }, 100);
+        }
     }, []);
 
-    const handleScroll = (event) => {
-        // Get the scroll position
-        const offsetY = event.nativeEvent.contentOffset.y;
-        const contentHeight = event.nativeEvent.contentSize.height;
-        const containerHeight = event.nativeEvent.layoutMeasurement.height;
+    // Reset the scroll position when reaching the end of data to create infinite scroll
+    const handleScrollEndReached = () => {
+        const middleMonthStart = monthDates.length;
+        const totalItems = allDates.length;
 
-        // Check if we're near the bottom of the ScrollView
-        if (offsetY + containerHeight > contentHeight - 200) {
-            addCycleToBottom();
-        }
-
-        // Check if we're near the top of the ScrollView
-        if (offsetY < 100) {
-            addCycleToTop();
+        if (activeIndex.value < middleMonthStart - 5) {
+            // If scrolled too far back, reset to the middle set
+            if (scrollRef.current) {
+                const newIndex = activeIndex.value + monthDates.length;
+                scrollRef.current.scrollTo({
+                    y: newIndex * ITEM_HEIGHT,
+                    animated: false
+                });
+                activeIndex.value = newIndex;
+            }
+        } else if (activeIndex.value > middleMonthStart * 2 + 5) {
+            // If scrolled too far forward, reset to the middle set
+            if (scrollRef.current) {
+                const newIndex = activeIndex.value - monthDates.length;
+                scrollRef.current.scrollTo({
+                    y: newIndex * ITEM_HEIGHT,
+                    animated: false
+                });
+                activeIndex.value = newIndex;
+            }
         }
     };
+
+    // Handle scroll events
+    const scrollHandler = useAnimatedScrollHandler({
+        onScroll: (event) => {
+            scrollY.value = event.contentOffset.y;
+
+            // Calculate current active index
+            const newIndex = Math.round(scrollY.value / ITEM_HEIGHT);
+            if (newIndex !== activeIndex.value) {
+                activeIndex.value = newIndex;
+                runOnJS(handleIndexChange)(newIndex);
+            }
+        },
+        onMomentumEnd: (event) => {
+            // Check if we need to reset position for infinite scroll
+            runOnJS(handleScrollEndReached)();
+        },
+    });
 
     // Function to get the appropriate image source based on moon phase
     const getMoonPhaseImage = (moonPhase) => {
@@ -173,72 +208,194 @@ function DateTimeline() {
         }
     };
 
-    return (
-        <ScrollView
-            ref={scrollRef}
-            contentContainerStyle={styles.timelineContainer}
-            showsVerticalScrollIndicator={false}
-            onScroll={handleScroll}
-            scrollEventThrottle={16}
-        >
-            {allDates.map((dateInfo, index) => {
-                const isToday = dateInfo.label === todayLabel;
-                const isFuture = dateInfo.isFuture;
+    // Render a single carousel item
+    const CarouselItem = ({ item, index }) => {
+        const isActive = activeIndex.value === index;
 
-                // Use center alignment for consistent pattern
-                const alignmentStyle = styles.centerItem;
+        // Create animated styles based on position relative to active item
+        const animatedStyle = useAnimatedStyle(() => {
+            // Calculate the offset from current position
+            const inputRange = [
+                (index - 2) * ITEM_HEIGHT,
+                (index - 1) * ITEM_HEIGHT,
+                index * ITEM_HEIGHT,
+                (index + 1) * ITEM_HEIGHT,
+                (index + 2) * ITEM_HEIGHT,
+            ];
 
-                const animationType = isToday ? 'pulse' : 'fadeInUp';
-                const animationDelay = isToday ? 0 : Math.min(index, 20) * 10; // Cap delay for better performance
+            // Enhanced scale for active item - make it bigger
+            const scale = interpolate(
+                scrollY.value,
+                inputRange,
+                [0.7, 0.9, 1.2, 0.9, 0.7], // Increased center scale from 1.1 to 1.2
+                Extrapolate.CLAMP
+            );
 
-                // Add size variation for organic layout
-                const sizeVariation = isToday ? 2.0 : 0.85 + Math.random() * 0.3;
+            // Opacity based on distance from center
+            const opacity = interpolate(
+                scrollY.value,
+                inputRange,
+                [0.5, 0.7, 1, 0.7, 0.5],
+                Extrapolate.CLAMP
+            );
 
-                // Create a key using uniqueId (day of month) and index to prevent React key warnings
-                const itemKey = `day-${dateInfo.uniqueId}-pos-${index}`;
+            // Subtle vertical translation for 3D effect
+            const translateY = interpolate(
+                scrollY.value,
+                inputRange,
+                [60, 30, 0, -30, -60],
+                Extrapolate.CLAMP
+            );
 
-                return (
-                    <Animatable.View
-                        key={itemKey}
-                        animation={animationType}
-                        delay={animationDelay}
-                        duration={300}
-                        easing="ease-out"
-                        iterationCount={isToday ? 'infinite' : 1}
-                        iterationDelay={5000}
-                        useNativeDriver
-                        style={[styles.dateItemWrapper, alignmentStyle]}
+            return {
+                transform: [
+                    { scale },
+                    { translateY }
+                ],
+                opacity,
+                zIndex: isActive ? 2 : 0,
+            };
+        });
+
+        // Animated style for the circle itself to add glow effects
+        const circleAnimatedStyle = useAnimatedStyle(() => {
+            const inputRange = [
+                (index - 1) * ITEM_HEIGHT,
+                index * ITEM_HEIGHT,
+                (index + 1) * ITEM_HEIGHT,
+            ];
+
+            // Enhanced shadow effect for active item
+            const shadowOpacity = interpolate(
+                scrollY.value,
+                inputRange,
+                [0.2, 0.8, 0.2],
+                Extrapolate.CLAMP
+            );
+
+            // Background color shift for active item
+            const backgroundColor = isActive
+                ? item.isToday
+                    ? '#94C9A9'
+                    : item.isFuture
+                        ? 'rgba(215, 201, 227, 1)'
+                        : 'rgba(215, 201, 227, 1)'
+                : item.isToday
+                    ? '#94C9A9'
+                    : item.isFuture
+                        ? 'rgba(215, 201, 227, 0.8)'
+                        : '#D7C9E3';
+
+            return {
+                shadowOpacity: shadowOpacity,
+                shadowRadius: isActive ? 15 : 4,
+                backgroundColor,
+                borderWidth: isActive ? 3 : 2,
+            };
+        });
+
+        // Determine if this is truly today (compensating for the repeated data)
+        const normalizedIndex = index % monthDates.length;
+        const normalizedTodayIndex = todayIndex;
+        const isTrueToday = normalizedIndex === normalizedTodayIndex;
+
+        return (
+            <Animated.View
+                style={[
+                    styles.carouselItem,
+                    animatedStyle
+                ]}
+            >
+                <Animated.View
+                    style={[
+                        styles.moonCircle,
+                        isTrueToday && styles.todayCircle,
+                        item.isFuture && styles.futureCircle,
+                        circleAnimatedStyle,
+                        isActive && styles.activeCircle
+                    ]}
+                >
+                    <Image
+                        source={getMoonPhaseImage(item.moonPhase)}
+                        style={[
+                            styles.moonImage,
+                            item.isFuture && styles.futureMoonImage
+                        ]}
+                        resizeMode="contain"
+                    />
+
+                    <Text
+                        style={[
+                            styles.dateText,
+                            isTrueToday && styles.todayText,
+                            item.isFuture && styles.futureText,
+                            isActive && styles.activeDateText
+                        ]}
                     >
-                        <View
-                            style={[
-                                styles.circle,
-                                isToday && styles.todayCircle,
-                                isFuture && styles.futureCircle,
-                                { transform: [{ scale: sizeVariation }] },
-                            ]}
-                        >
-                            <Image
-                                source={getMoonPhaseImage(dateInfo.moonPhase)}
-                                style={[
-                                    styles.moonImage,
-                                    isFuture && styles.futureMoonImage
-                                ]}
-                                resizeMode="contain"
-                            />
-                            <Text
-                                style={[
-                                    styles.dateText,
-                                    isToday && styles.todayText,
-                                    isFuture && styles.futureText
-                                ]}
-                            >
-                                {dateInfo.label}
-                            </Text>
-                        </View>
-                    </Animatable.View>
-                );
-            })}
-        </ScrollView>
+                        {item.label}
+                    </Text>
+
+                    {/* Add indicator for active item */}
+                    {isActive && (
+                        <View style={styles.activeIndicator} />
+                    )}
+                </Animated.View>
+
+                {/* Add a subtle glow around active item */}
+                {isActive && (
+                    <Animated.View style={styles.activeItemLocalGlow} />
+                )}
+            </Animated.View>
+        );
+    };
+
+    return (
+        <GestureHandlerRootView style={{ flex: 1 }}>
+            <View style={styles.carouselContainer}>
+                {/* Background glow effect for active item */}
+                <Animated.View
+                    style={[
+                        styles.activeItemGlow,
+                        {
+                            transform: [
+                                { translateY: withTiming(activeIndex.value * ITEM_HEIGHT - ITEM_HEIGHT / 2, { duration: 100 }) }
+                            ]
+                        }
+                    ]}
+                />
+
+                <Animated.ScrollView
+                    ref={scrollRef}
+                    contentContainerStyle={styles.scrollContent}
+                    showsVerticalScrollIndicator={false}
+                    onScroll={scrollHandler}
+                    scrollEventThrottle={16}
+                    snapToInterval={ITEM_HEIGHT}
+                    decelerationRate="fast"
+                    snapToAlignment="center"
+                    pagingEnabled={false}
+                >
+                    {/* Add padding at top and bottom for a better scroll experience */}
+                    <View style={{ height: height / 2 - ITEM_HEIGHT / 2 }} />
+
+                    {allDates.map((item, index) => (
+                        <CarouselItem
+                            key={`item-${item.uniqueId}-${index}`}
+                            item={item}
+                            index={index}
+                        />
+                    ))}
+
+                    <View style={{ height: height / 2 - ITEM_HEIGHT / 2 }} />
+                </Animated.ScrollView>
+
+                {/* Swipe indicator */}
+                <View style={styles.swipeIndicatorContainer}>
+                    <Fontisto name="angle-up" size={18} color="#D7C9E3" style={{ marginBottom: 5 }} />
+                    <Fontisto name="angle-down" size={18} color="#D7C9E3" />
+                </View>
+            </View>
+        </GestureHandlerRootView>
     );
 }
 
@@ -246,29 +403,21 @@ export default function HomeScreen() {
     const router = useRouter();
     const [modalVisible, setModalVisible] = useState(false);
 
+    // Check if weekly check-in should appear
     const checkIfDayIsDivisibleBy7 = () => {
         const justTheDay = new Date().toLocaleDateString('en-US', {
             day: 'numeric'
         });
 
-        if (Number(justTheDay) % 17 == 0) {
-            return true;
-        }
-        else {
-            return false;
-        }
+        return Number(justTheDay) % 20 === 0;
     }
 
     useEffect(() => {
-        setModalVisible(checkIfDayIsDivisibleBy7);
+        setModalVisible(checkIfDayIsDivisibleBy7());
     }, []);
 
     const handleProfilePress = () => {
         router.push("../Settings&ProfilePages/Profile");
-    };
-
-    const handleSettingsPress = () => {
-        router.push("../Settings&ProfilePages/Settings");
     };
 
     return (
@@ -281,46 +430,61 @@ export default function HomeScreen() {
                     onRequestClose={() => setModalVisible(false)}
                 >
                     <View style={styles.modalOverlay}>
-                        <View style={styles.modalContainer}>
+                        <Animated.View
+                            style={styles.modalContainer}
+                            entering={FadeIn.duration(400).delay(300)}
+                        >
                             <Text style={styles.modalText}>Weekly Check-in!</Text>
-                            <Text style={{ color: "white", marginBottom: 25 }}>Is there any updates you like to share from this week?</Text>
+                            <Text style={{ color: "white", marginBottom: 25 }}>
+                                Is there any updates you like to share from this week?
+                            </Text>
 
-                            <TextInput placeholder="Enter an update!" placeholderTextColor={"grey"} style={{ fontSize: 20, backgroundColor: "#212121", borderRadius: 12, borderWidth: 4, borderColor: "#212121", color: "white", width: "100%" }}>
-                            </TextInput>
+                            <TextInput
+                                placeholder="Enter an update!"
+                                placeholderTextColor={"grey"}
+                                style={styles.modalInput}
+                            />
 
-                            <View style={{
-                                flexDirection: "row",
-                                justifyContent: "space-around",
-                                width: "100%",
-                                marginTop: 45
-                            }}>
-                                <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.modalButton}>
+                            <View style={styles.modalButtonContainer}>
+                                <TouchableOpacity
+                                    onPress={() => setModalVisible(false)}
+                                    style={styles.modalButton}
+                                >
                                     <Text style={styles.modalButtonText}>Complete</Text>
                                 </TouchableOpacity>
 
-                                <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.modalButton}>
+                                <TouchableOpacity
+                                    onPress={() => setModalVisible(false)}
+                                    style={styles.modalButton}
+                                >
                                     <Text style={styles.modalButtonText}>Skip</Text>
                                 </TouchableOpacity>
                             </View>
-                        </View>
+                        </Animated.View>
                     </View>
                 </Modal>
 
-                <View style={styles.imageContainer}>
+                <Animated.View
+                    style={styles.imageContainer}
+                    entering={FadeIn.duration(800)}
+                >
                     <Image
                         source={require('../../Frontend/images/pine-tree-background.png')}
                         style={styles.image}
                         resizeMode="stretch"
                     />
-                </View>
+                </Animated.View>
 
-                <View style={styles.profileButtonContainer}>
+                <Animated.View
+                    style={styles.profileButtonContainer}
+                    entering={FadeIn.duration(500).delay(300)}
+                >
                     <Pressable onPress={handleProfilePress} style={styles.profileButton}>
                         <Fontisto name="person" size={24} color="#D7C9E3" />
                     </Pressable>
-                </View>
+                </Animated.View>
 
-                <DateTimeline />
+                <DateCarousel />
             </SafeAreaView>
         </LinearGradient>
     );
@@ -337,12 +501,6 @@ const styles = StyleSheet.create({
         right: 20,
         zIndex: 10,
     },
-    settingsButtonContainer: {
-        position: 'absolute',
-        top: 10,
-        left: 20,
-        zIndex: 10,
-    },
     profileButton: {
         width: 44,
         height: 44,
@@ -352,16 +510,11 @@ const styles = StyleSheet.create({
         borderColor: '#D7C9E3',
         justifyContent: 'center',
         alignItems: 'center',
-    },
-    settingsButton: {
-        width: 44,
-        height: 44,
-        borderRadius: 22,
-        backgroundColor: '#2C123F',
-        borderWidth: 2,
-        borderColor: '#D7C9E3',
-        justifyContent: 'center',
-        alignItems: 'center',
+        shadowColor: '#D7C9E3',
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.3,
+        shadowRadius: 5,
+        elevation: 5,
     },
     imageContainer: {
         position: 'absolute',
@@ -375,6 +528,37 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
     },
+    // Carousel styles
+    carouselContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        position: 'relative',
+    },
+    scrollContent: {
+        alignItems: 'center',
+    },
+    carouselItem: {
+        height: ITEM_HEIGHT,
+        width: width,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    moonCircle: {
+        width: CIRCLE_SIZE,
+        height: CIRCLE_SIZE,
+        borderRadius: CIRCLE_SIZE / 2,
+        borderColor: "black",
+        borderWidth: 2,
+        backgroundColor: '#D7C9E3',
+        justifyContent: 'center',
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+        elevation: 3,
+    },
     moonImage: {
         width: '70%',
         height: '70%',
@@ -384,31 +568,13 @@ const styles = StyleSheet.create({
         borderRadius: 50
     },
     futureMoonImage: {
-        opacity: 0.5,
-    },
-    timelineContainer: {
-        paddingVertical: 100,
-        position: 'relative',
-    },
-    dateItemWrapper: {
-        marginVertical: 40,
-        position: 'relative',
-    },
-    circle: {
-        width: CIRCLE_SIZE,
-        height: CIRCLE_SIZE,
-        borderRadius: CIRCLE_SIZE / 2,
-        borderColor: "black",
-        borderWidth: 2,
-        backgroundColor: '#D7C9E3',
-        justifyContent: 'center',
-        alignItems: 'center',
-        zIndex: 22,
+        opacity: 0.7,
     },
     dateText: {
-        fontSize: 14,
+        fontSize: 16,
         fontWeight: 'bold',
         color: 'black',
+        marginTop: 5,
     },
     todayCircle: {
         backgroundColor: '#94C9A9',
@@ -416,29 +582,85 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 0 },
         shadowOpacity: 0.6,
         shadowRadius: 20,
+        elevation: 8,
+        borderColor: '#4A7A5B',
+        borderWidth: 2,
     },
     todayText: {
         color: 'black',
-        fontSize: 16,
+        fontSize: 18,
+        fontWeight: 'bold',
     },
     futureCircle: {
         backgroundColor: '#D7C9E3',
-        opacity: 0.5,
+        opacity: 0.8,
+        borderColor: '#6E3A8E',
     },
     futureText: {
         color: 'black',
     },
-    leftItem: {
-        alignSelf: 'flex-start',
-        marginLeft: 20,
+    // Active item indicator
+    activeIndicator: {
+        position: 'absolute',
+        top: -8,
+        width: 16,
+        height: 16,
+        borderRadius: 8,
+        backgroundColor: '#D7C9E3',
+        borderWidth: 2,
+        borderColor: '#3d1865',
     },
-    rightItem: {
-        alignSelf: 'flex-end',
-        marginRight: 20,
+    // Enhanced styles for active item
+    activeCircle: {
+        borderColor: '#8A4FBC', // More vibrant border
+        shadowColor: '#D7C9E3',
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.8,
+        shadowRadius: 15,
+        elevation: 10,
     },
-    centerItem: {
-        alignSelf: 'center',
+    activeDateText: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#180723', // Darker text for contrast
     },
+    activeItemLocalGlow: {
+        position: 'absolute',
+        width: CIRCLE_SIZE + 30,
+        height: CIRCLE_SIZE + 30,
+        borderRadius: (CIRCLE_SIZE + 30) / 2,
+        backgroundColor: 'transparent',
+        borderColor: 'rgba(215, 201, 227, 0.4)',
+        borderWidth: 2,
+        shadowColor: '#D7C9E3',
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.6,
+        shadowRadius: 20,
+    },
+    // Glow effect for active item
+    activeItemGlow: {
+        position: 'absolute',
+        width: 180, // Increased from 150
+        height: 180, // Increased from 150
+        borderRadius: 90,
+        backgroundColor: 'rgba(84, 40, 130, 0.25)', // Slightly more opaque
+        shadowColor: '#6E3A8E',
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.7, // Increased from 0.6
+        shadowRadius: 50, // Increased from 40
+        zIndex: -1,
+    },
+    // Swipe indicator
+    swipeIndicatorContainer: {
+        position: 'absolute',
+        right: 20,
+        alignItems: 'center',
+        backgroundColor: 'rgba(40, 18, 63, 0.7)',
+        padding: 10,
+        borderRadius: 20,
+        zIndex: 100,
+    },
+    // Modal styles
     modalOverlay: {
         flex: 1,
         justifyContent: "center",
@@ -447,29 +669,55 @@ const styles = StyleSheet.create({
     },
     modalContainer: {
         width: "90%",
-        height: "35%",
         backgroundColor: "#180723",
-        padding: 15,
-        borderRadius: 11,
+        padding: 20,
+        borderRadius: 16,
         alignItems: "center",
         borderWidth: 2,
         borderColor: "#D7C9E3",
+        shadowColor: "#D7C9E3",
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.3,
+        shadowRadius: 15,
+        elevation: 10,
     },
     modalText: {
         color: "#D7C9E3",
-        fontSize: 18,
+        fontSize: 24,
+        fontWeight: "bold",
         marginBottom: 15,
         textAlign: "center",
+    },
+    modalInput: {
+        fontSize: 20,
+        backgroundColor: "#212121",
+        borderRadius: 12,
+        borderWidth: 4,
+        borderColor: "#212121",
+        color: "white",
+        width: "100%",
+        padding: 12,
+    },
+    modalButtonContainer: {
+        flexDirection: "row",
+        justifyContent: "space-around",
+        width: "100%",
+        marginTop: 45,
     },
     modalButton: {
         backgroundColor: "#2C123F",
         alignItems: "center",
-        paddingVertical: 10,
+        paddingVertical: 12,
         width: "45%",
         paddingHorizontal: 20,
-        borderRadius: 8,
+        borderRadius: 12,
         borderWidth: 1,
         borderColor: "#D7C9E3",
+        shadowColor: "#D7C9E3",
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.2,
+        shadowRadius: 5,
+        elevation: 3,
     },
     modalButtonText: {
         color: "#D7C9E3",

@@ -7,14 +7,15 @@ import { AnalysisProvider } from "../context/AnalysisContext";
 
 export default function RootLayout() {
     // Get proper status bar style based on platform
-    const statusBarStyle = Platform.OS === 'ios' ? 'light' : 'auto';
-
+    const statusBarStyle = Platform.OS === 'ios' ? 'auto' : 'auto';
     return (
         <UserProvider>
             <AnalysisProvider>
                 {/* Status bar with proper styling */}
 
                 <StatusBar style={statusBarStyle} backgroundColor="#273952" translucent={true} />
+
+
 
                 <Tabs
                     screenOptions={{
