@@ -107,6 +107,9 @@ function DateCarousel() {
     const activeIndex = useSharedValue(0);
     const [currentDateIndex, setCurrentDateIndex] = useState(0);
 
+    // Shared value for glow animation
+    const glowPosition = useSharedValue(0);
+
     // Find today's index in the original month dates
     const todayIndex = monthDates.findIndex(date => date.isToday);
 
@@ -116,6 +119,8 @@ function DateCarousel() {
     // Function to handle index changes for custom effects
     const handleIndexChange = (index) => {
         setCurrentDateIndex(index);
+        // Animate the glow position whenever active index changes
+        glowPosition.value = withTiming(index * ITEM_HEIGHT - ITEM_HEIGHT / 2, { duration: 100 });
     };
 
     useEffect(() => {
@@ -131,8 +136,9 @@ function DateCarousel() {
                     animated: false
                 });
 
-                // Set the active index
+                // Set the active index and glow position
                 activeIndex.value = initialScrollIndex;
+                glowPosition.value = initialScrollIndex * ITEM_HEIGHT - ITEM_HEIGHT / 2;
                 setCurrentDateIndex(initialScrollIndex);
             }, 100);
         }
@@ -152,6 +158,7 @@ function DateCarousel() {
                     animated: false
                 });
                 activeIndex.value = newIndex;
+                glowPosition.value = newIndex * ITEM_HEIGHT - ITEM_HEIGHT / 2;
             }
         } else if (activeIndex.value > middleMonthStart * 2 + 5) {
             // If scrolled too far forward, reset to the middle set
@@ -162,6 +169,7 @@ function DateCarousel() {
                     animated: false
                 });
                 activeIndex.value = newIndex;
+                glowPosition.value = newIndex * ITEM_HEIGHT - ITEM_HEIGHT / 2;
             }
         }
     };
@@ -175,6 +183,8 @@ function DateCarousel() {
             const newIndex = Math.round(scrollY.value / ITEM_HEIGHT);
             if (newIndex !== activeIndex.value) {
                 activeIndex.value = newIndex;
+                // Update glow position
+                glowPosition.value = newIndex * ITEM_HEIGHT - ITEM_HEIGHT / 2;
                 runOnJS(handleIndexChange)(newIndex);
             }
         },
@@ -182,6 +192,15 @@ function DateCarousel() {
             // Check if we need to reset position for infinite scroll
             runOnJS(handleScrollEndReached)();
         },
+    });
+
+    // Animated style for the glow effect
+    const glowAnimatedStyle = useAnimatedStyle(() => {
+        return {
+            transform: [
+                { translateY: glowPosition.value }
+            ]
+        };
     });
 
     // Function to get the appropriate image source based on moon phase
@@ -352,15 +371,11 @@ function DateCarousel() {
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
             <View style={styles.carouselContainer}>
-                {/* Background glow effect for active item */}
+                {/* Background glow effect for active item - FIXED HERE */}
                 <Animated.View
                     style={[
                         styles.activeItemGlow,
-                        {
-                            transform: [
-                                { translateY: withTiming(activeIndex.value * ITEM_HEIGHT - ITEM_HEIGHT / 2, { duration: 100 }) }
-                            ]
-                        }
+                        glowAnimatedStyle
                     ]}
                 />
 

@@ -12,7 +12,7 @@ export default function Entry() {
         const checkLoginStatus = async () => {
             try {
                 const data = await AsyncStorage.getItem('isLoggedIn');
-                const loggedIn = data === 'true';
+                const loggedIn = data === 'false';
                 setIsLoggedIn(loggedIn);
 
                 if (loggedIn) {

@@ -80,7 +80,7 @@ export default function DreamLogScreen() {
 
                                 <TouchableOpacity
                                     onPress={() => {
-                                        router.push({ pathname: `/logs/${EmptyType}`, params: { name: EmptyType } })
+                                        router.push({ pathname: `/logCompletion/emptyLogCompletion`, params: { name: EmptyType } })
 
                                     }}
                                     style={styles.modalButton}
