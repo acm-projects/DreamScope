@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Image, Pressable, Text, Button, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Image, Pressable, Text } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import { useRouter } from 'expo-router';
+import { Button } from "../../components/ui/button";
 import { LinearGradient } from 'expo-linear-gradient';
 import { Fontisto } from '@expo/vector-icons';
 import userDreamData from '../../Frontend/assets/dummyJson/multipleDreamLogsExampleForTimeline.json';
@@ -23,7 +24,7 @@ const getMarkedDates = (selectedDate: string, today: string) => {
             dotColor: 'transparent',
             customStyles: {
                 container: {
-                    backgroundColor: '#E2CF65', // Yellow solid circle
+                    backgroundColor: '#eadb8c', // Yellow solid circle
                     borderRadius: 20,
                 },
                 text: {
@@ -77,54 +78,11 @@ const MonthViewCalendar = () => {
     const [selectedDate, setSelectedDate] = useState('');
     const router = useRouter();
 
-    const a = new Date().toISOString().split('T')[0];
-
-    let today = ""
-
-    const currentMonth = new Date().toLocaleDateString("en-US", {
-        month: "numeric",
-
-    });
-    const currentDay = new Date().toLocaleDateString("en-US", {
-        day: "numeric",
-
-
-
-    });
-    const currentYear = new Date().toLocaleDateString("en-US", {
-        year: "numeric",
-
-    });
-
-
-    if (currentDay.length == 1) {
-
-        today = currentYear + "-" + currentMonth + "-0" + currentDay
-
-
-    }
-    else if (currentMonth.length == 1) {
-        today = currentYear + "-0" + currentMonth + "-" + currentDay
-
-
-    }
-    else if (currentMonth.length == 1 && currentDay.length == 1) {
-        today = currentYear + "-0" + currentMonth + "-0" + currentDay
-
-    }
-    else {
-
-        today = currentDay + "-" + currentMonth + "-" + currentYear
-
-    }
-
-
-
-
-
+    const today = new Date().toISOString().split('T')[0];
 
     const handleDayPress = (day: { dateString: string }) => {
         setSelectedDate(day.dateString);
+        console.log(selectedDate);
         validDate = true;
     };
 
@@ -132,14 +90,12 @@ const MonthViewCalendar = () => {
         if (validDate == true) {
             return router.push({
                 pathname: '/logs/Image_pages',
-                params: { date: selectedDate.toString() },
+                params: { date: selectedDate },
             });
         } else {
             //create an alert that the date the user picked is invalid
         }
     };
-
-
 
     return (
         <LinearGradient colors={['#180723', '#2C123F', '#3d1865']} style={styles.container}>
@@ -180,14 +136,14 @@ const MonthViewCalendar = () => {
             </View>
 
             <View style={{ marginTop: 20, marginBottom: 5 }}>
-                <TouchableOpacity
+                <Button
                     onPress={checkValidDate}
                     style={styles.visualizeDreamButton}
                 >
                     <Text style={styles.visualizeDreamButtonText}>
                         Visualize Dream
                     </Text>
-                </TouchableOpacity>
+                </Button>
             </View>
         </LinearGradient>
     );
@@ -200,7 +156,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     headerText: {
-        color: "#D7C9E3",
+        color: "#fc77a6",
         fontSize: 35,
         fontWeight: "bold",
         marginBottom: 50,
@@ -229,7 +185,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     visualizeDreamButton: {
-        backgroundColor: "#E2CF65",
+        backgroundColor: "#eadb8c",
         borderRadius: 12,
         alignItems: "center",
         justifyContent: "center",

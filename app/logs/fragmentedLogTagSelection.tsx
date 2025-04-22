@@ -296,7 +296,7 @@ export default function FragmentedTagSelectionScreen() {
 
                         }}>
                             {item.data.map((tag) => (
-                                <View key={tag} style={{ marginTop: 5, marginBottom: 5, marginLeft: 5, marginRight: 5, flexDirection: 'row' }}>
+                                <View key={tag} style={{ marginTop: 3, marginBottom: 0, marginLeft: 0, marginRight: 3, flexDirection: 'row' }}>
                                     {renderTagItem(tag, item.title)}
                                 </View>
                             ))}

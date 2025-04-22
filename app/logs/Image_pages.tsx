@@ -22,49 +22,37 @@ export default function AIAnalysisPage() {
     const [images, setImages] = useState<string[]>([]);
     const { date } = useLocalSearchParams(); // Retrieve the date parameter from the route
 
-    // // Fetch postId from AsyncStorage on component mount
-    // useEffect(() => {
-    //     const fetchPostId = async () => {
-    //         try {
-    //             const storedEmail = await AsyncStorage.getItem('useremail');
-    //             if (storedEmail) {
-    //                 const userResponse = await axios.get(`${API_BASE_URL}/users/email/${storedEmail}`);
-    //                 console.log("got email");
-    //                 if (userResponse.data) {
-    //                     const userId = userResponse.data._id;
-    //                     console.log("got user id")
-    //                     const dreamPostResponse = await axios.get(`${API_BASE_URL}/api/dreamPosts/users/${userId}/date/${date}`);
-    //                     if (dreamPostResponse.data) {
-    //                         setPostId(dreamPostResponse.data._id);
-    //                         console.log("got post id");
-    //                     } else {
-    //                         console.log("No dream post found for this user on the specified date.");
-    //                         setPostId(null);
-    //                     }
-    //                 } else {
-    //                     console.log("User not found with this email.");
-    //                     setPostId(null);
-    //                 }
-    //             }
-    //         } catch (error) {
-    //             console.error("Error fetching postId:", error);
-    //         }
-    //     };
-    //     fetchPostId();
-    // }, [date]);
-
     // Fetch postId from AsyncStorage on component mount
     useEffect(() => {
         const fetchPostId = async () => {
             try {
-                const storedPostId = await AsyncStorage.getItem("postId");
-                setPostId(storedPostId);
+                const storedEmail = await AsyncStorage.getItem('userEmail');
+                if (storedEmail) {
+                    const userResponse = await axios.get(`${API_BASE_URL}/users/email/${storedEmail}`);
+                    console.log("got email");
+                    if (userResponse.data) {
+                        const userId = userResponse.data._id;
+                        console.log("got user id")
+                        console.log(date);
+                        const dreamPostResponse = await axios.get(`http://10.0.2.2:5001/api/dreamPosts/users/${userId}/date/${date}`);
+                        if (dreamPostResponse.data) {
+                            setPostId(dreamPostResponse.data._id);
+                            console.log("got post id");
+                        } else {
+                            console.log("No dream post found for this user on the specified date.");
+                            setPostId(null);
+                        }
+                    } else {
+                        console.log("User not found with this email.");
+                        setPostId(null);
+                    }
+                }
             } catch (error) {
                 console.error("Error fetching postId:", error);
             }
         };
         fetchPostId();
-    }, []);
+    }, [date]);
 
     // Fetch dream post data when postId is available
     useEffect(() => {
@@ -75,9 +63,11 @@ export default function AIAnalysisPage() {
 
     useEffect(() => {
         if (analysisData?.visualizations) {
+
             setImages(analysisData.visualizations); // Set images directly to the array
         } else {
             setImages([]); // Ensure images is an empty array if no visualizations
+            console.log("hi")
         }
     }, [analysisData?.visualizations]);
 
@@ -97,7 +87,6 @@ export default function AIAnalysisPage() {
         return <Text style={{ color: "red" }}>Error: {error.message}</Text>;
     }
 
-    console.log("in page: ", userData.joinDate);
 
     // Get current date formatted nicely
     const currentDate = new Date().toLocaleDateString("en-US", {
@@ -113,8 +102,8 @@ export default function AIAnalysisPage() {
                 onPress={() => router.push("/tabs/DreamVisualization")}
                 style={{
                     position: "absolute",
-                    top: 5,
-                    left: -8,
+                    top: "2%",
+                    left: "3%",
                     backgroundColor: "transparent",
                     zIndex: 10,
                 }}
@@ -125,8 +114,8 @@ export default function AIAnalysisPage() {
             </Button>
 
             <ScrollView contentContainerStyle={styles.scrollViewContent}>
-                <Text style={styles.headerText}>Your Dream Visualizations</Text>
-                <Text style={styles.dateText}>Selected Date: {analysisData?.date}</Text>
+                <Text style={styles.headerText}>{"\n"}YOUR DREAM VISUALS</Text>
+                <Text style={styles.dateText}>Selected Date: {date}</Text>
                 {images.map((imgSrc, index) => (
                     <View key={index} style={styles.imageCard}>
                         <Image

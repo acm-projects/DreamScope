@@ -18,7 +18,7 @@ import { useUser } from "../context/UserContext";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const API_BASE_URL = "http://10.0.2.2:5001";
+const API_BASE_URL = 'http://10.0.2.2:5001';
 
 type DreamLog = {
     _id: string;
@@ -68,17 +68,17 @@ export default function DreamTimelineScreen() {
                 );
                 setDreamLogs(response.data);
             } catch (error) {
-                setError(error);
+                //setError(error);
                 console.error("Error fetching dream logs:", error);
             } finally {
                 setLoading(false);
             }
         };
 
-        if (!isLoading && userData && userData._id) {
+        if (!isLoading && userData && userData?._id) {
             fetchDreamLogs();
         }
-    }, [userData, isLoading]);
+    }, [userData?._id, isLoading]);
 
     if (loading) {
         return (
@@ -90,11 +90,58 @@ export default function DreamTimelineScreen() {
 
     if (error) {
         return (
-            <Text style={{ color: "red", flex: 1, textAlign: "center", marginTop: 50 }}>
-                Error loading dream timeline: {error as string}
-            </Text>
+            <LinearGradient colors={["#15041D", "#2C123F", "#3B1856"]} style={{ flex: 1 }}>
+                <StatusBar barStyle="light-content" />
+                <View style={{ alignItems: "center", marginTop: 40, marginBottom: 25 }}>
+                    <Text
+                        style={{
+                            fontSize: 36,
+                            fontWeight: "bold",
+                            color: "white",
+                            marginBottom: 5,
+                        }}
+                    >
+                        DREAM TIMELINE
+                    </Text>
+                    <Text
+                        style={{
+                            fontSize: 26,
+                            fontWeight: "bold",
+                            color: "#eadb8c",
+                            textAlign: "center",
+                            marginBottom: 8,
+                            textShadowColor: "rgba(0, 191, 255, 0.3)",
+                            textShadowOffset: { width: 0, height: 1 },
+                            textShadowRadius: 5,
+                        }}
+                    >
+                        {currentDate}
+                    </Text>
+
+
+                    <View style={{ alignItems: 'center', marginBottom: 20 }}>
+                        <Text style={{ color: 'white', fontSize: 18, fontWeight: 'bold', marginBottom: 10, textAlign: 'center' }}>
+                            Your Dream Logs would appear here!
+                        </Text>
+                        <Text style={{ color: '#C9B9E2', fontSize: 16, textAlign: 'center' }}>
+                            Start capturing your dreams by tapping the button below.
+                        </Text>
+                    </View>
+
+
+                    <View style={{ marginTop: 20, marginBottom: 5 }}>
+                        <Button onPress={() => router.push("/tabs/DreamLogging")} style={styles.newDreamButton}>
+                            <Text style={styles.newDreamButtonText}>Capture New Dream</Text>
+                            <Feather name="plus" size={18} color="white" style={{ marginLeft: 8 }} />
+                        </Button>
+                    </View>
+
+                </View>
+
+            </LinearGradient>
         );
     }
+
 
     const determineDreamTypeStyle = (dreamType: string) => {
         switch (dreamType) {
@@ -133,7 +180,7 @@ export default function DreamTimelineScreen() {
 
     const navigateToDreamPage = (item: DreamLog) => {
         router.push({
-            pathname: `/TimelinePages/[DreamNumber]`,
+            pathname: `/logs/[DreamNumber]`,
             params: {
                 DreamNumber: item._id,
                 DreamTitle: item.title,
@@ -167,7 +214,6 @@ export default function DreamTimelineScreen() {
                 />
             </View>
 
-            {/* Modal for "Empty" dream logs */}
             <Modal
                 animationType="fade"
                 transparent={true}
@@ -203,7 +249,6 @@ export default function DreamTimelineScreen() {
                 </View>
             </Modal>
 
-            {/* List of dream logs */}
             <FlatList
                 data={dreamLogs}
                 keyExtractor={(item) => item._id}
@@ -211,7 +256,6 @@ export default function DreamTimelineScreen() {
                 showsVerticalScrollIndicator={false}
                 ListHeaderComponent={() => (
                     <View>
-                        {/* Header with enhanced styling */}
                         <View style={{ alignItems: "center", marginTop: 40, marginBottom: 25 }}>
                             <Text
                                 style={{
@@ -288,6 +332,7 @@ export default function DreamTimelineScreen() {
         </LinearGradient>
     );
 }
+
 
 const styles = StyleSheet.create({
     container: {

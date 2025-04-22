@@ -49,7 +49,7 @@ export default function fragmentedLogTextScreen() {
                 const userId = response.data._id;
 
                 const dreamData = {
-                    _id: userId,
+                    userId: userId,
                     title: "no title provided",
                     type: "Fragmented",
                     dreamText: allText,
@@ -71,7 +71,7 @@ export default function fragmentedLogTextScreen() {
 
 
             } catch (error) {
-                console.error('Error submitting dream log:', error);
+                console.log('Error submitting dream log:', error);
                 Alert.alert('Error', 'Failed to submit dream log.');
             }
 

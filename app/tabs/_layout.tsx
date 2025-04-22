@@ -32,7 +32,7 @@ export default function RootLayout() {
                         },
                         tabBarStyle: {
                             borderTopWidth: 0.5,
-                            borderColor: "#273952",
+                            borderColor: "grey",
                             height: 60,
                             backgroundColor: "#273952",
                             paddingBottom: Platform.OS === 'ios' ? 0 : 0,

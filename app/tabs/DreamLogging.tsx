@@ -42,11 +42,11 @@ export default function DreamLogScreen() {
 
         }
         else if (dreamType == "Fragmented Capture") {
-            return router.push({ pathname: `/logs/[name]`, params: { name: dreamType } })
+            return router.push({ pathname: `/logs/name`, params: { name: dreamType } })
 
         }
         else {
-            return router.push({ pathname: `/logs/[name]`, params: { name: dreamType } })
+            return router.push({ pathname: `/logs/name`, params: { name: dreamType } })
 
         }
     }

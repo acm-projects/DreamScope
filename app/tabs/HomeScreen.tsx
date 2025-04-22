@@ -29,6 +29,8 @@ import Animated, {
     runOnJS,
 } from 'react-native-reanimated';
 import { ScrollView, GestureHandlerRootView } from 'react-native-gesture-handler';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 
 const { width, height } = Dimensions.get('window');
 const CIRCLE_SIZE = 100;
@@ -371,7 +373,7 @@ function DateCarousel() {
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
             <View style={styles.carouselContainer}>
-                {/* Background glow effect for active item - FIXED HERE */}
+                {/* Background glow effect for active item */}
                 <Animated.View
                     style={[
                         styles.activeItemGlow,
@@ -417,6 +419,9 @@ function DateCarousel() {
 export default function HomeScreen() {
     const router = useRouter();
     const [modalVisible, setModalVisible] = useState(false);
+    const [inputText, setInputText] = useState("");
+
+    const API_BASE_URL = 'http://10.0.2.2:5001';
 
     // Check if weekly check-in should appear
     const checkIfDayIsDivisibleBy7 = () => {
@@ -433,6 +438,18 @@ export default function HomeScreen() {
 
     const handleProfilePress = () => {
         router.push("../Settings&ProfilePages/Profile");
+    };
+
+    const handleCheckIn = async () => {
+        setModalVisible(false);
+        const storedEmail = await AsyncStorage.getItem('userEmail');
+        try {
+            const response = await axios.get(`${API_BASE_URL}/users/email/${storedEmail}`);
+            const userId = response.data._id;
+            await axios.put(`${API_BASE_URL}/api/checkIn/user/${userId}`, { checkInText: inputText, date: Date.now() });
+        } catch (error) {
+            console.error("Error handling check-in:", error);
+        }
     };
 
     return (
@@ -458,11 +475,13 @@ export default function HomeScreen() {
                                 placeholder="Enter an update!"
                                 placeholderTextColor={"grey"}
                                 style={styles.modalInput}
+                                value={inputText}
+                                onChangeText={setInputText}
                             />
 
                             <View style={styles.modalButtonContainer}>
                                 <TouchableOpacity
-                                    onPress={() => setModalVisible(false)}
+                                    onPress={handleCheckIn}
                                     style={styles.modalButton}
                                 >
                                     <Text style={styles.modalButtonText}>Complete</Text>
