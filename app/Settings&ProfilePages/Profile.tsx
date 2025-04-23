@@ -8,6 +8,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useUser } from '../context/UserContext';
 import React from 'react';
 import { getAuth, deleteUser } from "firebase/auth";
+import { Fontisto } from '@expo/vector-icons';
 import axios from "axios";
 
 const API_BASE_URL = 'http://10.0.2.2:5001';
@@ -22,9 +23,16 @@ export default function ProfilePage() {
     }
 
     if (!userData) {
+        router.push('../auth/sign_up');
         return <Text>User data not available</Text>;
     }
 
+    const handleLogout = () => {
+        Alert.alert('Logout', 'Are you sure you want to log out?', [
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Yes', onPress: () => router.push('../auth/sign_in') }
+        ]);
+    }
 
 
     const handleProfilePicChange = async () => {
@@ -86,14 +94,32 @@ export default function ProfilePage() {
     return (
         <LinearGradient colors={['#180723', '#2C123F', '#2C123F', '#3d1865']} style={{ flex: 1 }}>
             <SafeAreaView style={styles.container}>
+                <View style={styles.imageContainer}>
+                    <Image
+                        source={require('../../Frontend/images/pine-tree-background.png')}
+                        style={styles.image}
+                        resizeMode="cover"
+                    />
+                </View>
                 <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
-                    <Text style={styles.headerText}>MY PROFILE</Text>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: '100%', marginBottom: 20 }}>
+                        <TouchableOpacity onPress={() => router.push('../tabs/HomeScreen')} style={{ padding: 10 }}>
+                            <Fontisto name="arrow-left" size={24} color="#D7C9E3" />
+                        </TouchableOpacity>
+
+                        <Text style={styles.headerText}>MY PROFILE</Text>
+
+                        <TouchableOpacity onPress={() => router.push('./Settings')} style={{ padding: 10 }}>
+                            <Fontisto name="player-settings" size={24} color="#D7C9E3" />
+                        </TouchableOpacity>
+                    </View>
+
                     {/* Profile Picture */}
                     <TouchableOpacity style={styles.profilePicContainer} onPress={handleProfilePicChange}>
                         {profilePic ? (
                             <Image source={{ uri: profilePic }} style={styles.profilePic} />
                         ) : (
-                            <Text style={styles.profilePicText}>Add Profile Pic</Text>
+                            <Fontisto name="person" size={40} color="#180723" />
                         )}
                     </TouchableOpacity>
 
@@ -112,31 +138,26 @@ export default function ProfilePage() {
                     <View style={styles.statsBox}>
                         <Text style={styles.statsText}>My name: {userData.name} </Text>
                         <Text style={styles.statsText}>My email: {userData.email} </Text>
-                        <Text style={styles.statsText}>Joined on: {userData.joinDate}</Text>
+                        <Text style={styles.statsText}>Joined on: {userData.joinDate.substring(0, 15)}</Text>
                         <Text style={styles.statsText}>Total Dreams: {userData.totalDreams}</Text>
                         <Text style={styles.statsText}>Detailed Logs: {userData.detailedDreams}</Text>
                         <Text style={styles.statsText}>Fragmented Logs: {userData.fragDreams}</Text>
                     </View>
 
-                    {/* Buttons */}
-                    <TouchableOpacity style={styles.button} onPress={() => router.push('../tabs/DreamTimeline')}>
-                        <Text style={styles.buttonText}>My Dream Timeline</Text>
+                    <TouchableOpacity style={[styles.logoutButton, { flex: 1, marginRight: 10 }]} onPress={handleLogout}>
+                        <Text style={styles.logoutButtonText}>Log Out</Text>
                     </TouchableOpacity>
-
-                    <TouchableOpacity style={styles.button} onPress={() => router.push('../tabs/HomeScreen')}>
-                        <Text style={styles.buttonText}>Back to Home Page</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity style={styles.button} onPress={() => router.push('./Settings')}>
-                        <Text style={styles.buttonText}>Settings</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity style={styles.deleteButton} onPress={handleDeleteAccount}>
+                    <TouchableOpacity style={[styles.deleteButton, { flex: 1 }]} onPress={handleDeleteAccount}>
                         <Text style={styles.deleteButtonText}>Delete Account</Text>
                     </TouchableOpacity>
+
+
+
                 </ScrollView>
+
             </SafeAreaView>
         </LinearGradient>
+
     );
 }
 
@@ -153,7 +174,7 @@ const styles = StyleSheet.create({
         fontSize: 28,
         fontWeight: 'bold',
         color: '#D7C9E3',
-        marginTop: 30,
+        marginTop: 20,
         marginBottom: 20,
     },
     profilePicContainer: {
@@ -162,7 +183,7 @@ const styles = StyleSheet.create({
         height: 120,
         borderRadius: 60,
         borderWidth: 3,
-        borderColor: '#94C9A9',
+        borderColor: '#3d1865',
         alignItems: 'center',
         justifyContent: 'center',
         marginBottom: 20,
@@ -179,7 +200,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     bioInput: {
-        backgroundColor: '#2C123F',
+        backgroundColor: '#180723',
         color: '#D7C9E3',
         padding: 15,
         borderRadius: 12,
@@ -189,20 +210,23 @@ const styles = StyleSheet.create({
         textAlignVertical: 'top',
         width: '100%',
         marginBottom: 20,
+        opacity: 0.85,
+        fontSize: 16,
     },
     statsBox: {
-        backgroundColor: '#3d1865',
+        backgroundColor: '#180723',
         borderRadius: 12,
         padding: 20,
         width: '100%',
         borderWidth: 2,
         borderColor: '#D7C9E3',
         marginBottom: 30,
+        opacity: 0.85,
+        fontSize: 16,
     },
     statsText: {
         color: '#D7C9E3',
         fontSize: 16,
-        fontStyle: 'italic',
         marginBottom: 5,
     },
     button: {
@@ -220,11 +244,12 @@ const styles = StyleSheet.create({
     },
     deleteButton: {
         backgroundColor: '#C41E3A',
-        paddingVertical: 12,
-        borderRadius: 14,
+        paddingVertical: 14,
+        borderRadius: 20,
+        width: '70%',
         alignItems: 'center',
-        marginTop: 20,
-        width: '100%',
+        marginTop: 15,
+
     },
     deleteButtonText: {
         color: '#FFFFFF',
@@ -236,10 +261,36 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginTop: 50,
     },
+    logoutButton: {
+        backgroundColor: '#ffe25e',
+        paddingVertical: 14,
+        borderRadius: 20,
+        width: '40%',
+        alignItems: 'center',
+        marginTop: 30,
+
+    },
+    logoutButtonText: {
+        color: '#2C123F',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
     errorText: {
         fontSize: 18,
         color: 'red',
         textAlign: 'center',
         marginTop: 50,
+    },
+    imageContainer: {
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        height: 800,
+        zIndex: 0,
+    },
+    image: {
+        width: '100%',
+        height: '170%',
     },
 });

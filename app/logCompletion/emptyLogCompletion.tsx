@@ -35,14 +35,6 @@ export default function DetailedLogCompletion() {
         >
             <StatusBar barStyle="light-content" />
 
-            {/* Decorative background */}
-            <View style={{ position: "absolute", top: 0, right: 0, opacity: 0.15 }}>
-                <Image
-                    source={require("../../Frontend/images/treeforeground.png")}
-                    style={{ width: 200, height: 200 }}
-                    resizeMode="contain"
-                />
-            </View>
 
             <View style={{
                 flex: 1,

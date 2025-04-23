@@ -18,7 +18,7 @@ import { useUser } from "../context/UserContext";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const API_BASE_URL = 'http://10.0.2.2:5001';
+const API_BASE_URL = "http://10.0.2.2:5001";
 
 type DreamLog = {
     _id: string;
@@ -90,58 +90,11 @@ export default function DreamTimelineScreen() {
 
     if (error) {
         return (
-            <LinearGradient colors={["#15041D", "#2C123F", "#3B1856"]} style={{ flex: 1 }}>
-                <StatusBar barStyle="light-content" />
-                <View style={{ alignItems: "center", marginTop: 40, marginBottom: 25 }}>
-                    <Text
-                        style={{
-                            fontSize: 36,
-                            fontWeight: "bold",
-                            color: "white",
-                            marginBottom: 5,
-                        }}
-                    >
-                        DREAM TIMELINE
-                    </Text>
-                    <Text
-                        style={{
-                            fontSize: 26,
-                            fontWeight: "bold",
-                            color: "#eadb8c",
-                            textAlign: "center",
-                            marginBottom: 8,
-                            textShadowColor: "rgba(0, 191, 255, 0.3)",
-                            textShadowOffset: { width: 0, height: 1 },
-                            textShadowRadius: 5,
-                        }}
-                    >
-                        {currentDate}
-                    </Text>
-
-
-                    <View style={{ alignItems: 'center', marginBottom: 20 }}>
-                        <Text style={{ color: 'white', fontSize: 18, fontWeight: 'bold', marginBottom: 10, textAlign: 'center' }}>
-                            Your Dream Logs would appear here!
-                        </Text>
-                        <Text style={{ color: '#C9B9E2', fontSize: 16, textAlign: 'center' }}>
-                            Start capturing your dreams by tapping the button below.
-                        </Text>
-                    </View>
-
-
-                    <View style={{ marginTop: 20, marginBottom: 5 }}>
-                        <Button onPress={() => router.push("/tabs/DreamLogging")} style={styles.newDreamButton}>
-                            <Text style={styles.newDreamButtonText}>Capture New Dream</Text>
-                            <Feather name="plus" size={18} color="white" style={{ marginLeft: 8 }} />
-                        </Button>
-                    </View>
-
-                </View>
-
-            </LinearGradient>
+            <Text style={{ color: "red", flex: 1, textAlign: "center", marginTop: 50 }}>
+                Error loading dream timeline: {error as string}
+            </Text>
         );
     }
-
 
     const determineDreamTypeStyle = (dreamType: string) => {
         switch (dreamType) {
@@ -214,6 +167,7 @@ export default function DreamTimelineScreen() {
                 />
             </View>
 
+            {/* Modal for "Empty" dream logs */}
             <Modal
                 animationType="fade"
                 transparent={true}
@@ -223,7 +177,7 @@ export default function DreamTimelineScreen() {
                 <View style={styles.modalOverlay}>
                     <View style={styles.modalContainer}>
                         <Text style={styles.modalText}>
-                            Empty Captures hold little to no information, Proceed?
+                            Empty Captures only contain a small analysis, continue?
                         </Text>
                         <View style={styles.modalButtonsContainer}>
                             <TouchableOpacity
@@ -249,6 +203,7 @@ export default function DreamTimelineScreen() {
                 </View>
             </Modal>
 
+            {/* List of dream logs */}
             <FlatList
                 data={dreamLogs}
                 keyExtractor={(item) => item._id}
@@ -256,12 +211,13 @@ export default function DreamTimelineScreen() {
                 showsVerticalScrollIndicator={false}
                 ListHeaderComponent={() => (
                     <View>
+                        {/* Header with enhanced styling */}
                         <View style={{ alignItems: "center", marginTop: 40, marginBottom: 25 }}>
                             <Text
                                 style={{
                                     fontSize: 36,
                                     fontWeight: "bold",
-                                    color: "white",
+                                    color: "#D7C9E3",
                                     marginBottom: 5,
                                 }}
                             >
@@ -274,7 +230,6 @@ export default function DreamTimelineScreen() {
                                     color: "#eadb8c",
                                     textAlign: "center",
                                     marginBottom: 8,
-                                    textShadowColor: "rgba(0, 191, 255, 0.3)",
                                     textShadowOffset: { width: 0, height: 1 },
                                     textShadowRadius: 5,
                                 }}
@@ -288,13 +243,11 @@ export default function DreamTimelineScreen() {
                                     color: "#C9B9E2",
                                     opacity: 0.85,
                                     textAlign: "center",
-                                    fontStyle: "italic",
+
                                 }}
                             >
                                 Your journey through dreams
-                                <Text style={{ fontSize: 12 }}>
-                                    {"\n"}  *Select a capture to view its information*
-                                </Text>
+
                             </Text>
                         </View>
                     </View>
@@ -303,7 +256,7 @@ export default function DreamTimelineScreen() {
                     <TouchableOpacity onPress={() => checkDreamTypeOnPressed(item)}>
                         <View style={[styles.dreamCard, determineDreamTypeStyle(item.type)]}>
                             <View style={styles.dreamIconContainer}>
-                                <Feather name={getDreamTypeIcon(item.type)} size={24} color="#00BFFF" />
+                                <Feather name={getDreamTypeIcon(item.type)} size={24} color="#8caedb" />
                             </View>
                             <View style={styles.dreamContent}>
                                 <Text style={styles.dreamDate}>
@@ -315,7 +268,7 @@ export default function DreamTimelineScreen() {
                                 </View>
                             </View>
                             <View style={styles.chevronContainer}>
-                                <Feather name="chevron-right" size={24} color="#00BFFF" />
+                                <Feather name="chevron-right" size={24} color="#8caedb" />
                             </View>
                         </View>
                     </TouchableOpacity>
@@ -333,7 +286,6 @@ export default function DreamTimelineScreen() {
     );
 }
 
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -341,7 +293,7 @@ const styles = StyleSheet.create({
     },
     dreamCard: {
         flexDirection: 'row',
-        backgroundColor: "rgba(0, 49, 76, 0.3)",
+        backgroundColor: "rgba(56, 24, 101, 0.3)", // subtle dreamy purple glow
         borderRadius: 16,
         marginBottom: 15,
         padding: 16,
@@ -353,13 +305,13 @@ const styles = StyleSheet.create({
         elevation: 5,
     },
     detailedCapture: {
-        borderLeftColor: "#00cf91",
+        borderLeftColor: "#e9f59d", // white yellow
     },
     emptyCapture: {
-        borderLeftColor: "#ff0a9d",
+        borderLeftColor: "#fc77a6", // dreamy pink retained
     },
     fragmentedCapture: {
-        borderLeftColor: "#8A2BE2",
+        borderLeftColor: "#ffe25e", // vibrant yellow for fragmented memory
     },
     dreamIconContainer: {
         justifyContent: 'center',
@@ -372,25 +324,25 @@ const styles = StyleSheet.create({
     },
     dreamDate: {
         fontSize: 14,
-        color: "#C9B9E2",
+        color: "#eadb8c", // light yellow
         marginBottom: 4,
     },
     dreamTitle: {
         fontSize: 18,
         fontWeight: "bold",
-        color: "white",
+        color: "#D7C9E3", // white purple
         marginBottom: -2,
     },
     dreamTypeTag: {
         marginTop: 8,
         alignSelf: 'flex-start',
-        backgroundColor: "rgba(0, 191, 255, 0.15)",
+        backgroundColor: "rgba(255, 226, 94, 0.2)", // soft yellow glow
         borderRadius: 10,
         paddingVertical: 3,
         paddingHorizontal: 10,
     },
     dreamTypeText: {
-        color: "#00BFFF",
+        color: "#ffe25e", // yellow
         fontSize: 12,
         fontWeight: "bold",
     },
@@ -399,7 +351,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     newDreamButton: {
-        backgroundColor: "#0000ff",
+        backgroundColor: "#3d1865", // light purple
         borderRadius: 12,
         alignItems: "center",
         justifyContent: "center",
@@ -412,77 +364,51 @@ const styles = StyleSheet.create({
         elevation: 6,
     },
     newDreamButtonText: {
-        color: "#FFFFFF",
+        color: "#e9f59d", // white yellow
         fontSize: 16,
         fontWeight: "bold",
     },
     modalButtonsContainer: {
-        flexDirection: "row",
-        justifyContent: "space-around",
-        width: "100%",
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        width: '100%',
     },
     modalOverlay: {
         flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "rgba(31, 7, 63, 0.5)",
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(24, 7, 35, 0.7)',
     },
     modalContainer: {
-        width: "90%",
-        backgroundColor: "#180723",
-        padding: 20,
-        borderRadius: 16,
-        alignItems: "center",
+        width: '90%',
+        height: '20%',
+        backgroundColor: '#180723',
+        padding: 15,
+        borderRadius: 11,
+        alignItems: 'center',
         borderWidth: 2,
-        borderColor: "#D7C9E3",
-        shadowColor: "#D7C9E3",
-        shadowOffset: { width: 0, height: 0 },
-        shadowOpacity: 0.3,
-        shadowRadius: 15,
-        elevation: 10,
+        borderColor: '#D7C9E3',
     },
     modalText: {
-        color: "#D7C9E3",
-        fontSize: 24,
-        fontWeight: "bold",
+        color: '#D7C9E3',
+        fontSize: 18,
         marginBottom: 15,
-        textAlign: "center",
-    },
-    modalInput: {
-        fontSize: 20,
-        backgroundColor: "#212121",
-        borderRadius: 12,
-        borderWidth: 4,
-        borderColor: "#212121",
-        color: "white",
-        width: "100%",
-        padding: 12,
-    },
-    modalButtonContainer: {
-        flexDirection: "row",
-        justifyContent: "space-around",
-        width: "100%",
-        marginTop: 45,
+        textAlign: 'center',
     },
     modalButton: {
-        backgroundColor: "#2C123F",
-        alignItems: "center",
-        paddingVertical: 12,
-        width: "45%",
+        backgroundColor: '#2C123F',
+        alignItems: 'center',
+        paddingVertical: 10,
+        width: '45%',
         paddingHorizontal: 20,
-        borderRadius: 12,
+        borderRadius: 8,
         borderWidth: 1,
-        borderColor: "#D7C9E3",
-        shadowColor: "#D7C9E3",
-        shadowOffset: { width: 0, height: 0 },
-        shadowOpacity: 0.2,
-        shadowRadius: 5,
-        elevation: 3,
+        borderColor: '#D7C9E3',
     },
     modalButtonText: {
-        color: "#D7C9E3",
+        color: '#D7C9E3',
         fontSize: 16,
-        fontWeight: "bold",
+        fontWeight: 'bold',
     },
     imageContainer: {
         position: "absolute",
@@ -495,6 +421,6 @@ const styles = StyleSheet.create({
     image: {
         width: '100%',
         height: '100%',
-        opacity: .1
+        opacity: 0.1,
     },
 });

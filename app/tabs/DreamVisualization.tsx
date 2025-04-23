@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Image, Pressable, Text } from 'react-native';
+import { View, StyleSheet, Image, Pressable, Text, Button, TouchableOpacity } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import { useRouter } from 'expo-router';
-import { Button } from "../../components/ui/button";
 import { LinearGradient } from 'expo-linear-gradient';
 import { Fontisto } from '@expo/vector-icons';
 import userDreamData from '../../Frontend/assets/dummyJson/multipleDreamLogsExampleForTimeline.json';
@@ -24,7 +23,7 @@ const getMarkedDates = (selectedDate: string, today: string) => {
             dotColor: 'transparent',
             customStyles: {
                 container: {
-                    backgroundColor: '#eadb8c', // Yellow solid circle
+                    backgroundColor: '#E2CF65', // Yellow solid circle
                     borderRadius: 20,
                 },
                 text: {
@@ -40,10 +39,10 @@ const getMarkedDates = (selectedDate: string, today: string) => {
             ...marks[selectedDate],
             selected: true,
             dotColor: 'transparent', // Remove the dot color for selected date
-            selectedColor: '#94C9A9', // Optional selected override
+            selectedColor: '#d57f90', // Optional selected override
             customStyles: {
                 container: {
-                    backgroundColor: '#94C9A9',
+                    backgroundColor: '#d57f90',
                     borderRadius: 20,
                 },
                 text: {
@@ -78,11 +77,54 @@ const MonthViewCalendar = () => {
     const [selectedDate, setSelectedDate] = useState('');
     const router = useRouter();
 
-    const today = new Date().toISOString().split('T')[0];
+    const a = new Date().toISOString().split('T')[0];
+
+    let today = ""
+
+    const currentMonth = new Date().toLocaleDateString("en-US", {
+        month: "numeric",
+
+    });
+    const currentDay = new Date().toLocaleDateString("en-US", {
+        day: "numeric",
+
+
+
+    });
+    const currentYear = new Date().toLocaleDateString("en-US", {
+        year: "numeric",
+
+    });
+
+
+    if (currentDay.length == 1) {
+
+        today = currentYear + "-" + currentMonth + "-0" + currentDay
+
+
+    }
+    else if (currentMonth.length == 1) {
+        today = currentYear + "-0" + currentMonth + "-" + currentDay
+
+
+    }
+    else if (currentMonth.length == 1 && currentDay.length == 1) {
+        today = currentYear + "-0" + currentMonth + "-0" + currentDay
+
+    }
+    else {
+
+        today = currentDay + "-" + currentMonth + "-" + currentYear
+
+    }
+
+
+
+
+
 
     const handleDayPress = (day: { dateString: string }) => {
         setSelectedDate(day.dateString);
-        console.log(selectedDate);
         validDate = true;
     };
 
@@ -90,30 +132,30 @@ const MonthViewCalendar = () => {
         if (validDate == true) {
             return router.push({
                 pathname: '/logs/Image_pages',
-                params: { date: selectedDate },
+                params: { date: selectedDate.toString() },
             });
         } else {
             //create an alert that the date the user picked is invalid
         }
     };
 
+
+
     return (
         <LinearGradient colors={['#180723', '#2C123F', '#3d1865']} style={styles.container}>
             <View style={{ position: "absolute", top: 0, right: 0, opacity: 0.2 }}>
                 <Image
                     source={require("../../Frontend/images/dreamCatcherBackground.png")}
-                    style={{ backgroundColor: "black", maxWidth: "150%", maxHeight: "100%", opacity: 0.5 }}
+                    style={{ backgroundColor: "#180723", maxWidth: "150%", maxHeight: "100%", opacity: 0.4 }}
                     resizeMode="contain"
                 />
             </View>
 
             <Text style={styles.headerText}>DREAM VISUALIZATION</Text>
-            <Text style={{ color: "white", fontStyle: "italic", opacity: .5 }}>
+            <Text style={{ color: "white", opacity: .5, fontSize: 18, marginBottom: 50 }}>
                 Choose a date to bring a dream to life!
             </Text>
-            <Text style={{ color: "white", fontStyle: "italic", opacity: .5, marginBottom: 50 }}>
-                (Note: you can only visualize dreams that you've previously logged)
-            </Text>
+
 
             <View style={styles.calendarWrapper}>
                 <Calendar
@@ -129,21 +171,22 @@ const MonthViewCalendar = () => {
                         dayTextColor: '#D7C9E3',
                         textDisabledColor: '#5A3E6F',
                         monthTextColor: '#D7C9E3',
-                        arrowColor: '#94C9A9',
+                        arrowColor: '#eadb8c',
                         textSectionTitleColor: '#D7C9E3',
+                        textMonthFontSize: 30, // Increased font size for the month
                     }}
                 />
             </View>
 
             <View style={{ marginTop: 20, marginBottom: 5 }}>
-                <Button
+                <TouchableOpacity
                     onPress={checkValidDate}
                     style={styles.visualizeDreamButton}
                 >
                     <Text style={styles.visualizeDreamButtonText}>
                         Visualize Dream
                     </Text>
-                </Button>
+                </TouchableOpacity>
             </View>
         </LinearGradient>
     );
@@ -156,10 +199,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     headerText: {
-        color: "#fc77a6",
+        color: "#D7C9E3",
         fontSize: 35,
         fontWeight: "bold",
-        marginBottom: 50,
+        marginBottom: 20,
     },
     calendarWrapper: {
         width: '100%',

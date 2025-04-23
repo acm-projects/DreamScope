@@ -1,9 +1,10 @@
-import { View, Text, Image, TextInput, StyleSheet, ScrollView, SafeAreaView, TouchableOpacity, Alert, StatusBar } from "react-native";
+import { View, Text, Image, TextInput, StyleSheet, ScrollView, SafeAreaView, TouchableOpacity, Alert, StatusBar, ActivityIndicator } from "react-native";
 import { Button, ButtonText } from "../../components/ui/button";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { Feather } from "@expo/vector-icons";
 import React, { useState } from "react";
 import { LinearGradient } from "expo-linear-gradient";
+import * as Animatable from 'react-native-animatable'; // You may need to install this package
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
@@ -28,6 +29,11 @@ export default function fragmentedLogTextScreen() {
     const [inputFields, setInputFields] = useState(Array(numParts).fill(""));
     const [error, setError] = useState(false);
 
+    // Loading state
+    const [isLoading, setIsLoading] = useState(false);
+    const [loadingProgress, setLoadingProgress] = useState('');
+    const [loadingStage, setLoadingStage] = useState(0);
+
     // Handle text input changes
     const handleInputChange = (text: string, index: number) => {
         const newFields = [...inputFields];
@@ -36,12 +42,39 @@ export default function fragmentedLogTextScreen() {
         if (error) setError(false);
     };
 
+    // Function to simulate loading progress
+    const updateLoadingProgress = () => {
+        const loadingSteps = [
+            'Processing your fragmented entry...',
+            'Analyzing dream patterns...',
+            'Organizing your fragments...',
+            'Saving your dream log...'
+        ];
+
+        let currentStep = 0;
+
+        const progressInterval = setInterval(() => {
+            if (currentStep < loadingSteps.length) {
+                setLoadingProgress(loadingSteps[currentStep]);
+                setLoadingStage(currentStep + 1);
+                currentStep++;
+            } else {
+                clearInterval(progressInterval);
+            }
+        }, 1500);
+
+        return progressInterval;
+    };
+
     //function that checks if the title and text field both contain text.
     const handlePress = async () => {
 
         if (inputFields.every(field => field.trim() !== "")) {
             // Join all fragments and pass as a parameter
             const allText = inputFields.join(" ||| ");
+
+            setIsLoading(true);
+            const progressInterval = updateLoadingProgress();
 
             try {
                 const storedEmail = await AsyncStorage.getItem('userEmail');
@@ -67,22 +100,22 @@ export default function fragmentedLogTextScreen() {
                     totalDreams: totalDreams,
                     fragDreams: fragDreams,
                 });
-                router.push("/logCompletion/fragmentedLogCompletion");
 
+                clearInterval(progressInterval);
+                setIsLoading(false);
+                router.push("/logCompletion/fragmentedLogCompletion");
 
             } catch (error) {
                 console.log('Error submitting dream log:', error);
+                clearInterval(progressInterval);
+                setIsLoading(false);
                 Alert.alert('Error', 'Failed to submit dream log.');
             }
-
 
         } else {
             setError(true);
         }
-        return router.push("/logCompletion/fragmentedLogCompletion");
     };
-
-
 
     let arrayOfUsersTags = [];
     if (params.tags) {
@@ -97,6 +130,58 @@ export default function fragmentedLogTextScreen() {
                 arrayOfUsersTags[tagsIndex] = params.tags.slice(z, i + 1);
             }
         }
+    }
+
+    if (isLoading) {
+        return (
+            <LinearGradient
+                colors={["#180723", "#2C123F", "#3d1865"]}
+                style={styles.loadingContainer}
+            >
+                <StatusBar barStyle="light-content" />
+
+                <View style={styles.loadingContent}>
+                    <Animatable.View
+                        animation="pulse"
+                        iterationCount="infinite"
+                        duration={1500}
+                    >
+                        <View style={styles.loadingIconContainer}>
+                            <Feather name="moon" size={50} color="#ffe25e" />
+                        </View>
+                    </Animatable.View>
+
+                    <Text style={styles.loadingTitle}>Dreaming in Progress</Text>
+
+                    <Text style={styles.loadingText}>{loadingProgress}</Text>
+
+                    <View style={styles.progressContainer}>
+                        <View style={[styles.progressBar, { width: `${loadingStage * 25}%` }]} />
+                    </View>
+
+                    <View style={styles.loadingDotsContainer}>
+                        <Animatable.Text
+                            animation="flash"
+                            iterationCount="infinite"
+                            duration={1000}
+                            style={styles.loadingDots}
+                        >
+                            ...
+                        </Animatable.Text>
+                    </View>
+
+                    <Text style={styles.loadingSubtext}>
+                        Please wait while we process your dream
+                    </Text>
+                </View>
+
+                <Image
+                    source={require("../../Frontend/images/cloudbackground2.png")}
+                    style={styles.backgroundImage}
+                    resizeMode="contain"
+                />
+            </LinearGradient>
+        );
     }
 
     return (
@@ -326,3 +411,82 @@ export default function fragmentedLogTextScreen() {
         </LinearGradient>
     );
 }
+
+const styles = StyleSheet.create({
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    loadingContent: {
+        alignItems: 'center',
+        padding: 20,
+        width: '90%',
+        maxWidth: 400,
+    },
+    loadingIconContainer: {
+        width: 100,
+        height: 100,
+        borderRadius: 50,
+        backgroundColor: 'rgba(61, 24, 101, 0.7)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 20,
+        borderWidth: 2,
+        borderColor: '#fc77a6',
+        shadowColor: '#ffe25e',
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.5,
+        shadowRadius: 10,
+        elevation: 10,
+    },
+    loadingTitle: {
+        fontSize: 22,
+        fontWeight: 'bold',
+        color: '#ffe25e',
+        marginBottom: 12,
+        textAlign: 'center',
+    },
+    loadingText: {
+        fontSize: 18,
+        color: '#D7C9E3',
+        marginBottom: 25,
+        textAlign: 'center',
+    },
+    progressContainer: {
+        height: 10,
+        width: '100%',
+        backgroundColor: 'rgba(61, 24, 101, 0.5)',
+        borderRadius: 10,
+        marginBottom: 30,
+        overflow: 'hidden',
+        borderWidth: 1,
+        borderColor: '#eadb8c',
+    },
+    progressBar: {
+        height: '100%',
+        backgroundColor: '#fc77a6',
+        borderRadius: 10,
+    },
+    loadingDotsContainer: {
+        height: 20,
+        marginBottom: 10,
+    },
+    loadingDots: {
+        color: '#ffe25e',
+        fontSize: 30,
+        lineHeight: 30,
+    },
+    loadingSubtext: {
+        fontSize: 14,
+        color: '#eadb8c',
+        fontStyle: 'italic',
+        textAlign: 'center',
+    },
+    backgroundImage: {
+        position: 'absolute',
+        width: '100%',
+        height: '100%',
+        opacity: 0.15,
+    }
+});

@@ -6,7 +6,7 @@
     "jsEngine": "hermes",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "Frontend/images/icon2.png",
+    "icon": "Frontend/images/logo-final.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {

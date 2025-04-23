@@ -1,14 +1,14 @@
-import { View, Text, Image, TextInput, StyleSheet, ScrollView, SafeAreaView, TouchableOpacity, Alert, StatusBar } from "react-native";
+import { View, Text, Image, TextInput, StyleSheet, ScrollView, SafeAreaView, TouchableOpacity, Alert, StatusBar, ActivityIndicator } from "react-native";
 import { Button, ButtonText } from "../../components/ui/button";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { Feather } from "@expo/vector-icons";
 import React, { useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
-import { LinearGradient } from "expo-linear-gradient"
+import { LinearGradient } from "expo-linear-gradient";
+import * as Animatable from 'react-native-animatable'; // You may need to install this package
 
 const API_BASE_URL = 'http://10.0.2.2:5001';
-
 
 export default function DetailedLogTextScreen() {
     // To push onto new pages
@@ -27,6 +27,11 @@ export default function DetailedLogTextScreen() {
     // Title input state and validation
     const [inputTitle, setInputTitle] = useState("");
     const [validTitle, setValidTitle] = useState(false);
+
+    // Loading states
+    const [isLoading, setIsLoading] = useState(false);
+    const [loadingProgress, setLoadingProgress] = useState('');
+    const [loadingStage, setLoadingStage] = useState(0);
 
     // Updated handler for text input with immediate validation
     const handleTextChange = (text: string) => {
@@ -64,6 +69,30 @@ export default function DetailedLogTextScreen() {
         }
     };
 
+    // Function to simulate loading progress
+    const updateLoadingProgress = () => {
+        const loadingSteps = [
+            'Processing your dream entry...',
+            'Analyzing dream patterns...',
+            'Generating visualizations...',
+            'Saving your dream log...'
+        ];
+
+        let currentStep = 0;
+
+        const progressInterval = setInterval(() => {
+            if (currentStep < loadingSteps.length) {
+                setLoadingProgress(loadingSteps[currentStep]);
+                setLoadingStage(currentStep + 1);
+                currentStep++;
+            } else {
+                clearInterval(progressInterval);
+            }
+        }, 1500);
+
+        return progressInterval;
+    };
+
     // Function that checks if the title and text field both contain text.
     const handlePress = async () => {
         const isTitleValid = inputTitle.trim() !== "";
@@ -74,8 +103,10 @@ export default function DetailedLogTextScreen() {
         setTitleBorderColor(isTitleValid ? "#ffe25e" : "#fc77a6");
         setTextBorderColor(isTextValid ? "#ffe25e" : "#fc77a6");
 
-        if (validTitle && validText) {
-            router.push('/logCompletion/detailedLogCompletion');
+        if (isTitleValid && isTextValid) {
+            setIsLoading(true);
+            const progressInterval = updateLoadingProgress();
+
             try {
                 const storedEmail = await AsyncStorage.getItem('userEmail');
                 const response = await axios.get(`${API_BASE_URL}/users/email/${storedEmail}`);
@@ -97,24 +128,26 @@ export default function DetailedLogTextScreen() {
                 const totalDreams = response.data.totalDreams + 1;
                 const detailedDreams = response.data.detailedDreams + 1;
 
-
                 await axios.put(`${API_BASE_URL}/users/${userId}`, {
                     totalDreams: totalDreams + 1,
                     detailedDreams: detailedDreams + 1,
                 });
 
                 console.log("done");
-
+                clearInterval(progressInterval);
+                setIsLoading(false);
+                router.push('/logCompletion/detailedLogCompletion');
 
             } catch (error) {
                 console.error('Error submitting dream log:', error);
+                clearInterval(progressInterval);
+                setIsLoading(false);
                 Alert.alert('Error', 'Failed to submit dream log.');
             }
         }
         else {
             console.log("valid title and text is not true");
         }
-
     };
 
     // Improved tag parsing
@@ -126,6 +159,58 @@ export default function DetailedLogTextScreen() {
         day: "numeric",
         year: "numeric",
     });
+
+    if (isLoading) {
+        return (
+            <LinearGradient
+                colors={["#180723", "#2C123F", "#3d1865"]}
+                style={styles.loadingContainer}
+            >
+                <StatusBar barStyle="light-content" />
+
+                <View style={styles.loadingContent}>
+                    <Animatable.View
+                        animation="pulse"
+                        iterationCount="infinite"
+                        duration={1500}
+                    >
+                        <View style={styles.loadingIconContainer}>
+                            <Feather name="moon" size={50} color="#ffe25e" />
+                        </View>
+                    </Animatable.View>
+
+                    <Text style={styles.loadingTitle}>Dreaming in Progress</Text>
+
+                    <Text style={styles.loadingText}>{loadingProgress}</Text>
+
+                    <View style={styles.progressContainer}>
+                        <View style={[styles.progressBar, { width: `${loadingStage * 25}%` }]} />
+                    </View>
+
+                    <View style={styles.loadingDotsContainer}>
+                        <Animatable.Text
+                            animation="flash"
+                            iterationCount="infinite"
+                            duration={1000}
+                            style={styles.loadingDots}
+                        >
+                            ...
+                        </Animatable.Text>
+                    </View>
+
+                    <Text style={styles.loadingSubtext}>
+                        Please wait while we process your dream
+                    </Text>
+                </View>
+
+                <Image
+                    source={require("../../Frontend/images/cloudbackground2.png")}
+                    style={styles.backgroundImage}
+                    resizeMode="contain"
+                />
+            </LinearGradient>
+        );
+    }
 
     return (
         <LinearGradient
@@ -395,3 +480,82 @@ export default function DetailedLogTextScreen() {
         </LinearGradient>
     );
 }
+
+const styles = StyleSheet.create({
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    loadingContent: {
+        alignItems: 'center',
+        padding: 20,
+        width: '90%',
+        maxWidth: 400,
+    },
+    loadingIconContainer: {
+        width: 100,
+        height: 100,
+        borderRadius: 50,
+        backgroundColor: 'rgba(61, 24, 101, 0.7)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 20,
+        borderWidth: 2,
+        borderColor: '#fc77a6',
+        shadowColor: '#ffe25e',
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.5,
+        shadowRadius: 10,
+        elevation: 10,
+    },
+    loadingTitle: {
+        fontSize: 22,
+        fontWeight: 'bold',
+        color: '#ffe25e',
+        marginBottom: 12,
+        textAlign: 'center',
+    },
+    loadingText: {
+        fontSize: 18,
+        color: '#D7C9E3',
+        marginBottom: 25,
+        textAlign: 'center',
+    },
+    progressContainer: {
+        height: 10,
+        width: '100%',
+        backgroundColor: 'rgba(61, 24, 101, 0.5)',
+        borderRadius: 10,
+        marginBottom: 30,
+        overflow: 'hidden',
+        borderWidth: 1,
+        borderColor: '#eadb8c',
+    },
+    progressBar: {
+        height: '100%',
+        backgroundColor: '#fc77a6',
+        borderRadius: 10,
+    },
+    loadingDotsContainer: {
+        height: 20,
+        marginBottom: 10,
+    },
+    loadingDots: {
+        color: '#ffe25e',
+        fontSize: 30,
+        lineHeight: 30,
+    },
+    loadingSubtext: {
+        fontSize: 14,
+        color: '#eadb8c',
+        fontStyle: 'italic',
+        textAlign: 'center',
+    },
+    backgroundImage: {
+        position: 'absolute',
+        width: '100%',
+        height: '100%',
+        opacity: 0.15,
+    }
+});
