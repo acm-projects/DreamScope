@@ -8,6 +8,21 @@ import Feather from '@expo/vector-icons/Feather';
 import { AntDesign } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 
+// Updated color theme based on your specification
+const DREAM_THEME = {
+    yellow: '#ffe25e',
+    lightYellow: '#eadb8c',
+    whiteYellow: '#e9f59d',
+    darkPurple: '#180723',
+    purple: '#2C123F',
+    lightPurple: '#3d1865',
+    whitePurple: '#D7C9E3',
+    pink: '#fc77a6',
+    textLight: '#D7C9E3', // Using whitePurple for text
+    accent: '#fc77a6',    // Using pink as accent
+    primaryButton: '#ffe25e' // Using yellow for primary button
+};
+
 export default function FragmentedLogPartSelectionScreen() {
     const router = useRouter();
     let parts = ["2", "3", "4"];
@@ -48,7 +63,7 @@ export default function FragmentedLogPartSelectionScreen() {
 
     return (
         <LinearGradient
-            colors={["#15041D", "#2C123F", "#3B1856"]}
+            colors={[DREAM_THEME.darkPurple, DREAM_THEME.purple, DREAM_THEME.lightPurple]}
             style={{ flex: 1 }}
         >
             <StatusBar barStyle="light-content" />
@@ -60,8 +75,6 @@ export default function FragmentedLogPartSelectionScreen() {
                     resizeMode="contain"
                 />
             </View>
-
-
 
             <FlatList
                 data={sections}
@@ -81,7 +94,7 @@ export default function FragmentedLogPartSelectionScreen() {
                                 zIndex: 10,
                             }}
                         >
-                            <Text style={{ fontSize: 24, color: "white" }}>
+                            <Text style={{ fontSize: 24, color: DREAM_THEME.whitePurple }}>
                                 <Feather name="arrow-left" size={30} />
                             </Text>
                         </Button>
@@ -92,10 +105,10 @@ export default function FragmentedLogPartSelectionScreen() {
                                 style={{
                                     fontSize: 26,
                                     fontWeight: "bold",
-                                    color: "white",
+                                    color: DREAM_THEME.whiteYellow,
                                     textAlign: "center",
                                     marginBottom: 8,
-                                    textShadowColor: "rgba(0, 191, 255, 0.3)",
+                                    textShadowColor: "rgba(252, 119, 166, 0.3)", // Pink shadow
                                     textShadowOffset: { width: 0, height: 1 },
                                     textShadowRadius: 5,
                                 }}
@@ -106,7 +119,7 @@ export default function FragmentedLogPartSelectionScreen() {
                                 style={{
                                     fontSize: 18,
                                     fontWeight: "bold",
-                                    color: "#00BFFF",
+                                    color: DREAM_THEME.pink,
                                     marginBottom: 5,
                                 }}
                             >
@@ -115,7 +128,7 @@ export default function FragmentedLogPartSelectionScreen() {
                             <Text
                                 style={{
                                     fontSize: 16,
-                                    color: "#C9B9E2",
+                                    color: DREAM_THEME.whitePurple,
                                     opacity: 0.85,
                                     textAlign: "center",
                                     fontStyle: "italic",
@@ -128,7 +141,7 @@ export default function FragmentedLogPartSelectionScreen() {
                         {/* Selected part indicator */}
                         {selectedPart.length > 0 && (
                             <View style={{
-                                backgroundColor: "rgba(0, 191, 255, 0.15)",
+                                backgroundColor: "rgba(252, 119, 166, 0.15)", // Pink with opacity
                                 borderRadius: 12,
                                 padding: 12,
                                 marginBottom: 20,
@@ -136,9 +149,9 @@ export default function FragmentedLogPartSelectionScreen() {
                                 alignItems: "center",
                                 justifyContent: "center"
                             }}>
-                                <Feather name="layers" size={18} color="#00BFFF" />
+                                <Feather name="layers" size={18} color={DREAM_THEME.yellow} />
                                 <Text style={{
-                                    color: "white",
+                                    color: DREAM_THEME.whitePurple,
                                     fontSize: 15,
                                     marginLeft: 8
                                 }}>
@@ -151,22 +164,21 @@ export default function FragmentedLogPartSelectionScreen() {
                 renderItem={({ item }) => (
                     <View style={{
                         marginBottom: 25,
-                        backgroundColor: "rgba(0, 49, 76, 0.3)",
+                        backgroundColor: "rgba(44, 18, 63, 0.5)", // Purple with opacity
                         borderRadius: 16,
                         padding: 16,
                         borderLeftWidth: 3,
-                        borderLeftColor: "#00BFFF",
-
+                        borderLeftColor: DREAM_THEME.pink,
                     }}>
                         <Text
                             style={{
                                 fontSize: 20,
                                 fontWeight: "bold",
-                                color: "white",
+                                color: DREAM_THEME.whitePurple,
                                 marginBottom: 15,
                             }}
                         >
-                            <Feather name="layers" size={16} color="#00BFFF" /> {item.title}
+                            <Feather name="layers" size={16} color={DREAM_THEME.yellow} /> {item.title}
                         </Text>
 
                         <FlatList
@@ -180,16 +192,12 @@ export default function FragmentedLogPartSelectionScreen() {
                                     style={({ pressed }) => ({
                                         opacity: pressed ? 0.8 : 1,
                                         transform: [{ scale: pressed ? 0.98 : 1 }],
-                                        shadowColor: selectedPart.includes(tag) ? "#00BFFF" : "transparent",
+                                        shadowColor: selectedPart.includes(tag) ? DREAM_THEME.yellow : "transparent",
                                         shadowOffset: { width: 0, height: 2 },
                                         shadowOpacity: 0.5,
                                         shadowRadius: 4,
-
                                         elevation: selectedPart.includes(tag) ? 3 : 0,
                                         marginRight: 12,
-
-
-
                                     })}
                                 >
                                     <View
@@ -201,9 +209,9 @@ export default function FragmentedLogPartSelectionScreen() {
                                             alignItems: "center",
                                             borderRadius: 16,
                                             backgroundColor: selectedPart.includes(tag)
-                                                ? "#00BFFF"
-                                                : "#00314C",
-                                            borderColor: "#00BFFF",
+                                                ? DREAM_THEME.yellow
+                                                : DREAM_THEME.purple,
+                                            borderColor: DREAM_THEME.pink,
                                             borderWidth: selectedPart.includes(tag) ? 0 : 1.5,
                                         }}
                                     >
@@ -211,7 +219,7 @@ export default function FragmentedLogPartSelectionScreen() {
                                             style={{
                                                 fontSize: 48,
                                                 fontWeight: "bold",
-                                                color: selectedPart.includes(tag) ? "white" : "#E4D7F4",
+                                                color: selectedPart.includes(tag) ? DREAM_THEME.darkPurple : DREAM_THEME.whiteYellow,
                                                 textAlign: "center",
                                             }}
                                         >
@@ -220,7 +228,7 @@ export default function FragmentedLogPartSelectionScreen() {
                                         <Text
                                             style={{
                                                 fontSize: 14,
-                                                color: selectedPart.includes(tag) ? "white" : "#C9B9E2",
+                                                color: selectedPart.includes(tag) ? DREAM_THEME.darkPurple : DREAM_THEME.whitePurple,
                                                 textAlign: "center",
                                                 marginTop: 6,
                                             }}
@@ -239,7 +247,7 @@ export default function FragmentedLogPartSelectionScreen() {
                         <Button
                             onPress={handleContinuePress}
                             style={{
-                                backgroundColor: selectedPart.length > 0 ? "#0000ff" : "rgba(0, 0, 255, 0.5)",
+                                backgroundColor: selectedPart.length > 0 ? DREAM_THEME.yellow : "rgba(255, 226, 94, 0.5)", // Yellow with opacity when disabled
                                 borderRadius: 12,
                                 alignItems: "center",
                                 justifyContent: "center",
@@ -254,7 +262,7 @@ export default function FragmentedLogPartSelectionScreen() {
                         >
                             <ButtonText
                                 style={{
-                                    color: "#FFFFFF",
+                                    color: DREAM_THEME.darkPurple,
                                     fontSize: 16,
                                     fontWeight: "bold",
                                 }}
@@ -273,7 +281,7 @@ export default function FragmentedLogPartSelectionScreen() {
                             <Text
                                 style={{
                                     fontSize: 16,
-                                    color: "#C9B9E2",
+                                    color: DREAM_THEME.whitePurple,
                                     textDecorationLine: "underline",
                                 }}
                             >

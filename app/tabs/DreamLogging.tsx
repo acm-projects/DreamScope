@@ -1,41 +1,45 @@
-import { View, FlatList, Text, TouchableOpacity, SafeAreaView, Alert, StyleSheet, Dimensions, Modal, Image } from "react-native";
-import { useRouter, useLocalSearchParams } from "expo-router";
-import React, { useState } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import axios from "axios";
-import { LinearGradient } from "expo-linear-gradient";
-import options from "../../Frontend/assets/dummyJson/options.json";
-
+import {
+    View,
+    FlatList,
+    Text,
+    TouchableOpacity,
+    SafeAreaView,
+    Alert,
+    StyleSheet,
+    Dimensions,
+    Modal,
+    Image,
+} from 'react-native';
+import { useRouter, useLocalSearchParams } from 'expo-router';
+import React, { useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import { LinearGradient } from 'expo-linear-gradient';
+import options from '../../Frontend/assets/dummyJson/options.json';
 
 const API_BASE_URL = 'http://10.0.2.2:5001';
+const { width } = Dimensions.get('window');
 
-
-const { width } = Dimensions.get("window");
-const currentDate = new Date().toLocaleDateString("en-US", {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
+const currentDate = new Date().toLocaleDateString('en-US', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
 });
 
-const EmptyType = "Empty Capture"
-
 const checkDreamType = (dreamType: any) => {
-
-    if (dreamType == "Fragmented Capture") {
-        return "#C9B9E2";
-
+    if (dreamType == 'Fragmented Capture') {
+        return '#D7C9E3'; // white purple
+    } else if (dreamType == 'Empty Capture') {
+        return '#eadb8c'; // light yellow
+    } else {
+        return '#fc77a6'; // pink
     }
-    else if (dreamType == "Empty Capture") {
-        return "#eadb8c";
-    }
-    else {
-        return "#fc77a6";
-    }
-
-}
-
+};
 
 export default function DreamLogScreen() {
+    const [modalVisible, setModalVisible] = useState(false);
+    const router = useRouter();
+    const params = useLocalSearchParams();
 
     const handlePress2 = async () => {
         router.push('/logCompletion/emptyLogCompletion');
@@ -44,12 +48,11 @@ export default function DreamLogScreen() {
             const response = await axios.get(`${API_BASE_URL}/users/email/${storedEmail}`);
             const userId = response.data._id;
 
-            console.log(response.data.name);
             const dreamData = {
                 userId: userId,
-                title: "",
-                type: "Empty",
-                dreamText: "",
+                title: '',
+                type: 'Empty',
+                dreamText: '',
                 selectedThemes: [],
                 selectedSettings: [],
                 selectedEmotions: [],
@@ -57,77 +60,39 @@ export default function DreamLogScreen() {
 
             const apiResponse = await axios.post(`${API_BASE_URL}/api/dreamPosts`, dreamData);
             await AsyncStorage.setItem('postId', apiResponse.data._id);
-            const totalDreams = response.data.totalDreams + 1;
-            const detailedDreams = response.data.detailedDreams + 1;
-
 
             await axios.put(`${API_BASE_URL}/users/${userId}`, {
-                totalDreams: totalDreams + 1,
-                detailedDreams: detailedDreams + 1,
+                totalDreams: response.data.totalDreams + 1,
+                detailedDreams: response.data.detailedDreams + 1,
             });
-
-            console.log("done");
-
-
         } catch (error) {
             console.error('Error submitting dream log:', error);
             Alert.alert('Error', 'Failed to submit dream log.');
         }
-
-    }
-
-
-
-    const [modalVisible, setModalVisible] = useState(false);
-
+    };
 
     const handlePress = (dreamType: any) => {
-        if (dreamType == "Empty Capture") {
+        if (dreamType === 'Empty Capture') {
             setModalVisible(true);
-
-
+        } else {
+            router.push({ pathname: `/logs/name`, params: { name: dreamType } });
         }
-        else if (dreamType == "Fragmented Capture") {
-            return router.push({ pathname: `/logs/name`, params: { name: dreamType } })
-
-        }
-        else {
-            return router.push({ pathname: `/logs/name`, params: { name: dreamType } })
-
-        }
-    }
-
-
-
-
-
-    const router = useRouter();
-    const params = useLocalSearchParams();
+    };
 
     return (
-        <LinearGradient colors={["#15041D", "#29123A", "#3B1856"]} style={{ flex: 1 }}>
-            <SafeAreaView style={{ flex: 1, padding: 10, alignContent: "center" }}>
-
-
-                {/*modal stuff for empty log*/}
-                <Modal
-                    animationType="fade"
-                    transparent={true}
-                    visible={modalVisible}
-                    onRequestClose={() => setModalVisible(false)}
-                >
+        <LinearGradient colors={['#180723', '#2C123F', '#3d1865']} style={{ flex: 1 }}>
+            <SafeAreaView style={{ flex: 1, padding: 10 }}>
+                <Modal animationType="fade" transparent visible={modalVisible} onRequestClose={() => setModalVisible(false)}>
                     <View style={styles.modalOverlay}>
                         <View style={styles.modalContainer}>
-                            <Text style={styles.modalText}>Empty Captures hold little to no information and is intended for streak saving, proceed?</Text>
+                            <Text style={styles.modalText}>
+                                Empty Captures hold little to no information and is intended for streak saving, proceed?
+                            </Text>
                             <View style={styles.modalButtonsContainer}>
                                 <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.modalButton}>
                                     <Text style={styles.modalButtonText}>No</Text>
                                 </TouchableOpacity>
-
-                                <TouchableOpacity
-                                    onPress={handlePress2}
-                                    style={styles.modalButton}
-                                >
+                                <TouchableOpacity onPress={handlePress2} style={styles.modalButton}>
                                     <Text style={styles.modalButtonText}>Yes</Text>
                                 </TouchableOpacity>
                             </View>
@@ -135,181 +100,140 @@ export default function DreamLogScreen() {
                     </View>
                 </Modal>
 
-                {/* Decorative background elements */}
-                <View style={{ position: "absolute", top: 0, right: 0, opacity: 0.1 }}>
+                <View style={{ position: 'absolute', top: 0, right: 0, opacity: 0.1 }}>
                     <Image
-                        source={require("../../Frontend/images/cloudbackground2.png")}
-                        style={{ maxWidth: "auto", maxHeight: "auto" }}
+                        source={require('../../Frontend/images/cloudbackground2.png')}
+                        style={{ maxWidth: 'auto', maxHeight: 'auto' }}
                         resizeMode="contain"
                     />
                 </View>
 
-
-
-                {/* Dream Options */}
                 <FlatList
                     contentContainerStyle={{ paddingBottom: 12, paddingTop: 30 }}
                     data={options}
                     keyExtractor={(item) => item.name.toString()}
                     showsVerticalScrollIndicator={false}
                     ListHeaderComponent={() => (
-
-                        <View>
-
-
-
-
-
-                            {/* Header with enhanced styling */}
-                            <View style={{ alignItems: "center", marginTop: 10, marginBottom: 25 }}>
-
-                                <Text
-                                    style={{
-                                        fontSize: 36,
-                                        fontWeight: "bold",
-                                        color: "white",
-                                        marginBottom: 5,
-                                    }}
-                                >
-                                    DREAM LOGGING
-                                </Text>
-
-                                <Text
-                                    style={{
-                                        fontSize: 26,
-                                        fontWeight: "bold",
-                                        color: "#eadb8c",
-
-                                        textAlign: "center",
-                                        marginBottom: 8,
-                                        textShadowColor: "rgba(0, 191, 255, 0.3)",
-                                        textShadowOffset: { width: 0, height: 1 },
-                                        textShadowRadius: 5,
-                                    }}
-                                >
-                                    {currentDate}
-                                </Text>
-
-                                <Text
-                                    style={{
-                                        fontSize: 16,
-                                        color: "#C9B9E2",
-                                        opacity: 0.85,
-                                        textAlign: "center",
-                                        fontStyle: "italic",
-                                    }}
-                                >
-                                    What type of dream would you like to log?
-                                    <Text style={{ fontSize: 12 }}>
-                                    </Text>
-                                </Text>
-                            </View>
+                        <View style={{ alignItems: 'center', marginTop: 10, marginBottom: 25 }}>
+                            <Text style={{ fontSize: 36, fontWeight: 'bold', color: '#D7C9E3', marginBottom: 5 }}>
+                                DREAM LOGGING
+                            </Text>
+                            <Text
+                                style={{
+                                    fontSize: 26,
+                                    fontWeight: 'bold',
+                                    color: '#eadb8c',
+                                    textAlign: 'center',
+                                    marginBottom: 8,
+                                    textShadowColor: 'rgba(0, 191, 255, 0.3)',
+                                    textShadowOffset: { width: 0, height: 1 },
+                                    textShadowRadius: 5,
+                                }}
+                            >
+                                {currentDate}
+                            </Text>
+                            <Text
+                                style={{
+                                    fontSize: 16,
+                                    color: '#D7C9E3',
+                                    opacity: 0.85,
+                                    textAlign: 'center',
+                                    fontStyle: 'italic',
+                                }}
+                            >
+                                What type of dream would you like to log?
+                            </Text>
                         </View>
                     )}
                     renderItem={({ item }) => (
-
                         <TouchableOpacity
                             onPress={() => handlePress(item.name)}
                             style={{
                                 marginBottom: 20,
                                 padding: 24,
                                 borderRadius: 13,
-                                borderBottomLeftRadius: 13,
-                                borderBottomRightRadius: 13,
-                                backgroundColor: "rgba(215, 201, 250, 0.25)",
+                                backgroundColor: 'rgba(215, 201, 250, 0.25)',
                                 borderWidth: 1,
                                 height: 250,
                                 borderColor: checkDreamType(item.name),
                                 shadowColor: checkDreamType(item.name),
-
                                 shadowOffset: { width: 0, height: 6 },
                                 shadowOpacity: 0.4,
                                 shadowRadius: 12,
                                 elevation: 5,
-
                             }}
                         >
-                            <Text style={{
-                                fontSize: 25,
-                                marginTop: 50,
-                                fontWeight: "600",
-                                color: "#fedde8",
-                                textAlign: "center",
-                                marginBottom: 6,
-                                textTransform: "capitalize",
-
-                            }}>
+                            <Text
+                                style={{
+                                    fontSize: 25,
+                                    marginTop: 50,
+                                    fontWeight: '600',
+                                    color: '#ffe25e',
+                                    textAlign: 'center',
+                                    marginBottom: 6,
+                                    textTransform: 'capitalize',
+                                }}
+                            >
                                 {item.name}
                             </Text>
-                            <Text style={{
-                                fontSize: 14,
-                                color: "#C9B9E2",
-                                opacity: 1,
-                                textAlign: "center",
-                            }}>
+                            <Text
+                                style={{
+                                    fontSize: 14,
+                                    color: '#D7C9E3',
+                                    textAlign: 'center',
+                                }}
+                            >
                                 {item.description}
                             </Text>
                         </TouchableOpacity>
-
-
-
                     )}
                 />
             </SafeAreaView>
-        </LinearGradient >
+        </LinearGradient>
     );
 }
 
-
-
 const styles = StyleSheet.create({
-
-    newDreamButtonText: {
-        color: "#FFFFFF",
-        fontSize: 16,
-        fontWeight: "bold",
-    },
-
     modalButtonsContainer: {
-        flexDirection: "row",
-        justifyContent: "space-around",
-        width: "100%",
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        width: '100%',
     },
     modalOverlay: {
         flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "rgba(31, 7, 63, 0.5)",
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(24, 7, 35, 0.7)',
     },
     modalContainer: {
-        width: "90%",
-        height: "20%",
-        backgroundColor: "#180723",
+        width: '90%',
+        height: '20%',
+        backgroundColor: '#180723',
         padding: 15,
         borderRadius: 11,
-        alignItems: "center",
+        alignItems: 'center',
         borderWidth: 2,
-        borderColor: "#D7C9E3",
+        borderColor: '#D7C9E3',
     },
     modalText: {
-        color: "#D7C9E3",
+        color: '#D7C9E3',
         fontSize: 18,
         marginBottom: 15,
-        textAlign: "center",
+        textAlign: 'center',
     },
     modalButton: {
-        backgroundColor: "#2C123F",
-        alignItems: "center",
+        backgroundColor: '#2C123F',
+        alignItems: 'center',
         paddingVertical: 10,
-        width: "45%",
+        width: '45%',
         paddingHorizontal: 20,
         borderRadius: 8,
         borderWidth: 1,
-        borderColor: "#D7C9E3",
+        borderColor: '#D7C9E3',
     },
     modalButtonText: {
-        color: "#D7C9E3",
+        color: '#D7C9E3',
         fontSize: 16,
-        fontWeight: "bold",
+        fontWeight: 'bold',
     },
 });

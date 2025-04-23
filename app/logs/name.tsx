@@ -15,11 +15,7 @@ import axios from "axios";
 const API_BASE_URL = 'http://10.0.2.2:5001';
 
 export default function TagsScreen() {
-
-
     const handlePress = async () => {
-
-
         router.push('/logCompletion/detailedLogCompletion');
         try {
             const storedEmail = await AsyncStorage.getItem('userEmail');
@@ -42,26 +38,17 @@ export default function TagsScreen() {
             const totalDreams = response.data.totalDreams + 1;
             const detailedDreams = response.data.detailedDreams + 1;
 
-
             await axios.put(`${API_BASE_URL}/users/${userId}`, {
                 totalDreams: totalDreams + 1,
                 detailedDreams: detailedDreams + 1,
             });
 
             console.log("done");
-
-
         } catch (error) {
             console.error('Error submitting dream log:', error);
             Alert.alert('Error', 'Failed to submit dream log.');
         }
-
-
-
     };
-
-
-
 
     const [selectedThemesTags, setSelectedThemesTags] = useState<string[]>([]);
     const [selectedSettingsTags, setSelectedSettingsTags] = useState<string[]>([]);
@@ -80,14 +67,11 @@ export default function TagsScreen() {
         year: "numeric",
     });
 
-
     const currentDateNumFormat = new Date().toLocaleDateString("en-US", {
         month: "2-digit",
         day: "2-digit",
         year: "2-digit",
     })
-
-
 
     // Use useEffect for navigation based on conditions
     useEffect(() => {
@@ -95,7 +79,6 @@ export default function TagsScreen() {
         if (isNavigating) return;
 
         if (name === "Empty Capture") {
-
             setIsNavigating(true);
             router.push({
                 pathname: "/logCompletion/emptyLogCompletion", params: {
@@ -107,10 +90,8 @@ export default function TagsScreen() {
                     THEMETAGS: [],
                     SETTINGSTAGS: [],
                     ADDONSTAGS: [],
-
                 }
             });
-
         } else if (name === "Fragmented Capture") {
             setIsNavigating(true);
             router.push({
@@ -129,14 +110,12 @@ export default function TagsScreen() {
                     ? prevThemeTags.filter((T) => T !== tag)
                     : [...prevThemeTags, tag]
             )
-
         }
         else if (tagType == "Settings") {
             setSelectedSettingsTags((prevSettingTags) =>
                 prevSettingTags.includes(tag)
                     ? prevSettingTags.filter((S) => S !== tag)
                     : [...prevSettingTags, tag]
-
             )
         }
         else {
@@ -144,7 +123,6 @@ export default function TagsScreen() {
                 prevAddonTags.includes(tag)
                     ? prevAddonTags.filter((A) => A !== tag)
                     : [...prevAddonTags, tag]
-
             )
         }
 
@@ -155,7 +133,6 @@ export default function TagsScreen() {
                 : [...prevTags, tag]
         );
     };
-
 
     // If we're in the process of navigating, return null to avoid rendering
     if (isNavigating || name === "Empty Capture" || name === "Fragmented Capture") {
@@ -180,7 +157,7 @@ export default function TagsScreen() {
                         style={({ pressed }) => ({
                             opacity: pressed ? 0.8 : 1,
                             transform: [{ scale: pressed ? 0.98 : 1 }],
-                            shadowColor: selectedTags.includes(tag) ? "#00BFFF" : "transparent",
+                            shadowColor: selectedTags.includes(tag) ? "#fc77a6" : "transparent",
                             shadowOffset: { width: 0, height: 2 },
                             shadowOpacity: 0.5,
                             shadowRadius: 4,
@@ -193,9 +170,9 @@ export default function TagsScreen() {
                                 paddingHorizontal: 12,
                                 borderRadius: 12,
                                 backgroundColor: selectedTags.includes(tag)
-                                    ? "#00BFFF"
-                                    : "#00314C",
-                                borderColor: "#00BFFF",
+                                    ? "#fc77a6"
+                                    : "#180723",
+                                borderColor: "#ffe25e",
                                 borderWidth: selectedTags.includes(tag) ? 0 : 1.5,
                                 margin: 5,
                                 minWidth: 90,
@@ -206,7 +183,7 @@ export default function TagsScreen() {
                                 style={{
                                     fontSize: 14,
                                     fontWeight: "bold",
-                                    color: selectedTags.includes(tag) ? "white" : "#E4D7F4",
+                                    color: selectedTags.includes(tag) ? "#e9f59d" : "#D7C9E3",
                                     textAlign: "center",
                                 }}
                             >
@@ -221,7 +198,7 @@ export default function TagsScreen() {
 
     return (
         <LinearGradient
-            colors={["#15041D", "#2C123F", "#3B1856"]}
+            colors={["#180723", "#2C123F", "#3d1865"]}
             style={{ flex: 1 }}
         >
             <StatusBar barStyle="light-content" />
@@ -251,7 +228,7 @@ export default function TagsScreen() {
                                     backgroundColor: "transparent",
                                 }}
                             >
-                                <Text style={{ fontSize: 24, color: "white" }}>
+                                <Text style={{ fontSize: 24, color: "#e9f59d" }}>
                                     <Feather name="arrow-left" size={30} />
                                 </Text>
                             </Button>
@@ -274,12 +251,12 @@ export default function TagsScreen() {
                                     paddingVertical: 8,
                                     marginTop: 15,
                                     borderRadius: 20,
-                                    backgroundColor: 'rgba(255, 255, 255, 0.15)'
+                                    backgroundColor: 'rgba(234, 219, 140, 0.15)'
                                 }}
                             >
                                 <Text style={{
                                     fontSize: 16,
-                                    color: "white",
+                                    color: "#e9f59d",
                                     fontWeight: '500'
                                 }}>
                                     Skip
@@ -293,10 +270,10 @@ export default function TagsScreen() {
                                 style={{
                                     fontSize: 26,
                                     fontWeight: "bold",
-                                    color: "white",
+                                    color: "#e9f59d",
                                     textAlign: "center",
                                     marginBottom: 8,
-                                    textShadowColor: "rgba(0, 191, 255, 0.3)",
+                                    textShadowColor: "rgba(255, 226, 94, 0.3)",
                                     textShadowOffset: { width: 0, height: 1 },
                                     textShadowRadius: 5,
                                 }}
@@ -307,7 +284,7 @@ export default function TagsScreen() {
                                 style={{
                                     fontSize: 18,
                                     fontWeight: "bold",
-                                    color: "#00BFFF",
+                                    color: "#ffe25e",
                                     marginBottom: 5,
                                 }}
                             >
@@ -316,7 +293,7 @@ export default function TagsScreen() {
                             <Text
                                 style={{
                                     fontSize: 16,
-                                    color: "#C9B9E2",
+                                    color: "#D7C9E3",
                                     opacity: 0.85,
                                     textAlign: "center",
                                     fontStyle: "italic",
@@ -329,7 +306,7 @@ export default function TagsScreen() {
                         {/* Selected tags count indicator */}
                         {selectedTags.length > 0 && (
                             <View style={{
-                                backgroundColor: "rgba(0, 191, 255, 0.15)",
+                                backgroundColor: "rgba(252, 119, 166, 0.15)",
                                 borderRadius: 12,
                                 padding: 12,
                                 marginBottom: 20,
@@ -337,9 +314,9 @@ export default function TagsScreen() {
                                 alignItems: "center",
                                 justifyContent: "center"
                             }}>
-                                <Feather name="tag" size={18} color="#00BFFF" />
+                                <Feather name="tag" size={18} color="#fc77a6" />
                                 <Text style={{
-                                    color: "white",
+                                    color: "#D7C9E3",
                                     fontSize: 15,
                                     marginLeft: 8
                                 }}>
@@ -352,17 +329,17 @@ export default function TagsScreen() {
                 renderItem={({ item }) => (
                     <View style={{
                         marginBottom: 25,
-                        backgroundColor: "rgba(0, 49, 76, 0.3)",
+                        backgroundColor: "rgba(24, 7, 35, 0.6)",
                         borderRadius: 16,
                         padding: 16,
                         borderLeftWidth: 3,
-                        borderLeftColor: "#00BFFF",
+                        borderLeftColor: "#ffe25e",
                     }}>
                         <Text
                             style={{
                                 fontSize: 20,
                                 fontWeight: "bold",
-                                color: "white",
+                                color: "#D7C9E3",
                                 marginBottom: 15,
                             }}
                         >
@@ -372,7 +349,7 @@ export default function TagsScreen() {
                                         item.title === "Settings" ? "settings" : "plus-circle"
                                 }
                                 size={16}
-                                color="#00BFFF"
+                                color="#ffe25e"
                             /> {item.title}
                         </Text>
 
@@ -389,7 +366,7 @@ export default function TagsScreen() {
                                 params: { monthDayYear: currentDateNumFormat, name: name, tags: selectedTags.join(","), THEMETAGS: selectedThemesTags.join(","), ADDONTAGS: selectedAddonsTags.join(","), SETTINGSTAGS: selectedSettingsTags.join(",") }
                             })}
                             style={{
-                                backgroundColor: selectedTags.length > 0 ? "#0000ff" : "rgba(0, 0, 255, 0.5)",
+                                backgroundColor: selectedTags.length > 0 ? "#fc77a6" : "rgba(252, 119, 166, 0.5)",
                                 borderRadius: 12,
                                 alignItems: "center",
                                 justifyContent: "center",
@@ -404,7 +381,7 @@ export default function TagsScreen() {
                         >
                             <ButtonText
                                 style={{
-                                    color: "#FFFFFF",
+                                    color: "#e9f59d",
                                     fontSize: 16,
                                     fontWeight: "bold",
                                 }}

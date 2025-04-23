@@ -101,7 +101,7 @@ export default function fragmentedLogTextScreen() {
 
     return (
         <LinearGradient
-            colors={["#15041D", "#2C123F", "#3B1856"]}
+            colors={["#180723", "#2C123F", "#3d1865"]}
             style={{ flex: 1 }}
         >
             <StatusBar barStyle="light-content" />
@@ -136,7 +136,7 @@ export default function fragmentedLogTextScreen() {
                             zIndex: 10,
                         }}
                     >
-                        <Text style={{ fontSize: 24, color: "white" }}>
+                        <Text style={{ fontSize: 24, color: "#e9f59d" }}>
                             <Feather name="arrow-left" size={30} />
                         </Text>
                     </Button>
@@ -147,10 +147,10 @@ export default function fragmentedLogTextScreen() {
                             style={{
                                 fontSize: 26,
                                 fontWeight: "bold",
-                                color: "white",
+                                color: "#ffe25e",
                                 textAlign: "center",
                                 marginBottom: 8,
-                                textShadowColor: "rgba(0, 191, 255, 0.3)",
+                                textShadowColor: "rgba(252, 119, 166, 0.3)",
                                 textShadowOffset: { width: 0, height: 1 },
                                 textShadowRadius: 5,
                             }}
@@ -161,7 +161,7 @@ export default function fragmentedLogTextScreen() {
                             style={{
                                 fontSize: 18,
                                 fontWeight: "bold",
-                                color: "#00BFFF",
+                                color: "#fc77a6",
                                 marginBottom: 5,
                             }}
                         >
@@ -170,7 +170,7 @@ export default function fragmentedLogTextScreen() {
                         <Text
                             style={{
                                 fontSize: 16,
-                                color: "#C9B9E2",
+                                color: "#D7C9E3",
                                 opacity: 0.85,
                                 textAlign: "center",
                                 fontStyle: "italic",
@@ -208,23 +208,23 @@ export default function fragmentedLogTextScreen() {
                     {arrayOfUsersTags.length > 0 && (
                         <View
                             style={{
-                                backgroundColor: "rgba(0, 49, 76, 0.3)",
+                                backgroundColor: "rgba(24, 7, 35, 0.6)",
                                 borderRadius: 16,
                                 padding: 16,
                                 marginBottom: 20,
                                 borderLeftWidth: 3,
-                                borderLeftColor: "#00BFFF",
+                                borderLeftColor: "#fc77a6",
                             }}
                         >
                             <Text
                                 style={{
                                     fontSize: 16,
                                     fontWeight: "bold",
-                                    color: "white",
+                                    color: "#e9f59d",
                                     marginBottom: 10,
                                 }}
                             >
-                                <Feather name="tag" size={14} color="#00BFFF" /> Selected Tags
+                                <Feather name="tag" size={14} color="#ffe25e" /> Selected Tags
                             </Text>
 
                             <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
@@ -235,7 +235,7 @@ export default function fragmentedLogTextScreen() {
                                             margin: 4,
                                             paddingVertical: 6,
                                             paddingHorizontal: 10,
-                                            backgroundColor: "#00BFFF",
+                                            backgroundColor: "#fc77a6",
                                             borderRadius: 12,
                                             shadowColor: "#000",
                                             shadowOffset: { width: 0, height: 2 },
@@ -244,7 +244,7 @@ export default function fragmentedLogTextScreen() {
                                             elevation: 2,
                                         }}
                                     >
-                                        <Text style={{ fontSize: 14, fontWeight: "500", color: "white" }}>
+                                        <Text style={{ fontSize: 14, fontWeight: "500", color: "#180723" }}>
                                             {item}
                                         </Text>
                                     </View>
@@ -263,7 +263,7 @@ export default function fragmentedLogTextScreen() {
                             }}
                         >
                             <Text style={{
-                                color: "#00BFFF",
+                                color: "#ffe25e",
                                 fontSize: 16,
                                 marginBottom: 8,
                                 fontWeight: "500"
@@ -280,11 +280,11 @@ export default function fragmentedLogTextScreen() {
                                 style={{
                                     minHeight: 100,
                                     width: "100%",
-                                    borderColor: error && value.trim() === "" ? "#FF3B30" : "#00BFFF",
+                                    borderColor: error && value.trim() === "" ? "#FF3B30" : "#eadb8c",
                                     borderWidth: 1.5,
-                                    backgroundColor: "rgba(0, 49, 76, 0.3)",
+                                    backgroundColor: "rgba(60, 24, 101, 0.3)",
                                     padding: 15,
-                                    color: "white",
+                                    color: "#e9f59d",
                                     borderRadius: 12,
                                     textAlignVertical: "top",
                                     fontSize: 16
@@ -297,7 +297,7 @@ export default function fragmentedLogTextScreen() {
                     <Button
                         onPress={handlePress}
                         style={{
-                            backgroundColor: "#0000ff",
+                            backgroundColor: "#fc77a6",
                             borderRadius: 12,
                             alignItems: "center",
                             justifyContent: "center",
@@ -313,7 +313,7 @@ export default function fragmentedLogTextScreen() {
                     >
                         <ButtonText
                             style={{
-                                color: "#FFFFFF",
+                                color: "#180723",
                                 fontSize: 16,
                                 fontWeight: "bold",
                             }}

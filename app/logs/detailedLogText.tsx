@@ -17,8 +17,8 @@ export default function DetailedLogTextScreen() {
     const params = useLocalSearchParams();
 
     // Default border color, dynamically setting border color
-    const [titleBorderColor, setTitleBorderColor] = useState("#00BFFF");
-    const [textBorderColor, setTextBorderColor] = useState("#00BFFF");
+    const [titleBorderColor, setTitleBorderColor] = useState("#ffe25e");
+    const [textBorderColor, setTextBorderColor] = useState("#ffe25e");
 
     // Text input state and validation
     const [inputText, setInputText] = useState("");
@@ -32,16 +32,16 @@ export default function DetailedLogTextScreen() {
     const handleTextChange = (text: string) => {
         setInputText(text);
         setValidText(text.trim() !== "");
-        setTextBorderColor(text.trim() !== "" ? "#00BFFF" : "red");
+        setTextBorderColor(text.trim() !== "" ? "#ffe25e" : "#fc77a6");
     };
 
     // Handler for when user finishes editing text
     const userEndedEditingText = () => {
         if (inputText.trim() === "") {
-            setTextBorderColor("red");
+            setTextBorderColor("#fc77a6");
             setValidText(false);
         } else {
-            setTextBorderColor("#00BFFF");
+            setTextBorderColor("#ffe25e");
             setValidText(true);
         }
     };
@@ -50,16 +50,16 @@ export default function DetailedLogTextScreen() {
     const handleTitleChange = (text: string) => {
         setInputTitle(text);
         setValidTitle(text.trim() !== "");
-        setTitleBorderColor(text.trim() !== "" ? "#00BFFF" : "red");
+        setTitleBorderColor(text.trim() !== "" ? "#ffe25e" : "#fc77a6");
     };
 
     // Handler for when user finishes editing title
     const userEndedEditingTitle = () => {
         if (inputTitle.trim() === "") {
-            setTitleBorderColor("red");
+            setTitleBorderColor("#fc77a6");
             setValidTitle(false);
         } else {
-            setTitleBorderColor("#00BFFF");
+            setTitleBorderColor("#ffe25e");
             setValidTitle(true);
         }
     };
@@ -71,8 +71,8 @@ export default function DetailedLogTextScreen() {
 
         setValidTitle(isTitleValid);
         setValidText(isTextValid);
-        setTitleBorderColor(isTitleValid ? "#00BFFF" : "red");
-        setTextBorderColor(isTextValid ? "#00BFFF" : "red");
+        setTitleBorderColor(isTitleValid ? "#ffe25e" : "#fc77a6");
+        setTextBorderColor(isTextValid ? "#ffe25e" : "#fc77a6");
 
         if (validTitle && validText) {
             router.push('/logCompletion/detailedLogCompletion');
@@ -129,7 +129,7 @@ export default function DetailedLogTextScreen() {
 
     return (
         <LinearGradient
-            colors={["#15041D", "#2C123F", "#3B1856"]}
+            colors={["#180723", "#2C123F", "#3d1865"]}
             style={{ flex: 1 }}
         >
             <StatusBar barStyle="light-content" />
@@ -161,7 +161,7 @@ export default function DetailedLogTextScreen() {
                             zIndex: 10,
                         }}
                     >
-                        <Text style={{ fontSize: 24, color: "white" }}>
+                        <Text style={{ fontSize: 24, color: "#e9f59d" }}>
                             <Feather name="arrow-left" size={30} />
                         </Text>
                     </Button>
@@ -172,10 +172,10 @@ export default function DetailedLogTextScreen() {
                             style={{
                                 fontSize: 26,
                                 fontWeight: "bold",
-                                color: "white",
+                                color: "#e9f59d",
                                 textAlign: "center",
                                 marginBottom: 8,
-                                textShadowColor: "rgba(0, 191, 255, 0.3)",
+                                textShadowColor: "rgba(255, 226, 94, 0.3)",
                                 textShadowOffset: { width: 0, height: 1 },
                                 textShadowRadius: 5,
                             }}
@@ -186,7 +186,7 @@ export default function DetailedLogTextScreen() {
                         <Text
                             style={{
                                 fontSize: 16,
-                                color: "#C9B9E2",
+                                color: "#D7C9E3",
                                 opacity: 0.85,
                                 textAlign: "center",
                                 fontStyle: "italic",
@@ -201,23 +201,23 @@ export default function DetailedLogTextScreen() {
                     {arrayOfUsersTags.length > 0 && (
                         <View
                             style={{
-                                backgroundColor: "rgba(0, 49, 76, 0.3)",
+                                backgroundColor: "rgba(24, 7, 35, 0.6)",
                                 borderRadius: 16,
                                 padding: 16,
                                 marginBottom: 20,
                                 borderLeftWidth: 3,
-                                borderLeftColor: "#00BFFF",
+                                borderLeftColor: "#ffe25e",
                             }}
                         >
                             <Text
                                 style={{
                                     fontSize: 16,
                                     fontWeight: "bold",
-                                    color: "white",
+                                    color: "#D7C9E3",
                                     marginBottom: 10,
                                 }}
                             >
-                                <Feather name="tag" size={14} color="#00BFFF" /> Selected Tags
+                                <Feather name="tag" size={14} color="#ffe25e" /> Selected Tags
                             </Text>
 
                             <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
@@ -228,7 +228,7 @@ export default function DetailedLogTextScreen() {
                                             margin: 4,
                                             paddingVertical: 6,
                                             paddingHorizontal: 10,
-                                            backgroundColor: "#00BFFF",
+                                            backgroundColor: "#fc77a6",
                                             borderRadius: 12,
                                             shadowColor: "#000",
                                             shadowOffset: { width: 0, height: 2 },
@@ -237,7 +237,7 @@ export default function DetailedLogTextScreen() {
                                             elevation: 2,
                                         }}
                                     >
-                                        <Text style={{ fontSize: 14, fontWeight: "500", color: "white" }}>
+                                        <Text style={{ fontSize: 14, fontWeight: "500", color: "#e9f59d" }}>
                                             {item}
                                         </Text>
                                     </View>
@@ -249,23 +249,23 @@ export default function DetailedLogTextScreen() {
                     {/* Title Input Container */}
                     <View
                         style={{
-                            backgroundColor: "rgba(0, 49, 76, 0.3)",
+                            backgroundColor: "rgba(24, 7, 35, 0.6)",
                             borderRadius: 16,
                             padding: 16,
                             marginBottom: 20,
                             borderLeftWidth: 3,
-                            borderLeftColor: "#00BFFF",
+                            borderLeftColor: "#ffe25e",
                         }}
                     >
                         <Text
                             style={{
                                 fontSize: 16,
                                 fontWeight: "bold",
-                                color: "white",
+                                color: "#D7C9E3",
                                 marginBottom: 10,
                             }}
                         >
-                            <Feather name="edit-3" size={14} color="#00BFFF" /> Title
+                            <Feather name="edit-3" size={14} color="#ffe25e" /> Title
                         </Text>
 
                         <TextInput
@@ -275,20 +275,20 @@ export default function DetailedLogTextScreen() {
                             numberOfLines={1}
                             multiline={false}
                             placeholder="Enter a title for your experience..."
-                            placeholderTextColor="rgba(201, 185, 226, 0.6)"
+                            placeholderTextColor="rgba(215, 201, 227, 0.6)"
                             style={{
-                                backgroundColor: "#00314C",
+                                backgroundColor: "#180723",
                                 borderWidth: 2,
                                 borderColor: titleBorderColor,
                                 borderRadius: 12,
-                                color: "white",
+                                color: "#e9f59d",
                                 padding: 12,
                                 fontSize: 16,
                             }}
                         />
 
-                        {titleBorderColor === 'red' && (
-                            <Text style={{ color: "#FF6B6B", marginTop: 5, fontSize: 12 }}>
+                        {titleBorderColor === '#fc77a6' && (
+                            <Text style={{ color: "#fc77a6", marginTop: 5, fontSize: 12 }}>
                                 <Feather name="alert-circle" size={12} /> Please enter a title
                             </Text>
                         )}
@@ -297,23 +297,23 @@ export default function DetailedLogTextScreen() {
                     {/* Main Text Input Container */}
                     <View
                         style={{
-                            backgroundColor: "rgba(0, 49, 76, 0.3)",
+                            backgroundColor: "rgba(24, 7, 35, 0.6)",
                             borderRadius: 16,
                             padding: 16,
                             marginBottom: 30,
                             borderLeftWidth: 3,
-                            borderLeftColor: "#00BFFF",
+                            borderLeftColor: "#ffe25e",
                         }}
                     >
                         <Text
                             style={{
                                 fontSize: 16,
                                 fontWeight: "bold",
-                                color: "white",
+                                color: "#D7C9E3",
                                 marginBottom: 10,
                             }}
                         >
-                            <Feather name="book-open" size={14} color="#00BFFF" /> Description
+                            <Feather name="book-open" size={14} color="#ffe25e" /> Description
                         </Text>
 
                         <TextInput
@@ -321,15 +321,15 @@ export default function DetailedLogTextScreen() {
                             onChangeText={handleTextChange}
                             onEndEditing={userEndedEditingText}
                             multiline={true}
-                            placeholderTextColor="rgba(201, 185, 226, 0.6)"
+                            placeholderTextColor="rgba(215, 201, 227, 0.6)"
                             placeholder="Begin typing your experience here..."
                             style={{
                                 height: 200,
-                                backgroundColor: "#00314C",
+                                backgroundColor: "#180723",
                                 borderWidth: 2,
                                 borderColor: textBorderColor,
                                 padding: 16,
-                                color: "white",
+                                color: "#e9f59d",
                                 borderRadius: 12,
                                 marginBottom: 25,
                                 textAlignVertical: 'top',
@@ -337,8 +337,8 @@ export default function DetailedLogTextScreen() {
                             }}
                         />
 
-                        {textBorderColor === 'red' && (
-                            <Text style={{ color: "#FF6B6B", marginTop: 5, fontSize: 12 }}>
+                        {textBorderColor === '#fc77a6' && (
+                            <Text style={{ color: "#fc77a6", marginTop: 5, fontSize: 12 }}>
                                 <Feather name="alert-circle" size={12} /> Please enter a description
                             </Text>
                         )}
@@ -348,7 +348,7 @@ export default function DetailedLogTextScreen() {
                     <Button
                         onPress={handlePress}
                         style={{
-                            backgroundColor: validTitle && validText ? "#0000ff" : "rgba(0, 0, 255, 0.5)",
+                            backgroundColor: validTitle && validText ? "#fc77a6" : "rgba(252, 119, 166, 0.5)",
                             borderRadius: 12,
                             alignItems: "center",
                             justifyContent: "center",
@@ -363,7 +363,7 @@ export default function DetailedLogTextScreen() {
                     >
                         <ButtonText
                             style={{
-                                color: "#FFFFFF",
+                                color: "#e9f59d",
                                 fontSize: 16,
                                 fontWeight: "bold",
                             }}
@@ -383,7 +383,7 @@ export default function DetailedLogTextScreen() {
                         <Text
                             style={{
                                 fontSize: 16,
-                                color: "#C9B9E2",
+                                color: "#eadb8c",
                                 textDecorationLine: "underline",
                             }}
                         >

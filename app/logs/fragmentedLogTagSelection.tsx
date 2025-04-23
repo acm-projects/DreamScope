@@ -8,6 +8,21 @@ import Feather from '@expo/vector-icons/Feather';
 import { AntDesign, Fontisto } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 
+// Updated color theme based on your specification
+const DREAM_THEME = {
+    yellow: '#ffe25e',
+    lightYellow: '#eadb8c',
+    whiteYellow: '#e9f59d',
+    darkPurple: '#180723',
+    purple: '#2C123F',
+    lightPurple: '#3d1865',
+    whitePurple: '#D7C9E3',
+    pink: '#fc77a6',
+    textLight: '#D7C9E3', // Using whitePurple for text
+    accent: '#fc77a6',    // Using pink as accent
+    primaryButton: '#ffe25e' // Using yellow for primary button
+};
+
 export default function FragmentedTagSelectionScreen() {
     const router = useRouter();
     const { name, parts } = useLocalSearchParams();
@@ -91,7 +106,7 @@ export default function FragmentedTagSelectionScreen() {
                 style={({ pressed }) => ({
                     opacity: pressed ? 0.8 : 1,
                     transform: [{ scale: pressed ? 0.98 : 1 }],
-                    shadowColor: isSelected ? "#00BFFF" : "transparent",
+                    shadowColor: isSelected ? DREAM_THEME.yellow : "transparent",
                     shadowOffset: { width: 0, height: 2 },
                     shadowOpacity: 0.5,
                     shadowRadius: 4,
@@ -104,8 +119,8 @@ export default function FragmentedTagSelectionScreen() {
                         paddingVertical: 10,
                         paddingHorizontal: 12,
                         borderRadius: 12,
-                        backgroundColor: isSelected ? "#00BFFF" : "#00314C",
-                        borderColor: "#00BFFF",
+                        backgroundColor: isSelected ? DREAM_THEME.yellow : DREAM_THEME.purple,
+                        borderColor: DREAM_THEME.pink,
                         borderWidth: isSelected ? 0 : 1.5,
                     }}
                 >
@@ -113,7 +128,7 @@ export default function FragmentedTagSelectionScreen() {
                         style={{
                             fontSize: 14,
                             fontWeight: "bold",
-                            color: isSelected ? "white" : "#E4D7F4",
+                            color: isSelected ? DREAM_THEME.darkPurple : DREAM_THEME.whiteYellow,
                             textAlign: "center",
                         }}
                     >
@@ -126,7 +141,7 @@ export default function FragmentedTagSelectionScreen() {
 
     return (
         <LinearGradient
-            colors={["#15041D", "#2C123F", "#3B1856"]}
+            colors={[DREAM_THEME.darkPurple, DREAM_THEME.purple, DREAM_THEME.lightPurple]}
             style={{ flex: 1 }}
         >
             <StatusBar barStyle="light-content" />
@@ -162,7 +177,7 @@ export default function FragmentedTagSelectionScreen() {
                                     backgroundColor: "transparent",
                                 }}
                             >
-                                <Text style={{ fontSize: 24, color: "white" }}>
+                                <Text style={{ fontSize: 24, color: DREAM_THEME.whitePurple }}>
                                     <Feather name="arrow-left" size={30} />
                                 </Text>
                             </Button>
@@ -186,12 +201,12 @@ export default function FragmentedTagSelectionScreen() {
                                     paddingVertical: 8,
                                     marginTop: 15,
                                     borderRadius: 20,
-                                    backgroundColor: 'rgba(255, 255, 255, 0.15)'
+                                    backgroundColor: 'rgba(255, 226, 94, 0.15)' // Yellow with opacity
                                 }}
                             >
                                 <Text style={{
                                     fontSize: 16,
-                                    color: "white",
+                                    color: DREAM_THEME.whiteYellow,
                                     fontWeight: '500'
                                 }}>
                                     Skip
@@ -205,10 +220,10 @@ export default function FragmentedTagSelectionScreen() {
                                 style={{
                                     fontSize: 26,
                                     fontWeight: "bold",
-                                    color: "white",
+                                    color: DREAM_THEME.whiteYellow,
                                     textAlign: "center",
                                     marginBottom: 8,
-                                    textShadowColor: "rgba(0, 191, 255, 0.3)",
+                                    textShadowColor: "rgba(252, 119, 166, 0.3)", // Pink shadow
                                     textShadowOffset: { width: 0, height: 1 },
                                     textShadowRadius: 5,
                                 }}
@@ -219,7 +234,7 @@ export default function FragmentedTagSelectionScreen() {
                                 style={{
                                     fontSize: 18,
                                     fontWeight: "bold",
-                                    color: "#00BFFF",
+                                    color: DREAM_THEME.pink,
                                     marginBottom: 5,
                                 }}
                             >
@@ -228,7 +243,7 @@ export default function FragmentedTagSelectionScreen() {
                             <Text
                                 style={{
                                     fontSize: 16,
-                                    color: "#C9B9E2",
+                                    color: DREAM_THEME.whitePurple,
                                     opacity: 0.85,
                                     textAlign: "center",
                                     fontStyle: "italic",
@@ -241,7 +256,7 @@ export default function FragmentedTagSelectionScreen() {
                         {/* Selected tags count indicator */}
                         {selectedTags.length > 0 && (
                             <View style={{
-                                backgroundColor: "rgba(0, 191, 255, 0.15)",
+                                backgroundColor: "rgba(252, 119, 166, 0.15)", // Pink with opacity
                                 borderRadius: 12,
                                 padding: 12,
                                 marginBottom: 20,
@@ -249,9 +264,9 @@ export default function FragmentedTagSelectionScreen() {
                                 alignItems: "center",
                                 justifyContent: "center"
                             }}>
-                                <Feather name="tag" size={18} color="#00BFFF" />
+                                <Feather name="tag" size={18} color={DREAM_THEME.yellow} />
                                 <Text style={{
-                                    color: "white",
+                                    color: DREAM_THEME.whitePurple,
                                     fontSize: 15,
                                     marginLeft: 8
                                 }}>
@@ -264,17 +279,17 @@ export default function FragmentedTagSelectionScreen() {
                 renderItem={({ item }) => (
                     <View style={{
                         marginBottom: 25,
-                        backgroundColor: "rgba(0, 49, 76, 0.3)",
+                        backgroundColor: "rgba(44, 18, 63, 0.5)", // Purple with opacity
                         borderRadius: 16,
                         padding: 16,
                         borderLeftWidth: 3,
-                        borderLeftColor: "#00BFFF",
+                        borderLeftColor: DREAM_THEME.pink,
                     }}>
                         <Text
                             style={{
                                 fontSize: 20,
                                 fontWeight: "bold",
-                                color: "white",
+                                color: DREAM_THEME.whitePurple,
                                 marginBottom: 15,
                             }}
                         >
@@ -284,7 +299,7 @@ export default function FragmentedTagSelectionScreen() {
                                         item.title === "Settings" ? "settings" : "plus-circle"
                                 }
                                 size={16}
-                                color="#00BFFF"
+                                color={DREAM_THEME.yellow}
                             /> {item.title}
                         </Text>
 
@@ -309,7 +324,7 @@ export default function FragmentedTagSelectionScreen() {
                         <Button
                             onPress={navigateToLogText}
                             style={{
-                                backgroundColor: selectedTags.length > 0 ? "#0000ff" : "rgba(0, 0, 255, 0.5)",
+                                backgroundColor: selectedTags.length > 0 ? DREAM_THEME.yellow : "rgba(255, 226, 94, 0.5)", // Yellow with opacity when disabled
                                 borderRadius: 12,
                                 alignItems: "center",
                                 justifyContent: "center",
@@ -324,7 +339,7 @@ export default function FragmentedTagSelectionScreen() {
                         >
                             <ButtonText
                                 style={{
-                                    color: "#FFFFFF",
+                                    color: DREAM_THEME.darkPurple,
                                     fontSize: 16,
                                     fontWeight: "bold",
                                 }}
