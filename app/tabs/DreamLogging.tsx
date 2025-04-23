@@ -1,8 +1,14 @@
-import { View, FlatList, Text, TouchableOpacity, SafeAreaView, StyleSheet, Dimensions, Modal, Image } from "react-native";
+import { View, FlatList, Text, TouchableOpacity, SafeAreaView, Alert, StyleSheet, Dimensions, Modal, Image } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
 import { LinearGradient } from "expo-linear-gradient";
 import options from "../../Frontend/assets/dummyJson/options.json";
+
+
+const API_BASE_URL = 'http://10.0.2.2:5001';
+
 
 const { width } = Dimensions.get("window");
 const currentDate = new Date().toLocaleDateString("en-US", {
@@ -30,6 +36,46 @@ const checkDreamType = (dreamType: any) => {
 
 
 export default function DreamLogScreen() {
+
+    const handlePress2 = async () => {
+        router.push('/logCompletion/emptyLogCompletion');
+        try {
+            const storedEmail = await AsyncStorage.getItem('userEmail');
+            const response = await axios.get(`${API_BASE_URL}/users/email/${storedEmail}`);
+            const userId = response.data._id;
+
+            console.log(response.data.name);
+            const dreamData = {
+                userId: userId,
+                title: "",
+                type: "Empty",
+                dreamText: "",
+                selectedThemes: [],
+                selectedSettings: [],
+                selectedEmotions: [],
+            };
+
+            const apiResponse = await axios.post(`${API_BASE_URL}/api/dreamPosts`, dreamData);
+            await AsyncStorage.setItem('postId', apiResponse.data._id);
+            const totalDreams = response.data.totalDreams + 1;
+            const detailedDreams = response.data.detailedDreams + 1;
+
+
+            await axios.put(`${API_BASE_URL}/users/${userId}`, {
+                totalDreams: totalDreams + 1,
+                detailedDreams: detailedDreams + 1,
+            });
+
+            console.log("done");
+
+
+        } catch (error) {
+            console.error('Error submitting dream log:', error);
+            Alert.alert('Error', 'Failed to submit dream log.');
+        }
+
+    }
+
 
 
     const [modalVisible, setModalVisible] = useState(false);
@@ -79,10 +125,7 @@ export default function DreamLogScreen() {
                                 </TouchableOpacity>
 
                                 <TouchableOpacity
-                                    onPress={() => {
-                                        router.push({ pathname: `/logCompletion/emptyLogCompletion`, params: { name: EmptyType } })
-
-                                    }}
+                                    onPress={handlePress2}
                                     style={styles.modalButton}
                                 >
                                     <Text style={styles.modalButtonText}>Yes</Text>
@@ -216,6 +259,7 @@ export default function DreamLogScreen() {
         </LinearGradient >
     );
 }
+
 
 
 const styles = StyleSheet.create({

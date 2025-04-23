@@ -1,3 +1,4 @@
+
 import { useUser } from "../context/UserContext";
 import axios from 'axios';
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -7,7 +8,7 @@ import { View, Alert, Text, SafeAreaView, ScrollView, FlatList, TouchableOpacity
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { useLocalSearchParams } from 'expo-router';
-import userDreamData from '../../Frontend/assets/dummyJson/multipleDreamLogsExampleForTimeline.json';
+import userDreamData from "../../Frontend/assets/dummyJson/multipleDreamLogsExampleForTimeline.json";
 import { LinearGradient } from "expo-linear-gradient";
 import Feather from '@expo/vector-icons/Feather';
 
@@ -292,6 +293,9 @@ export default function DreamTimelinePage() {
                             borderRightColor: "#00cf91",
                         }}
                     >
+
+
+
 
 
                     </View>
@@ -580,9 +584,8 @@ export default function DreamTimelinePage() {
                         lineHeight: 24,
                         fontStyle: "italic", justifyContent: "center", alignItems: "center"
                     }}>
-                        {params.DreamDescription} {"\n"}
-                        {params.AiAnalysis}
 
+                        The absence of a dream might suggest a night of deep rest or emotional numbness. This dream may reflect deeper emotional undercurrents, symbolic imagery, or internal conflicts that are surfacing during rest.
 
                     </Text>
 

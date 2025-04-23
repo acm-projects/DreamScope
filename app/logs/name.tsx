@@ -16,6 +16,53 @@ const API_BASE_URL = 'http://10.0.2.2:5001';
 
 export default function TagsScreen() {
 
+
+    const handlePress = async () => {
+
+
+        router.push('/logCompletion/detailedLogCompletion');
+        try {
+            const storedEmail = await AsyncStorage.getItem('userEmail');
+            const response = await axios.get(`${API_BASE_URL}/users/email/${storedEmail}`);
+            const userId = response.data._id;
+
+            console.log(response.data.name);
+            const dreamData = {
+                userId: userId,
+                title: "",
+                type: "Empty",
+                dreamText: "",
+                selectedThemes: [],
+                selectedSettings: [],
+                selectedEmotions: [],
+            };
+
+            const apiResponse = await axios.post(`${API_BASE_URL}/api/dreamPosts`, dreamData);
+            await AsyncStorage.setItem('postId', apiResponse.data._id);
+            const totalDreams = response.data.totalDreams + 1;
+            const detailedDreams = response.data.detailedDreams + 1;
+
+
+            await axios.put(`${API_BASE_URL}/users/${userId}`, {
+                totalDreams: totalDreams + 1,
+                detailedDreams: detailedDreams + 1,
+            });
+
+            console.log("done");
+
+
+        } catch (error) {
+            console.error('Error submitting dream log:', error);
+            Alert.alert('Error', 'Failed to submit dream log.');
+        }
+
+
+
+    };
+
+
+
+
     const [selectedThemesTags, setSelectedThemesTags] = useState<string[]>([]);
     const [selectedSettingsTags, setSelectedSettingsTags] = useState<string[]>([]);
     const [selectedAddonsTags, setSelectedAddonsTags] = useState<string[]>([]);
@@ -125,7 +172,7 @@ export default function TagsScreen() {
     // Function to render tags in a flexbox layout that properly wraps
     const renderTagsGrid = (tags: string[], sectionTitle: string) => {
         return (
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap', flexGrow: 5 }}>
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
                 {tags.map((tag) => (
                     <Pressable
                         key={tag}

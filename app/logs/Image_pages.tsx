@@ -33,11 +33,12 @@ export default function AIAnalysisPage() {
                     if (userResponse.data) {
                         const userId = userResponse.data._id;
                         console.log("got user id")
-                        console.log(date);
                         const dreamPostResponse = await axios.get(`http://10.0.2.2:5001/api/dreamPosts/users/${userId}/date/${date}`);
                         if (dreamPostResponse.data) {
-                            setPostId(dreamPostResponse.data._id);
+                            setPostId("68088d4d40764fe7f5620213"); //68043925d627f746b4741cc8
                             console.log("got post id");
+                            console.log(date)
+
                         } else {
                             console.log("No dream post found for this user on the specified date.");
                             setPostId(null);
@@ -63,7 +64,7 @@ export default function AIAnalysisPage() {
 
     useEffect(() => {
         if (analysisData?.visualizations) {
-
+            console.log(images)
             setImages(analysisData.visualizations); // Set images directly to the array
         } else {
             setImages([]); // Ensure images is an empty array if no visualizations
