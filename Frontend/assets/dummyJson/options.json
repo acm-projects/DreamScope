@@ -2,16 +2,16 @@
     {
         "id": 1,
         "name": "Detailed Capture",
-        "description": "A in-depths log of the Users dream"
+        "description": "A in-depth log of your dream"
     },
     {
         "id": 2,
         "name": "Fragmented Capture",
-        "description": "When the User's dream was split into multiple parts"
+        "description": "For dreams that you remember in parts"
     },
     {
         "id": 3,
         "name": "Empty Capture",
-        "description": "User didnt have a dream/or forgot *keeps streaks*"
+        "description": "Streak saving"
     }
 ]

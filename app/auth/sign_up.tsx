@@ -65,24 +65,27 @@ const SignUp = (): JSX.Element => {
 
     return (
         <LinearGradient colors={['#180723', '#2C123F', '#2C123F', '#3d1865']} style={{ flex: 1 }}>
-            <View style={{ position: "absolute", top: 0, right: 0, opacity: 0.2 }}>
-                <Image
-                    source={require("../../Frontend/images/cloudedLoginSignin.png")}
-                    style={{ maxWidth: "auto", maxHeight: "auto" }}
-                    resizeMode="contain"
-                />
-            </View>
             <SafeAreaView style={styles.container}>
+
+                <View style={{ position: "absolute", bottom: 0, top: 0, opacity: 0.75 }}>
+                    <Image
+                        source={require("../../Frontend/images/cloudedLoginSignin.png")}
+                        style={{ maxWidth: "auto", maxHeight: "auto" }}
+                        resizeMode="contain"
+                    />
+                </View>
                 <ScrollView contentContainerStyle={styles.scrollContainer}>
                     <View style={styles.innerContainer}>
                         <Text style={styles.title}>
-                            <Text>D</Text>
-                            <Text style={styles.highlight}>ream</Text>
-                            <Text>S</Text>
-                            <Text style={styles.highlight}>cope</Text>
+                            <Text style={styles.title}>
+                                <Text>N</Text>
+                                <Text style={styles.highlight}>oc</Text>
+                                <Text></Text>
+                                <Text style={styles.highlight}>turne</Text>
+                            </Text>
                         </Text>
 
-                        <Image source={require("../../Frontend/images/logo-final.png")} style={styles.logo} resizeMode="contain" />
+                        <Image source={require("../../Frontend/images/logo-trans.png")} style={styles.logo} resizeMode="contain" />
 
                         <TextInput
                             style={[styles.input, focusedField === "username" && styles.inputFocused]}
@@ -157,35 +160,35 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     title: {
-        fontSize: 32,
+        fontSize: 50,
         fontWeight: "bold",
-        color: "#fff",
+        color: "#D7C9E3",
         marginBottom: 10,
     },
     highlight: {
-        color: "#FFD700",
+        color: "#ffe25e",
     },
     logo: {
-        width: 100,
-        height: 100,
+        width: 200,
+        height: 200,
         marginBottom: 20,
     },
     input: {
         width: "100%",
         height: 50,
-        backgroundColor: "#fff",
+        backgroundColor: "#D7C9E3",
         borderRadius: 8,
         paddingHorizontal: 15,
         marginBottom: 15,
         fontSize: 16,
         borderWidth: 2,
-        borderColor: "#fff",
+        borderColor: "#D7C9E3",
     },
     inputFocused: {
-        borderColor: "#FFD700",
+        borderColor: "#ffe25e",
     },
     button: {
-        backgroundColor: "#FFD700",
+        backgroundColor: "#ffe25e",
         paddingVertical: 12,
         paddingHorizontal: 20,
         borderRadius: 8,
@@ -195,20 +198,20 @@ const styles = StyleSheet.create({
     buttonText: {
         fontSize: 18,
         fontWeight: "bold",
-        color: "#000",
+        color: "#2C123F",
     },
     footer: {
         flexDirection: "row",
         marginTop: 20,
     },
     footerText: {
-        color: "#fff",
+        color: "#D7C9E3",
         fontSize: 16,
     },
     linkText: {
         fontSize: 16,
         fontWeight: "bold",
-        color: "#FFD700",
+        color: "#ffe25e",
         marginLeft: 5,
     },
 });

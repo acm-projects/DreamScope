@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
-import { View, Text, FlatList, ScrollView, StatusBar, TouchableOpacity, Image, StyleSheet, Dimensions } from "react-native";
-import { Button, ButtonText } from "../../components/ui/button";
+import { View, Text, ScrollView, StatusBar, TouchableOpacity, Image, StyleSheet, Dimensions } from "react-native";
 import { useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import { Feather } from '@expo/vector-icons';
@@ -18,8 +17,8 @@ export default function AIAnalysisPage() {
     const router = useRouter();
     const { analysisData, loading, error, fetchDreamPostById } = useAnalysis();
     const { userData, isLoading } = useUser();
-    const [postId, setPostId] = useState<string | null>(null);
-    const [images, setImages] = useState<string[]>([]);
+    const [postId, setPostId] = useState(null);
+    const [images, setImages] = useState([]);
     const { date } = useLocalSearchParams(); // Retrieve the date parameter from the route
 
     // Fetch postId from AsyncStorage on component mount
@@ -37,7 +36,7 @@ export default function AIAnalysisPage() {
                         if (dreamPostResponse.data) {
                             setPostId("68088d4d40764fe7f5620213"); //68043925d627f746b4741cc8
                             console.log("got post id");
-                            console.log(date)
+                            console.log(date);
                         } else {
                             console.log("No dream post found for this user on the specified date.");
                             setPostId(null);
@@ -63,11 +62,11 @@ export default function AIAnalysisPage() {
 
     useEffect(() => {
         if (analysisData?.visualizations) {
-            console.log(images)
+            console.log(images);
             setImages(analysisData.visualizations); // Set images directly to the array
         } else {
             setImages([]); // Ensure images is an empty array if no visualizations
-            console.log("hi")
+            console.log("hi");
         }
     }, [analysisData?.visualizations]);
 
@@ -109,68 +108,48 @@ export default function AIAnalysisPage() {
         let month = date.slice(5, 7);
         let day = date.slice(8, 10);
 
-
-
         switch (month) {
-            case "01":
-                month = "January";
-                break;
-            case "02":
-                month = "February";
-                break;
-            case "03":
-                month = "March";
-                break;
-            case "04":
-                month = "April";
-                break;
-            case "05":
-                month = "May";
-                break;
-            case "06":
-                month = "June";
-                break;
-            case "07":
-                month = "July";
-                break;
-            case "08":
-                month = "August";
-                break;
-            case "09":
-                month = "September";
-                break;
-            case "10":
-                month = "October";
-                break;
-            case "11":
-                month = "November";
-                break;
-            case "12":
-                month = "December";
-                break;
-
-
-
+            case "01": month = "January"; break;
+            case "02": month = "February"; break;
+            case "03": month = "March"; break;
+            case "04": month = "April"; break;
+            case "05": month = "May"; break;
+            case "06": month = "June"; break;
+            case "07": month = "July"; break;
+            case "08": month = "August"; break;
+            case "09": month = "September"; break;
+            case "10": month = "October"; break;
+            case "11": month = "November"; break;
+            case "12": month = "December"; break;
         }
 
-        return month + " " + day + " ," + year
+        return month + " " + day + ", " + year;
     };
 
     return (
         <LinearGradient
-            colors={['#180723', '#2C123F', '#3d1865']}
+            colors={["#15041D", "#2C123F", "#3B1856"]} // Updated to second code's color scheme
             style={styles.container}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
         >
-            <StatusBar barStyle="light-content" backgroundColor="#180723" />
+            <StatusBar barStyle="light-content" backgroundColor="#15041D" />
+
+            {/* Decorative background elements */}
+            <View style={{ opacity: 0.2, position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 }}>
+                <Image
+                    source={require("../../Frontend/images/cloudbackground2.png")}
+                    style={{ width: '100%', height: '100%' }}
+                    resizeMode="contain"
+                />
+            </View>
 
             {/* Back Button with improved shadow and positioning */}
             <TouchableOpacity
                 onPress={() => router.push("/tabs/DreamVisualization")}
                 style={styles.backButton}
             >
-                <Feather name="arrow-left" size={28} color="#FFE25E" />
+                <Feather name="arrow-left" size={30} color="#00BFFF" />
             </TouchableOpacity>
 
             <ScrollView
@@ -181,7 +160,7 @@ export default function AIAnalysisPage() {
                 <View style={styles.headerSection}>
                     <Text style={styles.headerText}>DREAM VISUALS</Text>
                     <View style={styles.dateContainer}>
-                        <Feather name="calendar" size={20} color="#FFE25E" />
+                        <Feather name="calendar" size={20} color="#00BFFF" />
                         <Text style={styles.dateText}>{displayDate()}</Text>
                     </View>
                 </View>
@@ -196,7 +175,7 @@ export default function AIAnalysisPage() {
                                 resizeMode="cover"
                             />
                             <LinearGradient
-                                colors={['#3d1865', '#2C123F']}
+                                colors={['#00314C', '#00314C']} // Updated to match second code's blues
                                 style={styles.captionContainer}
                             >
                                 <Text style={styles.caption}>Dream Visual {index + 1}</Text>
@@ -205,7 +184,7 @@ export default function AIAnalysisPage() {
                     ))
                 ) : (
                     <View style={styles.noImagesContainer}>
-                        <Feather name="image" size={60} color="#EADB8C" />
+                        <Feather name="image" size={60} color="#00BFFF" />
                         <Text style={styles.noImagesText}>No dream visuals available for this date</Text>
                     </View>
                 )}
@@ -223,22 +202,22 @@ const styles = StyleSheet.create({
     },
     loadingContainer: {
         flex: 1,
-        backgroundColor: "#180723",
+        backgroundColor: "#15041D",
         justifyContent: 'center',
         alignItems: 'center',
     },
     loadingText: {
-        color: "#FFE25E",
+        color: "#00BFFF", // Updated to blue from second code
         fontSize: 18,
         fontWeight: "500",
     },
     errorText: {
-        color: "#FC77A6",
+        color: "#00BFFF", // Updated to blue from second code
         fontSize: 18,
         fontWeight: "500",
     },
     scrollViewContent: {
-        padding: 16,
+        padding: 20,
         paddingTop: 60,
     },
     backButton: {
@@ -246,7 +225,7 @@ const styles = StyleSheet.create({
         top: 40,
         left: 16,
         zIndex: 10,
-        backgroundColor: "rgba(60, 24, 101, 0.7)",
+        backgroundColor: "rgba(0, 49, 76, 0.7)", // Updated to match second code's theme
         borderRadius: 12,
         padding: 8,
         shadowColor: "#000",
@@ -261,12 +240,13 @@ const styles = StyleSheet.create({
     headerSection: {
         alignItems: "center",
         marginBottom: 24,
-        backgroundColor: "rgba(60, 24, 101, 0.5)",
+        backgroundColor: "rgba(0, 49, 76, 0.3)", // Updated to match second code's theme
         borderRadius: 16,
         padding: 16,
-        borderWidth: 1,
-        borderColor: "#E9F59D",
-        shadowColor: "#FFE25E",
+        borderWidth: 0,
+        borderLeftWidth: 3,
+        borderLeftColor: "#00BFFF", // Updated to blue from second code
+        shadowColor: "#00BFFF",
         shadowOffset: {
             width: 0,
             height: 2,
@@ -276,16 +256,19 @@ const styles = StyleSheet.create({
         elevation: 5,
     },
     headerText: {
-        color: "#FFE25E",
-        fontSize: 28,
+        color: "white", // Updated to match second code's theme
+        fontSize: 26,
         fontWeight: "bold",
         marginBottom: 8,
         letterSpacing: 1.2,
+        textShadowColor: "rgba(0, 191, 255, 0.3)",
+        textShadowOffset: { width: 0, height: 1 },
+        textShadowRadius: 5,
     },
     dateContainer: {
         flexDirection: "row",
         alignItems: "center",
-        backgroundColor: "rgba(24, 7, 35, 0.5)",
+        backgroundColor: "rgba(0, 0, 255, 0.15)", // Updated to match second code's theme
         paddingVertical: 8,
         paddingHorizontal: 14,
         borderRadius: 20,
@@ -293,25 +276,25 @@ const styles = StyleSheet.create({
     dateText: {
         fontSize: 16,
         fontWeight: '600',
-        color: '#E9F59D',
+        color: '#C9B9E2', // Updated to match second code's theme
         marginLeft: 8,
     },
     imageCard: {
-        borderRadius: 20,
+        borderRadius: 16,
         overflow: "hidden",
         marginBottom: 24,
         width: screenWidth * 0.9,
         alignSelf: "center",
         elevation: 6,
-        shadowColor: "#FFE25E",
+        shadowColor: "#00BFFF",
         shadowOffset: {
             width: 0,
             height: 4,
         },
         shadowOpacity: 0.3,
         shadowRadius: 4.65,
-        borderWidth: 2,
-        borderColor: "#EADB8C",
+        borderWidth: 1.5,
+        borderColor: "#00BFFF", // Updated to blue from second code
     },
     image: {
         width: "100%",
@@ -324,22 +307,22 @@ const styles = StyleSheet.create({
         textAlign: "center",
         fontSize: 16,
         fontWeight: "600",
-        color: "#D7C9E3",
+        color: "white",
     },
     noImagesContainer: {
         alignItems: "center",
         justifyContent: "center",
         height: 300,
-        backgroundColor: "rgba(60, 24, 101, 0.3)",
-        borderRadius: 20,
-        borderWidth: 1,
-        borderColor: "#3d1865",
+        backgroundColor: "rgba(0, 49, 76, 0.3)", // Updated to match second code's theme
+        borderRadius: 16,
+        borderLeftWidth: 3,
+        borderLeftColor: "#00BFFF",
         marginTop: 20,
     },
     noImagesText: {
         marginTop: 16,
         fontSize: 16,
-        color: "#EADB8C",
+        color: "#C9B9E2", // Updated to match second code's theme
         textAlign: "center",
         paddingHorizontal: 20,
     }

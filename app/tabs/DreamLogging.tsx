@@ -27,14 +27,25 @@ const currentDate = new Date().toLocaleDateString('en-US', {
 });
 
 const checkDreamType = (dreamType: any) => {
-    if (dreamType == 'Fragmented Capture') {
-        return '#D7C9E3'; // white purple
-    } else if (dreamType == 'Empty Capture') {
-        return '#eadb8c'; // light yellow
+    if (dreamType === 'Fragmented Capture') {
+        return '#C9B9E2'; // Using first file's color
+    } else if (dreamType === 'Empty Capture') {
+        return '#fc77a6'; // Using first file's color
     } else {
-        return '#fc77a6'; // pink
+        return '#8A2BE2'; // Using first file's color
     }
 };
+
+
+const checkDreamTypeForBackgroundColor = (dreamType: any) => {
+    if (dreamType === 'Fragmented Capture') {
+        return "rgba(201, 185, 226, 0.2)"; // Using first file's color
+    } else if (dreamType === 'Empty Capture') {
+        return "rgba(252, 119, 166, 0.2)"; // Using first file's color
+    } else {
+        return "rgba(138, 43, 226, 0.2)"; // Using first file's color
+    }
+}
 
 export default function DreamLogScreen() {
     const [modalVisible, setModalVisible] = useState(false);
@@ -80,7 +91,7 @@ export default function DreamLogScreen() {
     };
 
     return (
-        <LinearGradient colors={['#180723', '#2C123F', '#3d1865']} style={{ flex: 1 }}>
+        <LinearGradient colors={["#15041D", "#29123A", "#3B1856"]} style={{ flex: 1 }}>
             <SafeAreaView style={{ flex: 1, padding: 10 }}>
                 <Modal animationType="fade" transparent visible={modalVisible} onRequestClose={() => setModalVisible(false)}>
                     <View style={styles.modalOverlay}>
@@ -115,7 +126,7 @@ export default function DreamLogScreen() {
                     showsVerticalScrollIndicator={false}
                     ListHeaderComponent={() => (
                         <View style={{ alignItems: 'center', marginTop: 10, marginBottom: 25 }}>
-                            <Text style={{ fontSize: 36, fontWeight: 'bold', color: '#D7C9E3', marginBottom: 5 }}>
+                            <Text style={{ fontSize: 36, fontWeight: 'bold', color: 'white', marginBottom: 5 }}>
                                 DREAM LOGGING
                             </Text>
                             <Text
@@ -135,7 +146,7 @@ export default function DreamLogScreen() {
                             <Text
                                 style={{
                                     fontSize: 16,
-                                    color: '#D7C9E3',
+                                    color: '#C9B9E2',
                                     opacity: 0.85,
                                     textAlign: 'center',
                                     fontStyle: 'italic',
@@ -151,9 +162,9 @@ export default function DreamLogScreen() {
                             style={{
                                 marginBottom: 20,
                                 padding: 24,
-                                borderRadius: 13,
-                                backgroundColor: 'rgba(215, 201, 250, 0.25)',
-                                borderWidth: 1,
+                                borderRadius: 50,
+                                backgroundColor: checkDreamTypeForBackgroundColor(item.name),
+                                borderWidth: 3,
                                 height: 250,
                                 borderColor: checkDreamType(item.name),
                                 shadowColor: checkDreamType(item.name),
@@ -161,14 +172,20 @@ export default function DreamLogScreen() {
                                 shadowOpacity: 0.4,
                                 shadowRadius: 12,
                                 elevation: 5,
+
+
                             }}
                         >
+
+
+
+
                             <Text
                                 style={{
                                     fontSize: 25,
                                     marginTop: 50,
                                     fontWeight: '600',
-                                    color: '#ffe25e',
+                                    color: '#fedde8',
                                     textAlign: 'center',
                                     marginBottom: 6,
                                     textTransform: 'capitalize',
@@ -179,7 +196,7 @@ export default function DreamLogScreen() {
                             <Text
                                 style={{
                                     fontSize: 14,
-                                    color: '#D7C9E3',
+                                    color: '#C9B9E2',
                                     textAlign: 'center',
                                 }}
                             >
@@ -203,7 +220,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'rgba(24, 7, 35, 0.7)',
+        backgroundColor: 'rgba(31, 7, 63, 0.5)',
     },
     modalContainer: {
         width: '90%',

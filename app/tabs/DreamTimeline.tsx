@@ -17,6 +17,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useUser } from "../context/UserContext";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { BlurView } from 'expo-blur';
 
 const API_BASE_URL = "http://10.0.2.2:5001";
 
@@ -96,6 +97,7 @@ export default function DreamTimelineScreen() {
         );
     }
 
+
     const determineDreamTypeStyle = (dreamType: string) => {
         switch (dreamType) {
             case "Detailed":
@@ -108,6 +110,9 @@ export default function DreamTimelineScreen() {
                 return styles.detailedCapture;
         }
     };
+
+
+
 
     const getDreamTypeIcon = (dreamType: string) => {
         switch (dreamType) {
@@ -156,10 +161,10 @@ export default function DreamTimelineScreen() {
     };
 
     return (
-        <LinearGradient colors={["#15041D", "#2C123F", "#3B1856"]} style={{ flex: 1 }}>
+        <LinearGradient colors={["#15041D", "#29123A", "#3B1856"]} style={{ flex: 1 }}>
             <StatusBar barStyle="light-content" />
 
-            <View style={{ position: "absolute", top: 0, right: 0, opacity: 0.2 }}>
+            <View style={{ position: "absolute", top: 0, right: 0, opacity: 0.25, zIndex: -0 }}>
                 <Image
                     source={require("../../Frontend/images/cloudbackground.png")}
                     style={{ maxWidth: "auto", maxHeight: "auto" }}
@@ -217,7 +222,7 @@ export default function DreamTimelineScreen() {
                                 style={{
                                     fontSize: 36,
                                     fontWeight: "bold",
-                                    color: "#D7C9E3",
+                                    color: "white",
                                     marginBottom: 5,
                                 }}
                             >
@@ -243,18 +248,31 @@ export default function DreamTimelineScreen() {
                                     color: "#C9B9E2",
                                     opacity: 0.85,
                                     textAlign: "center",
-
                                 }}
                             >
                                 Your journey through dreams
-
                             </Text>
                         </View>
                     </View>
                 )}
                 renderItem={({ item }) => (
                     <TouchableOpacity onPress={() => checkDreamTypeOnPressed(item)}>
-                        <View style={[styles.dreamCard, determineDreamTypeStyle(item.type)]}>
+                        <LinearGradient
+                            colors={[
+                                item.type === "Detailed" ? "rgba(138, 43, 226, 0.15)" :
+                                    item.type === "Empty" ? "rgba(252, 119, 166, 0.15)" :
+                                        item.type === "Fragmented" ? "rgba(201, 185, 226, 0.15)" : "rgba(255,255,255,0.05)",
+                                "transparent"
+                            ]}
+                            style={[styles.dreamCard, determineDreamTypeStyle(item.type), {
+                                shadowColor:
+                                    item.type === "Detailed" ? "#8A2BE2" :
+                                        item.type === "Empty" ? "#fc77a6" :
+                                            item.type === "Fragmented" ? "#C9B9E2" : "#fff",
+                                shadowOpacity: 0.4,
+                                shadowRadius: 10,
+                            }]}
+                        >
                             <View style={styles.dreamIconContainer}>
                                 <Feather name={getDreamTypeIcon(item.type)} size={24} color="#8caedb" />
                             </View>
@@ -270,7 +288,7 @@ export default function DreamTimelineScreen() {
                             <View style={styles.chevronContainer}>
                                 <Feather name="chevron-right" size={24} color="#8caedb" />
                             </View>
-                        </View>
+                        </LinearGradient>
                     </TouchableOpacity>
                 )}
                 ListFooterComponent={() => (
@@ -293,7 +311,7 @@ const styles = StyleSheet.create({
     },
     dreamCard: {
         flexDirection: 'row',
-        backgroundColor: "rgba(56, 24, 101, 0.3)", // subtle dreamy purple glow
+        backgroundColor: "rgba(56, 24, 101, 0.8)", // subtle dreamy purple glow
         borderRadius: 16,
         marginBottom: 15,
         padding: 16,
@@ -305,13 +323,13 @@ const styles = StyleSheet.create({
         elevation: 5,
     },
     detailedCapture: {
-        borderLeftColor: "#e9f59d", // white yellow
+        borderLeftColor: "#8A2BE2", // Using pink from first file
     },
     emptyCapture: {
-        borderLeftColor: "#fc77a6", // dreamy pink retained
+        borderLeftColor: "#fc77a6", // Using yellow from first file
     },
     fragmentedCapture: {
-        borderLeftColor: "#ffe25e", // vibrant yellow for fragmented memory
+        borderLeftColor: "#C9B9E2", // Using purple from first file
     },
     dreamIconContainer: {
         justifyContent: 'center',
@@ -324,25 +342,26 @@ const styles = StyleSheet.create({
     },
     dreamDate: {
         fontSize: 14,
-        color: "#eadb8c", // light yellow
+        fontWeight: "condensedBold",
+        color: "white", // light yellow
         marginBottom: 4,
     },
     dreamTitle: {
         fontSize: 18,
         fontWeight: "bold",
-        color: "#D7C9E3", // white purple
+        color: "#fedde8", // Using pink/white from first file
         marginBottom: -2,
     },
     dreamTypeTag: {
         marginTop: 8,
         alignSelf: 'flex-start',
-        backgroundColor: "rgba(255, 226, 94, 0.2)", // soft yellow glow
+        backgroundColor: "rgba(215, 201, 250, 0.25)", // Using background from first file
         borderRadius: 10,
         paddingVertical: 3,
         paddingHorizontal: 10,
     },
     dreamTypeText: {
-        color: "#ffe25e", // yellow
+        color: "#C9B9E2", // Using purple from first file
         fontSize: 12,
         fontWeight: "bold",
     },
@@ -351,7 +370,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     newDreamButton: {
-        backgroundColor: "#3d1865", // light purple
+        backgroundColor: "#2b288a", // Using darker purple from first file
         borderRadius: 12,
         alignItems: "center",
         justifyContent: "center",
@@ -364,7 +383,7 @@ const styles = StyleSheet.create({
         elevation: 6,
     },
     newDreamButtonText: {
-        color: "#e9f59d", // white yellow
+        color: "#FFFFFF", // white
         fontSize: 16,
         fontWeight: "bold",
     },
@@ -377,11 +396,11 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'rgba(24, 7, 35, 0.7)',
+        backgroundColor: 'rgba(31, 7, 63, 0.5)', // Using first file's modal background
     },
     modalContainer: {
         width: '90%',
-        height: '20%',
+        height: '17%',
         backgroundColor: '#180723',
         padding: 15,
         borderRadius: 11,

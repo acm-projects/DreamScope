@@ -1,3 +1,4 @@
+
 import { useUser } from "../context/UserContext";
 import axios from 'axios';
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -40,7 +41,7 @@ export default function DreamTimelinePage() {
         )
     }, [])
 
-    // Using the same dream type handling as the first file
+    // Updated condition to match the first file's dream types
     if (params.DreamType == "Detailed") {
         return (
             <LinearGradient
@@ -62,19 +63,30 @@ export default function DreamTimelinePage() {
                     flexGrow: 1,
                     padding: 20,
                 }}
+
                     showsVerticalScrollIndicator={false}>
 
                     <TouchableOpacity
                         onPress={() => router.push("/tabs/DreamTimeline")}
                         style={{
                             position: "absolute",
-                            top: 50,
-                            left: 20,
-                            backgroundColor: "transparent",
+                            top: 40,
+                            left: 16,
                             zIndex: 10,
+                            backgroundColor: "rgba(0, 49, 76, 0.7)", // Updated to match second code's theme
+                            borderRadius: 12,
+                            padding: 8,
+                            shadowColor: "#000",
+                            shadowOffset: {
+                                width: 0,
+                                height: 2,
+                            },
+                            shadowOpacity: 0.25,
+                            shadowRadius: 3.84,
+                            elevation: 5,
                         }}
                     >
-                        <Text style={{ fontSize: 24, color: "#8caedb" }}>
+                        <Text style={{ fontSize: 24, color: "#00BFFF" }}>
                             <Feather name="arrow-left" size={30} />
                         </Text>
                     </TouchableOpacity>
@@ -82,11 +94,12 @@ export default function DreamTimelinePage() {
                     <View style={{ alignItems: "center", marginTop: 100, marginBottom: 20 }}>
                         <Text
                             style={{
-                                fontSize: 22,
+                                fontSize: 25,
                                 fontWeight: "bold",
-                                color: "#eadb8c", // light yellow from first file
+                                color: "#eadb8c",
                                 textAlign: "center",
                                 marginBottom: 8,
+                                textShadowColor: "rgba(0, 191, 255, 0.3)",
                                 textShadowOffset: { width: 0, height: 1 },
                                 textShadowRadius: 5,
                             }}
@@ -95,9 +108,9 @@ export default function DreamTimelinePage() {
                         </Text>
                         <Text
                             style={{
-                                fontSize: 28,
+                                fontSize: 35,
                                 fontWeight: "bold",
-                                color: "#D7C9E3", // white purple from first file
+                                color: "#00BFFF",
                                 marginBottom: 5,
                             }}
                         >
@@ -110,56 +123,63 @@ export default function DreamTimelinePage() {
                         </View>
                     </View>
 
-                    <Text style={{ fontWeight: "bold", fontSize: 25, color: "#D7C9E3", marginBottom: 10 }}>
+
+                    <Text style={{ fontWeight: "bold", fontSize: 25, color: "white", marginBottom: 10 }}>
                         Dream Details
                     </Text>
                     <View
                         style={{
-                            backgroundColor: "rgba(56, 24, 101, 0.3)", // from first file's dreamCard
+                            backgroundColor: "#0c1b33",
                             borderRadius: 16,
                             padding: 20,
                             borderLeftWidth: 3,
-                            borderLeftColor: "#e9f59d", // white yellow for Detailed from first file
+                            borderLeftColor: "#8A2BE2",
                             borderRightWidth: 3,
-                            borderRightColor: "#e9f59d",
+                            borderRightColor: "#8A2BE2",
                         }}
                     >
-                        <Text style={{ fontWeight: "bold", color: "#e9f59d", marginBottom: 8 }}>
+
+
+
+                        <Text style={{ fontWeight: "bold", color: "#4fe38f", marginBottom: 8 }}>
                             Dream Title: {"\n"}
-                            <Text style={{ color: "#D7C9E3" }}>
+                            <Text style={{ color: "white" }}>
                                 {params.DreamTitle}
                             </Text>
                         </Text>
 
-                        <Text style={{ fontWeight: "bold", color: "#e9f59d", marginBottom: 8 }}>
+                        <Text style={{ fontWeight: "bold", color: "#4fe38f", marginBottom: 8 }}>
                             Dream Type: {"\n"}
-                            <Text style={{ color: "#D7C9E3" }}>
+                            <Text style={{ color: "white" }}>
                                 {params.DreamType}
                             </Text>
                         </Text>
 
-                        <Text style={{ fontWeight: "bold", color: "#e9f59d", marginBottom: 8 }}>
+
+                        <Text style={{ fontWeight: "bold", color: "#4fe38f", marginBottom: 8 }}>
                             Dream Capture Date: {"\n"}
-                            <Text style={{ color: "#D7C9E3" }}>
+                            <Text style={{ color: "white" }}>
                                 {params.DayMonthYear}
                             </Text>
                         </Text>
 
-                        <Text style={{ fontWeight: "bold", color: "#e9f59d", marginBottom: 8 }}>
+                        <Text style={{ fontWeight: "bold", color: "#4fe38f", marginBottom: 8 }}>
                             Dream Capture Time: {"\n"}
-                            <Text style={{ color: "#D7C9E3" }}>
+                            <Text style={{ color: "white" }}>
                                 {params.TimeOfCapture}
                             </Text>
                         </Text>
 
-                        <Text style={{ fontWeight: "bold", color: "#e9f59d", marginBottom: 8 }}>
+                        <Text style={{ fontWeight: "bold", color: "#4fe38f", marginBottom: 8 }}>
                             Selected Tags: {"\n"}
-                            <Text style={{ color: "#D7C9E3" }}>
+                            <Text style={{ color: "white", borderColor: "white" }}>
                                 {params.SelectedTags}
                             </Text>
                         </Text>
 
-                        <Text style={{ fontWeight: "bold", color: "#e9f59d", marginBottom: 8 }}>
+
+
+                        <Text style={{ fontWeight: "bold", color: "#4fe38f", marginBottom: 8 }}>
                             Dream Description: {"\n"}
                             <Text style={{
                                 color: "#a37be3",
@@ -171,80 +191,87 @@ export default function DreamTimelinePage() {
                                 {params.DreamDescription}
                             </Text>
                         </Text>
+
+
+
+
                     </View>
 
-                    <Text style={{ fontWeight: "bold", fontSize: 25, color: "#D7C9E3", marginBottom: 10, marginTop: 10 }}>
+                    <Text style={{ fontWeight: "bold", fontSize: 25, color: "white", marginBottom: 10, marginTop: 10 }}>
                         AI Analysis
                     </Text>
                     <View
                         style={{
-                            backgroundColor: "rgba(56, 24, 101, 0.3)",
+                            backgroundColor: "#0c1b33",
                             borderRadius: 16,
                             padding: 20,
                             borderLeftWidth: 3,
-                            borderLeftColor: "#e9f59d",
+                            borderLeftColor: "#8A2BE2",
                             borderRightWidth: 3,
-                            borderRightColor: "#e9f59d",
+                            borderRightColor: "#8A2BE2",
                         }}
                     >
-                        <Text style={{ fontWeight: "bold", color: "#e9f59d", marginBottom: 8 }}>
+
+                        <Text style={{ fontWeight: "bold", color: "#4fe38f", marginBottom: 8 }}>
                             People: {"\n"}
-                            <Text style={{ color: "#D7C9E3", marginBottom: 8 }}>
+                            <Text style={{ color: "white", marginBottom: 8 }}>
                                 {params.People}
                             </Text>
                         </Text>
 
-                        <Text style={{ fontWeight: "bold", color: "#e9f59d", marginBottom: 8 }}>
+                        <Text style={{ fontWeight: "bold", color: "#4fe38f", marginBottom: 8 }}>
                             Recurring People: {"\n"}
-                            <Text style={{ color: "#D7C9E3" }}>
+                            <Text style={{ color: "white" }}>
                                 {params.RecurringPeople}
                             </Text>
                         </Text>
 
-                        <Text style={{ fontWeight: "bold", color: "#e9f59d", marginBottom: 8 }}>
+                        <Text style={{ fontWeight: "bold", color: "#4fe38f", marginBottom: 8 }}>
                             Objects: {"\n"}
-                            <Text style={{ color: "#D7C9E3" }}>
+                            <Text style={{ color: "white" }}>
                                 {params.Objects}
                             </Text>
                         </Text>
 
-                        <Text style={{ fontWeight: "bold", color: "#e9f59d", marginBottom: 8 }}>
+                        <Text style={{ fontWeight: "bold", color: "#4fe38f", marginBottom: 8 }}>
                             Recurring Objects: {"\n"}
-                            <Text style={{ color: "#D7C9E3" }}>
+                            <Text style={{ color: "white" }}>
                                 {params.RecurringObjects}
                             </Text>
                         </Text>
 
-                        <Text style={{ fontWeight: "bold", color: "#e9f59d", marginBottom: 8 }}>
+                        <Text style={{ fontWeight: "bold", color: "#4fe38f", marginBottom: 8 }}>
                             Places: {"\n"}
-                            <Text style={{ color: "#D7C9E3" }}>
+                            <Text style={{ color: "white" }}>
                                 {params.Places}
                             </Text>
                         </Text>
 
-                        <Text style={{ fontWeight: "bold", color: "#e9f59d", marginBottom: 8 }}>
+                        <Text style={{ fontWeight: "bold", color: "#4fe38f", marginBottom: 8 }}>
                             Recurring Places: {"\n"}
-                            <Text style={{ color: "#D7C9E3" }}>
+                            <Text style={{ color: "white" }}>
                                 {params.RecurringPlaces}
                             </Text>
                         </Text>
 
-                        <Text style={{ fontWeight: "bold", color: "#e9f59d", marginBottom: 8 }}>
+                        <Text style={{ fontWeight: "bold", color: "#4fe38f", marginBottom: 8 }}>
                             Themes: {"\n"}
-                            <Text style={{ color: "#D7C9E3" }}>
+                            <Text style={{ color: "white" }}>
                                 {params.Themes}
                             </Text>
                         </Text>
 
-                        <Text style={{ fontWeight: "bold", color: "#e9f59d", marginBottom: 8 }}>
+                        <Text style={{ fontWeight: "bold", color: "#4fe38f", marginBottom: 8 }}>
                             Recurring Themes: {"\n"}
-                            <Text style={{ color: "#D7C9E3" }}>
+                            <Text style={{ color: "white" }}>
                                 {params.RecurringThemes}
                             </Text>
                         </Text>
 
-                        <Text style={{ fontWeight: "bold", color: "#e9f59d" }}>
-                            AI Analysis:
+
+
+                        <Text style={{ fontWeight: "bold", fontSize: 25, color: "#4fe38f" }}>
+                            AI Analysis
                         </Text>
                         <Text
                             style={{
@@ -256,25 +283,36 @@ export default function DreamTimelinePage() {
                             }}
                         >
                             {params.AiAnalysis}
+
                         </Text>
                     </View>
 
-                    <Text style={{ fontWeight: "bold", fontSize: 25, color: "#D7C9E3", marginBottom: 10, marginTop: 10 }}>
+
+
+                    <Text style={{ fontWeight: "bold", fontSize: 25, color: "white", marginBottom: 10, marginTop: 10 }}>
                         Generated Images
                     </Text>
                     <View
                         style={{
-                            backgroundColor: "rgba(56, 24, 101, 0.3)",
+                            backgroundColor: "#0c1b33",
                             borderRadius: 16,
                             padding: 20,
                             borderLeftWidth: 3,
-                            borderLeftColor: "#e9f59d",
+                            borderLeftColor: "#8A2BE2",
                             borderRightWidth: 3,
-                            borderRightColor: "#e9f59d",
+                            borderRightColor: "#8A2BE2",
                         }}
                     >
+
+
+
+
+
                     </View>
+
+
                 </ScrollView>
+
             </LinearGradient>
         );
     }
@@ -299,19 +337,30 @@ export default function DreamTimelinePage() {
                     flexGrow: 1,
                     padding: 20,
                 }}
+
                     showsVerticalScrollIndicator={false}>
 
                     <TouchableOpacity
                         onPress={() => router.push("/tabs/DreamTimeline")}
                         style={{
                             position: "absolute",
-                            top: 50,
-                            left: 20,
-                            backgroundColor: "transparent",
+                            top: 40,
+                            left: 16,
                             zIndex: 10,
+                            backgroundColor: "rgba(0, 49, 76, 0.7)", // Updated to match second code's theme
+                            borderRadius: 12,
+                            padding: 8,
+                            shadowColor: "#000",
+                            shadowOffset: {
+                                width: 0,
+                                height: 2,
+                            },
+                            shadowOpacity: 0.25,
+                            shadowRadius: 3.84,
+                            elevation: 5,
                         }}
                     >
-                        <Text style={{ fontSize: 24, color: "#8caedb" }}>
+                        <Text style={{ fontSize: 24, color: "#00BFFF" }}>
                             <Feather name="arrow-left" size={30} />
                         </Text>
                     </TouchableOpacity>
@@ -321,9 +370,10 @@ export default function DreamTimelinePage() {
                             style={{
                                 fontSize: 22,
                                 fontWeight: "bold",
-                                color: "#eadb8c", // light yellow from first file
+                                color: "#A5E3B7",
                                 textAlign: "center",
                                 marginBottom: 8,
+                                textShadowColor: "rgba(0, 191, 255, 0.3)",
                                 textShadowOffset: { width: 0, height: 1 },
                                 textShadowRadius: 5,
                             }}
@@ -334,7 +384,7 @@ export default function DreamTimelinePage() {
                             style={{
                                 fontSize: 28,
                                 fontWeight: "bold",
-                                color: "#D7C9E3", // white purple from first file
+                                color: "#00BFFF",
                                 marginBottom: 5,
                             }}
                         >
@@ -347,56 +397,63 @@ export default function DreamTimelinePage() {
                         </View>
                     </View>
 
-                    <Text style={{ fontWeight: "bold", fontSize: 25, color: "#D7C9E3", marginBottom: 10 }}>
+
+                    <Text style={{ fontWeight: "bold", fontSize: 25, color: "white", marginBottom: 10 }}>
                         Dream Details
                     </Text>
                     <View
                         style={{
-                            backgroundColor: "rgba(56, 24, 101, 0.3)",
+                            backgroundColor: "#0c1b33",
                             borderRadius: 16,
                             padding: 20,
                             borderLeftWidth: 3,
-                            borderLeftColor: "#ffe25e", // vibrant yellow for Fragmented from first file
+                            borderLeftColor: "#C9B9E2",
                             borderRightWidth: 3,
-                            borderRightColor: "#ffe25e",
+                            borderRightColor: "#C9B9E2",
                         }}
                     >
-                        <Text style={{ fontWeight: "bold", color: "#ffe25e", marginBottom: 8 }}>
+
+
+
+                        <Text style={{ fontWeight: "bold", color: "#8A2BE2", marginBottom: 8 }}>
                             Dream Title: {"\n"}
-                            <Text style={{ color: "#D7C9E3" }}>
+                            <Text style={{ color: "white" }}>
                                 {params.DreamTitle}
                             </Text>
                         </Text>
 
-                        <Text style={{ fontWeight: "bold", color: "#ffe25e", marginBottom: 8 }}>
+                        <Text style={{ fontWeight: "bold", color: "#8A2BE2", marginBottom: 8 }}>
                             Dream Type: {"\n"}
-                            <Text style={{ color: "#D7C9E3" }}>
+                            <Text style={{ color: "white" }}>
                                 {params.DreamType}
                             </Text>
                         </Text>
 
-                        <Text style={{ fontWeight: "bold", color: "#ffe25e", marginBottom: 8 }}>
+
+                        <Text style={{ fontWeight: "bold", color: "#8A2BE2", marginBottom: 8 }}>
                             Dream Capture Date: {"\n"}
-                            <Text style={{ color: "#D7C9E3" }}>
+                            <Text style={{ color: "white" }}>
                                 {params.DayMonthYear}
                             </Text>
                         </Text>
 
-                        <Text style={{ fontWeight: "bold", color: "#ffe25e", marginBottom: 8 }}>
+                        <Text style={{ fontWeight: "bold", color: "#8A2BE2", marginBottom: 8 }}>
                             Dream Capture Time: {"\n"}
-                            <Text style={{ color: "#D7C9E3" }}>
+                            <Text style={{ color: "white" }}>
                                 {params.TimeOfCapture}
                             </Text>
                         </Text>
 
-                        <Text style={{ fontWeight: "bold", color: "#ffe25e", marginBottom: 8 }}>
+                        <Text style={{ fontWeight: "bold", color: "#8A2BE2", marginBottom: 8 }}>
                             Selected Tags: {"\n"}
-                            <Text style={{ color: "#D7C9E3" }}>
+                            <Text style={{ color: "white", borderColor: "white" }}>
                                 {params.SelectedTags}
                             </Text>
                         </Text>
 
-                        <Text style={{ fontWeight: "bold", color: "#ffe25e", marginBottom: 8 }}>
+
+
+                        <Text style={{ fontWeight: "bold", color: "#8A2BE2", marginBottom: 8 }}>
                             Dream Description: {"\n"}
                             <Text style={{
                                 color: "#a37be3",
@@ -408,79 +465,86 @@ export default function DreamTimelinePage() {
                                 {params.DreamDescription}
                             </Text>
                         </Text>
+
+
+
+
                     </View>
 
-                    <Text style={{ fontWeight: "bold", fontSize: 25, color: "#D7C9E3", marginBottom: 10, marginTop: 10 }}>
+                    <Text style={{ fontWeight: "bold", fontSize: 25, color: "white", marginBottom: 10, marginTop: 10 }}>
                         AI Analysis
                     </Text>
                     <View
                         style={{
-                            backgroundColor: "rgba(56, 24, 101, 0.3)",
+                            backgroundColor: "#0c1b33",
                             borderRadius: 16,
                             padding: 20,
                             borderLeftWidth: 3,
-                            borderLeftColor: "#ffe25e",
+                            borderLeftColor: "#C9B9E2",
                             borderRightWidth: 3,
-                            borderRightColor: "#ffe25e",
+                            borderRightColor: "#C9B9E2",
                         }}
                     >
-                        <Text style={{ fontWeight: "bold", color: "#ffe25e", marginBottom: 8 }}>
+
+                        <Text style={{ fontWeight: "bold", color: "#8A2BE2", marginBottom: 8 }}>
                             People: {"\n"}
-                            <Text style={{ color: "#D7C9E3", marginBottom: 8 }}>
+                            <Text style={{ color: "white", marginBottom: 8 }}>
                                 {params.People}
                             </Text>
                         </Text>
 
-                        <Text style={{ fontWeight: "bold", color: "#ffe25e", marginBottom: 8 }}>
+                        <Text style={{ fontWeight: "bold", color: "#8A2BE2", marginBottom: 8 }}>
                             Recurring People: {"\n"}
-                            <Text style={{ color: "#D7C9E3" }}>
+                            <Text style={{ color: "white" }}>
                                 {params.RecurringPeople}
                             </Text>
                         </Text>
 
-                        <Text style={{ fontWeight: "bold", color: "#ffe25e", marginBottom: 8 }}>
+                        <Text style={{ fontWeight: "bold", color: "#8A2BE2", marginBottom: 8 }}>
                             Objects: {"\n"}
-                            <Text style={{ color: "#D7C9E3" }}>
+                            <Text style={{ color: "white" }}>
                                 {params.Objects}
                             </Text>
                         </Text>
 
-                        <Text style={{ fontWeight: "bold", color: "#ffe25e", marginBottom: 8 }}>
+                        <Text style={{ fontWeight: "bold", color: "#8A2BE2", marginBottom: 8 }}>
                             Recurring Objects: {"\n"}
-                            <Text style={{ color: "#D7C9E3" }}>
+                            <Text style={{ color: "white" }}>
                                 {params.RecurringObjects}
                             </Text>
                         </Text>
 
-                        <Text style={{ fontWeight: "bold", color: "#ffe25e", marginBottom: 8 }}>
+                        <Text style={{ fontWeight: "bold", color: "#8A2BE2", marginBottom: 8 }}>
                             Places: {"\n"}
-                            <Text style={{ color: "#D7C9E3" }}>
+                            <Text style={{ color: "white" }}>
                                 {params.Places}
                             </Text>
                         </Text>
 
-                        <Text style={{ fontWeight: "bold", color: "#ffe25e", marginBottom: 8 }}>
+                        <Text style={{ fontWeight: "bold", color: "#8A2BE2", marginBottom: 8 }}>
                             Recurring Places: {"\n"}
-                            <Text style={{ color: "#D7C9E3" }}>
+                            <Text style={{ color: "white" }}>
                                 {params.RecurringPlaces}
                             </Text>
                         </Text>
 
-                        <Text style={{ fontWeight: "bold", color: "#ffe25e", marginBottom: 8 }}>
+                        <Text style={{ fontWeight: "bold", color: "#8A2BE2", marginBottom: 8 }}>
                             Themes: {"\n"}
-                            <Text style={{ color: "#D7C9E3" }}>
+                            <Text style={{ color: "white" }}>
                                 {params.Themes}
                             </Text>
                         </Text>
 
-                        <Text style={{ fontWeight: "bold", color: "#ffe25e", marginBottom: 8 }}>
+                        <Text style={{ fontWeight: "bold", color: "#8A2BE2", marginBottom: 8 }}>
                             Recurring Themes: {"\n"}
-                            <Text style={{ color: "#D7C9E3" }}>
+                            <Text style={{ color: "white" }}>
                                 {params.RecurringThemes}
                             </Text>
                         </Text>
 
-                        <Text style={{ fontWeight: "bold", color: "#ffe25e" }}>
+
+
+                        <Text style={{ fontWeight: "bold", color: "#8A2BE2" }}>
                             AI Analysis:
                         </Text>
                         <Text
@@ -493,37 +557,54 @@ export default function DreamTimelinePage() {
                             }}
                         >
                             {params.AiAnalysis}
+
                         </Text>
                     </View>
+
+
                 </ScrollView>
+
             </LinearGradient>
         );
+
     }
     else {
         // Default case for Empty type
         return (
-            <LinearGradient colors={["#15041D", "#66243b", "#3B1856"]} style={{ flex: 1 }}>
+            <LinearGradient colors={["#15041D", "#42052a", "#3B1856"]} style={{ flex: 1 }}>
                 <StatusBar barStyle="light-content" />
 
                 <TouchableOpacity
                     onPress={() => router.push("/tabs/DreamTimeline")}
                     style={{
                         position: "absolute",
-                        top: 50,
-                        left: 20,
-                        backgroundColor: "transparent",
+                        top: 40,
+                        left: 16,
                         zIndex: 10,
+                        backgroundColor: "rgba(0, 49, 76, 0.7)", // Updated to match second code's theme
+                        borderRadius: 12,
+                        padding: 8,
+                        shadowColor: "#000",
+                        shadowOffset: {
+                            width: 0,
+                            height: 2,
+                        },
+                        shadowOpacity: 0.25,
+                        shadowRadius: 3.84,
+                        elevation: 5,
                     }}
                 >
-                    <Text style={{ fontSize: 24, color: "#8caedb" }}>
+                    <Text style={{ fontSize: 24, color: "#00BFFF" }}>
                         <Feather name="arrow-left" size={30} />
                     </Text>
                 </TouchableOpacity>
 
                 <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-                    <Text style={{ fontSize: 22, color: "#fc77a6", fontWeight: "bold", marginBottom: 25 }}>
+                    <Text style={{ fontSize: 22, color: "#00BFFF", fontWeight: "bold", marginBottom: 25 }}>
                         Dream Details Not Available
+
                     </Text>
+
 
                     <Text style={{
                         color: "#C9B9E2",
@@ -531,13 +612,17 @@ export default function DreamTimelinePage() {
                         padding: 10,
                         fontSize: 16,
                         lineHeight: 24,
-                        fontStyle: "italic",
-                        justifyContent: "center",
-                        alignItems: "center"
+                        fontStyle: "italic", justifyContent: "center", alignItems: "center"
                     }}>
+
                         The absence of a dream might suggest a night of deep rest or emotional numbness. This dream may reflect deeper emotional undercurrents, symbolic imagery, or internal conflicts that are surfacing during rest.
+
                     </Text>
+
                 </View>
+
+
+
             </LinearGradient>
         );
     }
@@ -548,7 +633,7 @@ const styles = StyleSheet.create({
         height: 250,
         width: '100%',
         borderRadius: 16,
-        backgroundColor: "rgba(56, 24, 101, 0.3)", // Updated to match first file
+        backgroundColor: "rgba(0, 49, 76, 0.3)",
         marginBottom: 15,
         padding: 16,
         shadowColor: "#000",
@@ -558,16 +643,16 @@ const styles = StyleSheet.create({
         elevation: 5,
     },
     boxA: {
-        backgroundColor: 'rgba(56, 24, 101, 0.3)', // Updated to match first file
+        backgroundColor: 'rgba(0, 49, 76, 0.3)',
         borderRadius: 16,
         borderLeftWidth: 3,
-        borderLeftColor: "#ffe25e", // vibrant yellow for Fragmented
+        borderLeftColor: "#8A2BE2",
     },
     boxB: {
-        backgroundColor: 'rgba(56, 24, 101, 0.3)', // Updated to match first file
+        backgroundColor: 'rgba(0, 49, 76, 0.3)',
         borderRadius: 16,
         borderLeftWidth: 3,
-        borderLeftColor: "#e9f59d", // white yellow for Detailed
+        borderLeftColor: "#00cf91",
     },
     header: {
         height: HEADER_HEIGHT,
@@ -575,7 +660,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'transparent',
     },
     tabBar: {
-        backgroundColor: "rgba(56, 24, 101, 0.2)", // Updated to match first file
+        backgroundColor: "rgba(0, 49, 76, 0.2)",
         borderRadius: 12,
         height: 48,
         marginBottom: 20,
@@ -588,7 +673,7 @@ const styles = StyleSheet.create({
     },
     activeTabItem: {
         borderBottomWidth: 2,
-        borderBottomColor: "#e9f59d", // white yellow from first file
+        borderBottomColor: "#00BFFF",
     },
     tabText: {
         color: "#C9B9E2",
@@ -596,20 +681,20 @@ const styles = StyleSheet.create({
         fontWeight: "600",
     },
     activeTabText: {
-        color: "#e9f59d", // white yellow from first file
+        color: "#00BFFF",
         fontWeight: "bold",
     },
     tabScrollView: {
         backgroundColor: 'transparent',
     },
     dreamCard: {
-        backgroundColor: "rgba(56, 24, 101, 0.3)", // Updated to match first file
+        backgroundColor: "rgba(0, 49, 76, 0.3)",
         borderRadius: 16,
         padding: 20,
         marginHorizontal: 10,
         marginBottom: 20,
         borderLeftWidth: 3,
-        borderLeftColor: "#e9f59d", // white yellow from first file
+        borderLeftColor: "#00cf91",
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.25,
@@ -619,7 +704,7 @@ const styles = StyleSheet.create({
     sectionTitle: {
         fontSize: 18,
         fontWeight: "bold",
-        color: "#e9f59d", // white yellow from first file
+        color: "#00BFFF",
         marginBottom: 10,
         marginTop: 15,
     },
@@ -638,26 +723,26 @@ const styles = StyleSheet.create({
         flexWrap: "wrap",
     },
     tag: {
-        backgroundColor: "rgba(255, 226, 94, 0.2)", // Updated to match first file's dreamTypeTag
+        backgroundColor: "rgba(0, 191, 255, 0.15)",
         borderRadius: 10,
         paddingVertical: 5,
         paddingHorizontal: 12,
         margin: 4,
     },
     tagText: {
-        color: "#ffe25e", // vibrant yellow from first file
+        color: "#00BFFF",
         fontSize: 14,
         fontWeight: "500",
     },
     dreamTypeTag: {
         marginTop: 8,
-        backgroundColor: "rgba(255, 226, 94, 0.2)", // soft yellow glow from first file
+        backgroundColor: "rgba(0, 191, 255, 0.15)",
         borderRadius: 10,
         paddingVertical: 5,
         paddingHorizontal: 12,
     },
     dreamTypeText: {
-        color: "#ffe25e", // yellow from first file
+        color: "#00BFFF",
         fontSize: 14,
         fontWeight: "bold",
     },
@@ -670,12 +755,12 @@ const styles = StyleSheet.create({
         bottom: 0,
         left: 0,
         right: 0,
-        height: '100%',
-        zIndex: -1,
+        height: '100%', // Change to full height
+        zIndex: -1,     // Change from 0 to -1
     },
     image: {
         width: '100%',
         height: '100%',
-        opacity: 0.1
+        opacity: .1
     },
 });

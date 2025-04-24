@@ -5,7 +5,6 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../Backend/firebaseConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { LinearGradient } from 'expo-linear-gradient';
-import axios from 'axios';
 
 const SignIn = (): JSX.Element => {
     const [form, setForm] = useState<{ email: string; password: string }>({
@@ -25,6 +24,8 @@ const SignIn = (): JSX.Element => {
         }
         setSubmitting(true);
         try {
+
+
             const userCredential = await signInWithEmailAndPassword(auth, form.email, form.password);
 
             await AsyncStorage.setItem("isLoggedIn", JSON.stringify(true));
@@ -51,65 +52,66 @@ const SignIn = (): JSX.Element => {
             colors={['#180723', '#2C123F', '#2C123F', '#3d1865']}
             style={{ flex: 1 }}
         >
-            <View style={{ position: "absolute", top: 0, right: 0, opacity: 0.2 }}>
+            <View style={{ position: "absolute", bottom: 0, top: 0, opacity: 0.8 }}>
                 <Image
                     source={require("../../Frontend/images/cloudedLoginSignin.png")}
                     style={{ maxWidth: "auto", maxHeight: "auto" }}
                     resizeMode="contain"
                 />
             </View>
-            <SafeAreaView style={styles.container}>
-                <ScrollView contentContainerStyle={styles.scrollContainer}>
-                    <View style={styles.innerContainer}>
-                        <Text style={styles.title}>
-                            <Text>D</Text>
-                            <Text style={styles.highlight}>ream</Text>
-                            <Text>S</Text>
-                            <Text style={styles.highlight}>cope</Text>
-                        </Text>
 
-                        <Image source={require("../../Frontend/images/logo-final.png")} style={styles.logo} resizeMode="contain" />
 
-                        <TextInput
-                            style={[
-                                styles.input,
-                                focusedField === "email" && styles.inputFocused
-                            ]}
-                            placeholder="Email"
-                            value={form.email}
-                            onChangeText={(text) => setForm({ ...form, email: text })}
-                            keyboardType="email-address"
-                            autoCapitalize="none"
-                            onFocus={() => setFocusedField("email")}
-                            onBlur={() => setFocusedField(null)}
-                        />
+            <ScrollView contentContainerStyle={styles.scrollContainer}>
+                <View style={styles.innerContainer}>
+                    <Text style={styles.title}>
+                        <Text>N</Text>
+                        <Text style={styles.highlight}>oc</Text>
+                        <Text></Text>
+                        <Text style={styles.highlight}>turne</Text>
+                    </Text>
 
-                        <TextInput
-                            style={[
-                                styles.input,
-                                focusedField === "password" && styles.inputFocused
-                            ]}
-                            placeholder="Password"
-                            value={form.password}
-                            onChangeText={(text) => setForm({ ...form, password: text })}
-                            secureTextEntry
-                            onFocus={() => setFocusedField("password")}
-                            onBlur={() => setFocusedField(null)}
-                        />
+                    <Image source={require("../../Frontend/images/logo-trans.png")} style={styles.logo} resizeMode="contain" />
 
-                        <TouchableOpacity style={styles.button} onPress={submit} disabled={isSubmitting}>
-                            <Text style={styles.buttonText}>{isSubmitting ? "Logging in..." : "Log in"}</Text>
-                        </TouchableOpacity>
+                    <TextInput
+                        style={[
+                            styles.input,
+                            focusedField === "email" && styles.inputFocused
+                        ]}
+                        placeholder="Email"
+                        value={form.email}
+                        onChangeText={(text) => setForm({ ...form, email: text })}
+                        keyboardType="email-address"
+                        autoCapitalize="none"
+                        onFocus={() => setFocusedField("email")}
+                        onBlur={() => setFocusedField(null)}
+                    />
 
-                        <View style={styles.footer}>
-                            <Text style={styles.footerText}>Don't have an account?</Text>
-                            <Link href="../../auth/sign_up" style={styles.linkText}>
-                                Sign up
-                            </Link>
-                        </View>
+                    <TextInput
+                        style={[
+                            styles.input,
+                            focusedField === "password" && styles.inputFocused
+                        ]}
+                        placeholder="Password"
+                        value={form.password}
+                        onChangeText={(text) => setForm({ ...form, password: text })}
+                        secureTextEntry
+                        onFocus={() => setFocusedField("password")}
+                        onBlur={() => setFocusedField(null)}
+                    />
+
+                    <TouchableOpacity style={styles.button} onPress={submit} disabled={isSubmitting}>
+                        <Text style={styles.buttonText}>{isSubmitting ? "Logging in..." : "Log in"}</Text>
+                    </TouchableOpacity>
+
+                    <View style={styles.footer}>
+                        <Text style={styles.footerText}>Don't have an account?</Text>
+                        <Link href="../../auth/sign_up" style={styles.linkText}>
+                            Sign up
+                        </Link>
                     </View>
-                </ScrollView>
-            </SafeAreaView>
+                </View>
+            </ScrollView>
+
         </LinearGradient>
     );
 };
@@ -127,35 +129,35 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     title: {
-        fontSize: 32,
+        fontSize: 50,
         fontWeight: "bold",
-        color: "#fff",
+        color: "#D7C9E3",
         marginBottom: 10,
     },
     highlight: {
-        color: "#FFD700",
+        color: "#ffe25e",
     },
     logo: {
-        width: 100,
-        height: 100,
+        width: 200,
+        height: 200,
         marginBottom: 20,
     },
     input: {
         width: "100%",
         height: 50,
-        backgroundColor: "#fff",
+        backgroundColor: "#D7C9E3",
         borderRadius: 8,
         paddingHorizontal: 15,
         marginBottom: 15,
         fontSize: 16,
         borderWidth: 2,
-        borderColor: "#fff", // Default border color
+        borderColor: "#D7C9E3", // Default border color
     },
     inputFocused: {
-        borderColor: "#FFD700", // Highlight color when focused
+        borderColor: "#ffe25e", // Highlight color when focused
     },
     button: {
-        backgroundColor: "#FFD700",
+        backgroundColor: "#ffe25e",
         paddingVertical: 12,
         paddingHorizontal: 20,
         borderRadius: 8,
@@ -165,20 +167,20 @@ const styles = StyleSheet.create({
     buttonText: {
         fontSize: 18,
         fontWeight: "bold",
-        color: "#000",
+        color: "#2C123F",
     },
     footer: {
         flexDirection: "row",
         marginTop: 20,
     },
     footerText: {
-        color: "#fff",
+        color: "#D7C9E3",
         fontSize: 16,
     },
     linkText: {
         fontSize: 16,
         fontWeight: "bold",
-        color: "#FFD700",
+        color: "#ffe25e",
         marginLeft: 5,
     },
 });
