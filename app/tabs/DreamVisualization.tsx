@@ -53,6 +53,8 @@ const getMarkedDates = (selectedDate: string, today: string) => {
         };
     }
 
+
+    console.log(selectedDate)
     if (!marks[today]) {
         marks[today] = {
             marked: true,
