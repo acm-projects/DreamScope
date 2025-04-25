@@ -498,16 +498,15 @@ export default function HomeScreen() {
                     </View>
                 </Modal>
 
-                <Animated.View
+                <View
                     style={styles.imageContainer}
-                    entering={FadeIn.duration(800)}
                 >
                     <Image
                         source={require('../../Frontend/images/pine-tree-background.png')}
                         style={styles.image}
                         resizeMode="stretch"
                     />
-                </Animated.View>
+                </View>
 
                 <Animated.View
                     style={styles.profileButtonContainer}
@@ -531,9 +530,9 @@ const styles = StyleSheet.create({
     },
     profileButtonContainer: {
         position: 'absolute',
-        top: 10,
+        top: "5%",
         right: 20,
-        zIndex: 10,
+        zIndex: 100,
     },
     profileButton: {
         width: 44,
