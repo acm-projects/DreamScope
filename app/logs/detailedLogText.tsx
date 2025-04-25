@@ -236,20 +236,24 @@ export default function DetailedLogTextScreen() {
                     showsVerticalScrollIndicator={false}
                 >
                     {/* Back Button with improved shadow and positioning */}
-                    <Button
+                    <TouchableOpacity
                         onPress={() => router.back()}
                         style={{
                             position: "absolute",
                             top: "3%",
                             left: "2%",
-                            backgroundColor: "transparent",
                             zIndex: 10,
+                            backgroundColor: "rgba(0, 49, 76, 0.7)",
+                            padding: 10,
+                            borderColor: "rgba(0, 49, 76, 1)",
+                            borderRadius: 12,
+                            borderWidth: 1
                         }}
                     >
                         <Text style={{ fontSize: 24, color: "white" }}>
                             <Feather name="arrow-left" size={30} />
                         </Text>
-                    </Button>
+                    </TouchableOpacity>
 
                     {/* Header with enhanced styling */}
                     <View style={{ alignItems: "center", marginTop: 40, marginBottom: 25 }}>
@@ -291,7 +295,7 @@ export default function DetailedLogTextScreen() {
                                 padding: 16,
                                 marginBottom: 20,
                                 borderLeftWidth: 3,
-                                borderLeftColor: "#00BFFF",
+                                borderLeftColor: "#8A2BE2",
                             }}
                         >
                             <Text

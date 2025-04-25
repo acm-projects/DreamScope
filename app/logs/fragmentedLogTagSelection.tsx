@@ -156,16 +156,20 @@ export default function FragmentedTagSelectionScreen() {
                             paddingTop: 5
                         }}>
                             {/* Back Button */}
-                            <Button
+                            <TouchableOpacity
                                 onPress={() => router.back()}
                                 style={{
-                                    backgroundColor: "transparent",
+                                    backgroundColor: "rgba(0, 49, 76, 0.7)",
+                                    padding: 10,
+                                    borderColor: "rgba(0, 49, 76, 1)",
+                                    borderRadius: 12,
+                                    borderWidth: 1
                                 }}
                             >
                                 <Text style={{ fontSize: 24, color: "white" }}>
                                     <Feather name="arrow-left" size={30} />
                                 </Text>
-                            </Button>
+                            </TouchableOpacity>
 
                             {/* Skip Button */}
                             <TouchableOpacity

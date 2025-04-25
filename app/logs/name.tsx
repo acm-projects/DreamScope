@@ -222,16 +222,20 @@ export default function TagsScreen() {
                         {/* Navigation row with Back Button and Skip Button */}
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 5 }}>
                             {/* Back Button */}
-                            <Button
+                            <TouchableOpacity
                                 onPress={() => router.push("/tabs/DreamLogging")}
                                 style={{
-                                    backgroundColor: "transparent",
+                                    backgroundColor: "rgba(0, 49, 76, 0.7)",
+                                    padding: 10,
+                                    borderColor: "rgba(0, 49, 76, 1)",
+                                    borderRadius: 12,
+                                    borderWidth: 1
                                 }}
                             >
                                 <Text style={{ fontSize: 24, color: "white" }}>
                                     <Feather name="arrow-left" size={30} />
                                 </Text>
-                            </Button>
+                            </TouchableOpacity>
 
                             {/* Skip Button (moved from bottom to top right) */}
                             <TouchableOpacity

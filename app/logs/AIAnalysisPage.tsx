@@ -40,7 +40,7 @@ export default function AIAnalysisPage() {
 
     if (isLoading) {
         return (
-            <LinearGradient colors={["#180723", "#2C123F"]} style={styles.loadingContainer}>
+            <LinearGradient colors={["#15041D", "#2C123F"]} style={styles.loadingContainer}>
                 <Text style={styles.loadingText}>Loading User Data...</Text>
             </LinearGradient>
         );
@@ -49,7 +49,7 @@ export default function AIAnalysisPage() {
 
     if (!userData) {
         return (
-            <LinearGradient colors={["#180723", "#2C123F"]} style={styles.loadingContainer}>
+            <LinearGradient colors={["#15041D", "#2C123F"]} style={styles.loadingContainer}>
                 <Text style={styles.errorText}>User data not available.</Text>
             </LinearGradient>
         );
@@ -58,7 +58,7 @@ export default function AIAnalysisPage() {
 
     if (loading) {
         return (
-            <LinearGradient colors={["#180723", "#2C123F"]} style={styles.loadingContainer}>
+            <LinearGradient colors={["#15041D", "#2C123F"]} style={styles.loadingContainer}>
                 <Text style={styles.loadingText}>Loading Analysis...</Text>
             </LinearGradient>
         );
@@ -67,7 +67,7 @@ export default function AIAnalysisPage() {
 
     if (error) {
         return (
-            <LinearGradient colors={["#180723", "#2C123F"]} style={styles.loadingContainer}>
+            <LinearGradient colors={["#15041D", "#2C123F"]} style={styles.loadingContainer}>
                 <Text style={styles.errorText}>Error: {error.message}</Text>
             </LinearGradient>
         );
@@ -84,7 +84,7 @@ export default function AIAnalysisPage() {
 
     return (
         <LinearGradient
-            colors={["#180723", "#2C123F", "#3d1865"]}
+            colors={["#15041D", "#2C123F", "#3B1856"]}
             style={styles.container}
         >
             <StatusBar barStyle="light-content" />
@@ -112,7 +112,7 @@ export default function AIAnalysisPage() {
                     </Text>
 
                     <LinearGradient
-                        colors={["#FC77A6", "#3d1865"]}
+                        colors={["#00BFFF", "#0000ff"]}
                         start={{ x: 0, y: 0 }}
                         end={{ x: 1, y: 1 }}
                         style={styles.titleContainer}
@@ -126,12 +126,12 @@ export default function AIAnalysisPage() {
 
                 {/* Dream Breakdown Header */}
                 <LinearGradient
-                    colors={["rgba(252, 119, 166, 0.3)", "rgba(61, 24, 101, 0.3)"]}
+                    colors={["rgba(0, 191, 255, 0.15)", "rgba(0, 49, 76, 0.15)"]}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 0 }}
                     style={styles.sectionHeader}
                 >
-                    <Feather name="moon" size={18} color="#FFE25E" />
+                    <Feather name="moon" size={18} color="#00BFFF" />
                     <Text style={styles.sectionHeaderText}>
                         Your Dream Elements
                     </Text>
@@ -140,20 +140,20 @@ export default function AIAnalysisPage() {
 
                 {/* Categories (Places, People, Objects, Themes, etc.) */}
                 {[
-                    { label: "Places", icon: "map-pin", data: analysisData.dreamPlaces, color: "#FFE25E" },
-                    { label: "People", icon: "users", data: analysisData.dreamPeople, color: "#FC77A6" },
-                    { label: "Objects", icon: "box", data: analysisData.dreamObjects, color: "#E9F59D" },
-                    { label: "Themes", icon: "feather", data: analysisData.dreamThemes, color: "#EADB8C" },
-                    { label: "Reoccurring Places", icon: "repeat", data: userData.recurringPlaces, color: "#FFE25E" },
-                    { label: "Reoccurring People", icon: "refresh-cw", data: userData.recurringPeople, color: "#FC77A6" },
-                    { label: "Reoccurring Objects", icon: "rotate-cw", data: userData.recurringObjects, color: "#E9F59D" },
-                    { label: "Reoccurring Themes", icon: "refresh-ccw", data: userData.recurringThemes, color: "#EADB8C" },
+                    { label: "Places", icon: "map-pin", data: analysisData.dreamPlaces, color: "#00BFFF" },
+                    { label: "People", icon: "users", data: analysisData.dreamPeople, color: "#00BFFF" },
+                    { label: "Objects", icon: "box", data: analysisData.dreamObjects, color: "#00BFFF" },
+                    { label: "Themes", icon: "feather", data: analysisData.dreamThemes, color: "#00BFFF" },
+                    { label: "Reoccurring Places", icon: "repeat", data: userData.recurringPlaces, color: "#00BFFF" },
+                    { label: "Reoccurring People", icon: "refresh-cw", data: userData.recurringPeople, color: "#00BFFF" },
+                    { label: "Reoccurring Objects", icon: "rotate-cw", data: userData.recurringObjects, color: "#00BFFF" },
+                    { label: "Reoccurring Themes", icon: "refresh-ccw", data: userData.recurringThemes, color: "#00BFFF" },
                 ].map((section, index) => (
                     <View
                         key={index}
                         style={[
                             styles.categoryCard,
-                            index % 2 === 1 ? { borderLeftColor: "#FC77A6" } : {}
+                            index % 2 === 1 ? { borderLeftColor: "#00BFFF" } : {}
                         ]}
                     >
                         <View style={styles.categoryHeader}>
@@ -185,12 +185,12 @@ export default function AIAnalysisPage() {
                 {/* AI Insight/Analysis View */}
                 <View style={styles.aiInsightContainer}>
                     <LinearGradient
-                        colors={["rgba(252, 119, 166, 0.3)", "rgba(61, 24, 101, 0.3)"]}
+                        colors={["rgba(0, 191, 255, 0.15)", "rgba(0, 49, 76, 0.15)"]}
                         start={{ x: 0, y: 0 }}
                         end={{ x: 1, y: 0 }}
                         style={styles.sectionHeader}
                     >
-                        <Feather name="star" size={18} color="#FC77A6" />
+                        <Feather name="star" size={18} color="#00BFFF" />
                         <Text style={styles.sectionHeaderText}>
                             AI Overview
                         </Text>
@@ -198,8 +198,8 @@ export default function AIAnalysisPage() {
 
 
                     <LinearGradient
-                        colors={["rgba(44, 18, 63, 0.8)", "rgba(61, 24, 101, 0.8)"]}
-                        style={[styles.categoryCard, { borderLeftColor: "#FC77A6", borderLeftWidth: 4 }]}
+                        colors={["rgba(0, 49, 76, 0.3)", "rgba(0, 49, 76, 0.3)"]}
+                        style={[styles.categoryCard, { borderLeftColor: "#00BFFF", borderLeftWidth: 4 }]}
                     >
                         <Text style={styles.analysisText}>
                             {analysisData.analysis || "No analysis available."}
@@ -228,7 +228,7 @@ export default function AIAnalysisPage() {
                         style={styles.timelineButton}
                     >
                         <LinearGradient
-                            colors={["#FC77A6", "#3d1865"]}
+                            colors={["#00BFFF", "#0000ff"]}
                             start={{ x: 0, y: 0 }}
                             end={{ x: 1, y: 1 }}
                             style={styles.buttonGradient}
@@ -254,12 +254,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     loadingText: {
-        color: "#FFE25E",
+        color: "#00BFFF",
         fontSize: 18,
         fontWeight: "500",
     },
     errorText: {
-        color: "#FC77A6",
+        color: "#00BFFF",
         fontSize: 18,
         fontWeight: "500",
     },
@@ -287,10 +287,10 @@ const styles = StyleSheet.create({
     dateText: {
         fontSize: 26,
         fontWeight: "bold",
-        color: "#D7C9E3",
+        color: "white",
         textAlign: "center",
         marginBottom: 12,
-        textShadowColor: "rgba(252, 119, 166, 0.5)",
+        textShadowColor: "rgba(0, 191, 255, 0.3)",
         textShadowOffset: { width: 0, height: 1 },
         textShadowRadius: 5,
     },
@@ -299,7 +299,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 24,
         borderRadius: 18,
         elevation: 4,
-        shadowColor: "#FC77A6",
+        shadowColor: "#00BFFF",
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
@@ -307,7 +307,7 @@ const styles = StyleSheet.create({
     titleText: {
         fontSize: 24,
         fontWeight: "bold",
-        color: "#FFE25E",
+        color: "#00BFFF",
     },
     sectionHeader: {
         backgroundColor: "rgba(0, 0, 0, 0.2)",
@@ -317,21 +317,21 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         borderLeftWidth: 3,
-        borderLeftColor: "#FC77A6",
+        borderLeftColor: "#00BFFF",
     },
     sectionHeaderText: {
-        color: "#D7C9E3",
+        color: "white",
         fontSize: 18,
         fontWeight: "600",
         marginLeft: 8
     },
     categoryCard: {
         marginBottom: 20,
-        backgroundColor: "rgba(24, 7, 35, 0.5)",
+        backgroundColor: "rgba(0, 49, 76, 0.3)",
         borderRadius: 16,
         padding: 15,
         borderLeftWidth: 3,
-        borderLeftColor: "#FFE25E",
+        borderLeftColor: "#00BFFF",
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.25,
@@ -349,30 +349,30 @@ const styles = StyleSheet.create({
         marginLeft: 8
     },
     categoryItem: {
-        color: "#D7C9E3",
+        color: "#C9B9E2",
         fontSize: 16,
         marginBottom: 5,
         marginLeft: 26,
         lineHeight: 22
     },
     emptyCategory: {
-        color: "#D7C9E3",
+        color: "#C9B9E2",
         fontSize: 16,
         marginLeft: 26,
         fontStyle: "italic",
-        opacity: 0.7
+        opacity: 0.8
     },
     aiInsightContainer: {
         marginTop: 10,
         marginBottom: 20
     },
     analysisText: {
-        color: "#D7C9E3",
+        color: "#C9B9E2",
         padding: 10,
         fontSize: 16,
         lineHeight: 24,
         fontStyle: "italic",
-        borderLeftColor: "#FC77A6"
+        borderLeftColor: "#00BFFF"
     },
     buttonContainer: {
         flexDirection: "row",
@@ -380,8 +380,8 @@ const styles = StyleSheet.create({
         marginTop: 20
     },
     homeButton: {
-        backgroundColor: "rgba(24, 7, 35, 0.8)",
-        borderColor: "#FC77A6",
+        backgroundColor: "rgba(0, 49, 76, 0.8)",
+        borderColor: "#00BFFF",
         borderWidth: 1.5,
         borderRadius: 12,
         alignItems: "center",
@@ -401,7 +401,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         borderRadius: 12,
-        shadowColor: "#FC77A6",
+        shadowColor: "#00BFFF",
         shadowOffset: { width: 0, height: 3 },
         shadowOpacity: 0.4,
         shadowRadius: 4.65,

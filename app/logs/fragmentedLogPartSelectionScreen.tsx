@@ -75,8 +75,12 @@ export default function FragmentedLogPartSelectionScreen() {
                                 position: "absolute",
                                 top: 5,
                                 left: -8,
-                                backgroundColor: "transparent",
                                 zIndex: 10,
+                                backgroundColor: "rgba(0, 49, 76, 0.7)",
+                                padding: 10,
+                                borderColor: "rgba(0, 49, 76, 1)",
+                                borderRadius: 12,
+                                borderWidth: 1
                             }}
                         >
                             <Text style={{ fontSize: 24, color: "white" }}>

@@ -5,17 +5,6 @@ import { useRouter, useLocalSearchParams } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import { Feather } from '@expo/vector-icons';
 
-const COLORS = {
-    yellow: '#ffe25e',
-    lightYellow: '#eadb8c',
-    whiteYellow: '#e9f59d',
-    darkPurple: '#180723',
-    purple: '#2C123F',
-    lightPurple: '#3d1865',
-    whitePurple: '#D7C9E3',
-    pink: '#fc77a6',
-};
-
 export default function DetailedLogCompletion() {
     const router = useRouter();
     const { tags } = useLocalSearchParams();
@@ -30,7 +19,7 @@ export default function DetailedLogCompletion() {
 
     return (
         <LinearGradient
-            colors={[COLORS.darkPurple, COLORS.purple, COLORS.lightPurple]}
+            colors={["#15041D", "#2C123F", "#3B1856"]}
             style={{ flex: 1 }}
         >
             <StatusBar barStyle="light-content" />
@@ -48,12 +37,12 @@ export default function DetailedLogCompletion() {
                         style={{
                             fontSize: 26,
                             fontWeight: "bold",
-                            color: COLORS.whitePurple,
+                            color: "white",
                             textAlign: "center",
                             marginBottom: 12,
-                            textShadowColor: "rgba(255, 255, 255, 0.2)",
+                            textShadowColor: "rgba(0, 191, 255, 0.3)",
                             textShadowOffset: { width: 0, height: 1 },
-                            textShadowRadius: 4,
+                            textShadowRadius: 5,
                         }}
                     >
                         {currentDate}
@@ -63,7 +52,7 @@ export default function DetailedLogCompletion() {
                         style={{
                             fontSize: 24,
                             fontWeight: "bold",
-                            color: COLORS.yellow,
+                            color: "#00BFFF",
                             marginBottom: 10,
                         }}
                     >
@@ -72,7 +61,7 @@ export default function DetailedLogCompletion() {
 
                     {selectedTags.length > 0 && (
                         <View style={{
-                            backgroundColor: "rgba(255, 226, 94, 0.2)",
+                            backgroundColor: "rgba(0, 191, 255, 0.15)",
                             borderRadius: 12,
                             padding: 12,
                             marginTop: 10,
@@ -80,9 +69,9 @@ export default function DetailedLogCompletion() {
                             alignItems: "center",
                             justifyContent: "center"
                         }}>
-                            <Feather name="tag" size={18} color={COLORS.yellow} />
+                            <Feather name="tag" size={18} color="#00BFFF" />
                             <Text style={{
-                                color: COLORS.whitePurple,
+                                color: "white",
                                 fontSize: 15,
                                 marginLeft: 8
                             }}>
@@ -95,29 +84,29 @@ export default function DetailedLogCompletion() {
                 {/* Completion Card */}
                 <View style={{
                     alignItems: "center",
-                    backgroundColor: "rgba(255, 226, 94, 0.07)",
+                    backgroundColor: "rgba(0, 49, 76, 0.3)",
                     width: "100%",
                     borderRadius: 16,
                     padding: 30,
                     borderLeftWidth: 3,
-                    borderLeftColor: COLORS.yellow,
+                    borderLeftColor: "#00BFFF",
                     marginBottom: 30
                 }}>
                     <View style={{
                         width: 80,
                         height: 80,
                         borderRadius: 40,
-                        backgroundColor: "rgba(255, 226, 94, 0.2)",
+                        backgroundColor: "rgba(0, 191, 255, 0.2)",
                         justifyContent: "center",
                         alignItems: "center",
                         marginBottom: 20
                     }}>
-                        <Feather name="check-circle" size={50} color={COLORS.yellow} />
+                        <Feather name="check-circle" size={50} color="#00BFFF" />
                     </View>
 
                     <Text style={{
                         fontSize: 18,
-                        color: COLORS.whitePurple,
+                        color: "#C9B9E2",
                         textAlign: "center",
                         marginBottom: 10
                     }}>
@@ -129,8 +118,8 @@ export default function DetailedLogCompletion() {
                 <Button
                     onPress={() => router.push("/tabs/HomeScreen")}
                     style={{
-                        backgroundColor: "rgba(255, 226, 94, 0.12)",
-                        borderColor: COLORS.yellow,
+                        backgroundColor: "rgba(0, 49, 76, 0.8)",
+                        borderColor: "#00BFFF",
                         borderWidth: 1.5,
                         borderRadius: 12,
                         alignItems: "center",
@@ -142,7 +131,7 @@ export default function DetailedLogCompletion() {
                 >
                     <ButtonText
                         style={{
-                            color: COLORS.whitePurple,
+                            color: "#FFFFFF",
                             fontSize: 16,
                             fontWeight: "bold",
                         }}

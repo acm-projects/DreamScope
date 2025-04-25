@@ -34,7 +34,7 @@ export default function AIAnalysisPage() {
                         console.log("got user id")
                         const dreamPostResponse = await axios.get(`${API_BASE_URL}/api/dreamPosts/users/${userId}/date/${date}`);
                         if (dreamPostResponse.data) {
-                            setPostId("68088d4d40764fe7f5620213"); //68043925d627f746b4741cc8
+                            setPostId(dreamPostResponse.data._id); //68043925d627f746b4741cc8
                             console.log("got post id");
                             console.log(date);
                         } else {

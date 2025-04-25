@@ -166,6 +166,7 @@ export default function DreamLogScreen() {
                                 backgroundColor: checkDreamTypeForBackgroundColor(item.name),
                                 borderWidth: 3,
                                 height: 250,
+                                opacity: .99,
                                 borderColor: checkDreamType(item.name),
                                 shadowColor: checkDreamType(item.name),
                                 shadowOffset: { width: 0, height: 6 },
