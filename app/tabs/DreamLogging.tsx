@@ -74,7 +74,6 @@ export default function DreamLogScreen() {
 
             await axios.put(`${API_BASE_URL}/users/${userId}`, {
                 totalDreams: response.data.totalDreams + 1,
-                detailedDreams: response.data.detailedDreams + 1,
             });
         } catch (error) {
             console.error('Error submitting dream log:', error);

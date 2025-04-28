@@ -141,14 +141,14 @@ export default function DreamTimelinePage() {
 
 
 
-                        <Text style={{ fontWeight: "bold", color: "#4fe38f", marginBottom: 8 }}>
+                        <Text style={{ fontWeight: "bold", color: "#e3c4ff", marginBottom: 8 }}>
                             Dream Title: {"\n"}
                             <Text style={{ color: "white" }}>
                                 {params.DreamTitle}
                             </Text>
                         </Text>
 
-                        <Text style={{ fontWeight: "bold", color: "#4fe38f", marginBottom: 8 }}>
+                        <Text style={{ fontWeight: "bold", color: "#e3c4ff", marginBottom: 8 }}>
                             Dream Type: {"\n"}
                             <Text style={{ color: "white" }}>
                                 {params.DreamType}
@@ -156,21 +156,21 @@ export default function DreamTimelinePage() {
                         </Text>
 
 
-                        <Text style={{ fontWeight: "bold", color: "#4fe38f", marginBottom: 8 }}>
+                        <Text style={{ fontWeight: "bold", color: "#e3c4ff", marginBottom: 8 }}>
                             Dream Capture Date: {"\n"}
                             <Text style={{ color: "white" }}>
                                 {params.DayMonthYear}
                             </Text>
                         </Text>
 
-                        <Text style={{ fontWeight: "bold", color: "#4fe38f", marginBottom: 8 }}>
+                        <Text style={{ fontWeight: "bold", color: "#e3c4ff", marginBottom: 8 }}>
                             Dream Capture Time: {"\n"}
                             <Text style={{ color: "white" }}>
                                 {params.TimeOfCapture}
                             </Text>
                         </Text>
 
-                        <Text style={{ fontWeight: "bold", color: "#4fe38f", marginBottom: 8 }}>
+                        <Text style={{ fontWeight: "bold", color: "#e3c4ff", marginBottom: 8 }}>
                             Selected Tags: {"\n"}
                             <Text style={{ color: "white", borderColor: "white" }}>
                                 {params.SelectedTags}
@@ -179,7 +179,7 @@ export default function DreamTimelinePage() {
 
 
 
-                        <Text style={{ fontWeight: "bold", color: "#4fe38f", marginBottom: 8 }}>
+                        <Text style={{ fontWeight: "bold", color: "#e3c4ff", marginBottom: 8 }}>
                             Dream Description: {"\n"}
                             <Text style={{
                                 color: "#a37be3",
@@ -212,56 +212,56 @@ export default function DreamTimelinePage() {
                         }}
                     >
 
-                        <Text style={{ fontWeight: "bold", color: "#4fe38f", marginBottom: 8 }}>
+                        <Text style={{ fontWeight: "bold", color: "#e3c4ff", marginBottom: 8 }}>
                             People: {"\n"}
                             <Text style={{ color: "white", marginBottom: 8 }}>
                                 {params.People}
                             </Text>
                         </Text>
 
-                        <Text style={{ fontWeight: "bold", color: "#4fe38f", marginBottom: 8 }}>
+                        <Text style={{ fontWeight: "bold", color: "#e3c4ff", marginBottom: 8 }}>
                             Recurring People: {"\n"}
                             <Text style={{ color: "white" }}>
                                 {params.RecurringPeople}
                             </Text>
                         </Text>
 
-                        <Text style={{ fontWeight: "bold", color: "#4fe38f", marginBottom: 8 }}>
+                        <Text style={{ fontWeight: "bold", color: "#e3c4ff", marginBottom: 8 }}>
                             Objects: {"\n"}
                             <Text style={{ color: "white" }}>
                                 {params.Objects}
                             </Text>
                         </Text>
 
-                        <Text style={{ fontWeight: "bold", color: "#4fe38f", marginBottom: 8 }}>
+                        <Text style={{ fontWeight: "bold", color: "#e3c4ff", marginBottom: 8 }}>
                             Recurring Objects: {"\n"}
                             <Text style={{ color: "white" }}>
                                 {params.RecurringObjects}
                             </Text>
                         </Text>
 
-                        <Text style={{ fontWeight: "bold", color: "#4fe38f", marginBottom: 8 }}>
+                        <Text style={{ fontWeight: "bold", color: "#e3c4ff", marginBottom: 8 }}>
                             Places: {"\n"}
                             <Text style={{ color: "white" }}>
                                 {params.Places}
                             </Text>
                         </Text>
 
-                        <Text style={{ fontWeight: "bold", color: "#4fe38f", marginBottom: 8 }}>
+                        <Text style={{ fontWeight: "bold", color: "#e3c4ff", marginBottom: 8 }}>
                             Recurring Places: {"\n"}
                             <Text style={{ color: "white" }}>
                                 {params.RecurringPlaces}
                             </Text>
                         </Text>
 
-                        <Text style={{ fontWeight: "bold", color: "#4fe38f", marginBottom: 8 }}>
+                        <Text style={{ fontWeight: "bold", color: "#e3c4ff", marginBottom: 8 }}>
                             Themes: {"\n"}
                             <Text style={{ color: "white" }}>
                                 {params.Themes}
                             </Text>
                         </Text>
 
-                        <Text style={{ fontWeight: "bold", color: "#4fe38f", marginBottom: 8 }}>
+                        <Text style={{ fontWeight: "bold", color: "#e3c4ff", marginBottom: 8 }}>
                             Recurring Themes: {"\n"}
                             <Text style={{ color: "white" }}>
                                 {params.RecurringThemes}
@@ -270,8 +270,8 @@ export default function DreamTimelinePage() {
 
 
 
-                        <Text style={{ fontWeight: "bold", fontSize: 25, color: "#4fe38f" }}>
-                            AI Analysis
+                        <Text style={{ fontWeight: "bold", fontSize: 25, color: "#e3c4ff" }}>
+                            AI Overview:
                         </Text>
                         <Text
                             style={{

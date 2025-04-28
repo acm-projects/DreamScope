@@ -205,7 +205,7 @@ export default function DetailedLogTextScreen() {
 
                 <Image
                     source={require("../../Frontend/images/cloudbackground2.png")}
-                    style={styles.backgroundImage}
+                    style={{ position: "absolute", maxWidth: "auto", maxHeight: "auto" }}
                     resizeMode="contain"
                 />
             </LinearGradient>

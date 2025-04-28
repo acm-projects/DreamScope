@@ -44,6 +44,14 @@ export default function DetailedLogCompletion() {
         >
             <StatusBar barStyle="light-content" />
 
+            <View style={{ position: "absolute", top: 0, right: 0, opacity: 0.2 }}>
+                <Image
+                    source={require("../../Frontend/images/completionPage.png")}
+                    style={{ backgroundColor: "#180723", maxWidth: "150%", maxHeight: "100%", opacity: 0.1 }}
+                    resizeMode="contain"
+                />
+            </View>
+
 
 
             <View style={{

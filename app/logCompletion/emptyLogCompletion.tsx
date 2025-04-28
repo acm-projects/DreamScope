@@ -25,11 +25,19 @@ export default function DetailedLogCompletion() {
             <StatusBar barStyle="light-content" />
 
 
+            <View style={{ position: "absolute", top: 0, right: 0, opacity: 0.1, zIndex: 0 }}>
+                <Image
+                    source={require("../../Frontend/images/completionPage.png")}
+                    style={{ backgroundColor: "#180723", maxWidth: "150%", maxHeight: "100%", opacity: 0.25 }}
+                    resizeMode="contain"
+                />
+            </View>
+
             <View style={{
                 flex: 1,
                 justifyContent: "center",
                 alignItems: "center",
-                padding: 20
+                padding: 20,
             }}>
                 {/* Header */}
                 <View style={{ alignItems: "center", marginBottom: 30 }}>

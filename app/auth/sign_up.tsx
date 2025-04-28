@@ -205,7 +205,7 @@ const styles = StyleSheet.create({
         marginTop: 20,
     },
     footerText: {
-        color: "#D7C9E3",
+        color: "black",
         fontSize: 16,
     },
     linkText: {
