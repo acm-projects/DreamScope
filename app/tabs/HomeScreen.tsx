@@ -429,7 +429,7 @@ export default function HomeScreen() {
             day: 'numeric'
         });
 
-        return Number(justTheDay) % 20 === 0;
+        return Number(justTheDay) % 29 === 0;
     }
 
     useEffect(() => {

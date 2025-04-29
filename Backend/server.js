@@ -295,7 +295,7 @@ app.post('/api/dreamPosts', async (req, res) => {
       );
       if (key) {
         s3Keys.push(
-          `https://${process.env.S3_BUCKET_NAME}.s3.amazonaws.com${key}`
+          `https://${process.env.S3_BUCKET_NAME}.s3.amazonaws.com/${key}`
         );
       }
     }
