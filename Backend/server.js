@@ -1,28 +1,170 @@
 import analyzeDream from "./openAiHelper.js";
 import storeImageAsBlob from "./storeImage.js";
-import dotenv from "dotenv";
-import express from "express";
-import mongoose from "mongoose";
-import cors from "cors";
-
 import User from './models/User.js';
 import DreamPost from './models/DreamPost.js';
 import weeklyCheckIn from "./models/weeklyCheckIn.js";
 import getImages from './visualization.js';
 
+import dotenv from "dotenv";
+import express from "express";
+import mongoose from "mongoose";
+import cors from "cors";
+import { Server } from 'socket.io';
+import { PassThrough } from 'stream';
+import { TranscribeStreamingClient, StartStreamTranscriptionCommand } from "@aws-sdk/client-transcribe-streaming";
+
 dotenv.config();
 
 const app = express();
-
-// Middleware
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(express.json());
-app.use(cors());
 
-// Connect to MongoDB 
-mongoose
-  .connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log("MongoDB connected"))
   .catch((err) => console.error("MongoDB connection error:", err));
+
+const PORT = process.env.PORT || 5001;
+const server = app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
+
+const io = new Server(server, {
+  cors: {
+    origin: '*',
+    methods: ['GET', 'POST']
+  }
+});
+
+const transcribeClient = new TranscribeStreamingClient({
+  region: process.env.AWS_REGION || "us-east-1",
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_KEY
+  }
+});
+
+io.on('connection', (socket) => {
+  console.log('[SIO] Client connected');
+
+  let audioInputStream = null;
+  let transcribeStream = null;
+  let isTranscriptionActive = false;
+
+  socket.on('start-transcription', (config) => {
+    console.log('Starting transcription with config:', config);
+    isTranscriptionActive = true;
+
+    audioInputStream = new PassThrough({ highWaterMark: 1024 * 1024 });
+
+    const command = new StartStreamTranscriptionCommand({
+      LanguageCode: config.languageCode,
+      MediaSampleRateHertz: config.sampleRate,
+      MediaEncoding: 'pcm',
+      AudioStream: (async function* () {
+        try {
+          while (audioInputStream && !audioInputStream.destroyed) {
+            yield new Promise((resolve) => {
+              audioInputStream.once('data', (chunk) => {
+                resolve({ AudioEvent: { AudioChunk: chunk } });
+              });
+              audioInputStream.once('end', () => {
+                console.log('audioInputStream ended');
+                resolve({ AudioEvent: { AudioChunk: Buffer.from([]) } });
+              });
+              audioInputStream.once('error', (err) => {
+                console.error('audioInputStream error:', err);
+                resolve(null);
+              });
+            });
+          }
+        } catch (error) {
+          console.error('Error in AudioStream generator:', error);
+        } finally {
+          console.log('AudioStream generator finished');
+        }
+      })(),
+    });
+
+    transcribeClient.send(command)
+      .then((response) => {
+        console.log('Transcription started successfully:', response);
+        transcribeStream = response.TranscriptResultStream;
+
+        (async () => {
+          try {
+            for await (const event of transcribeStream) {
+              if (event.TranscriptEvent?.Transcript?.Results) {
+                console.log('Raw transcription event:', JSON.stringify(event));
+
+                for (const result of event.TranscriptEvent.Transcript.Results) {
+                  if (result.Alternatives?.length > 0) {
+                    const eventType = result.IsPartial ? 'partial-transcript' : 'final-transcript';
+                    const transcript = result.Alternatives[0].Transcript;
+
+                    console.log(`Emitting ${eventType}:`, transcript);
+
+                    socket.emit(eventType, {
+                      transcript: transcript,
+                      isPartial: result.IsPartial
+                    });
+                  }
+                }
+              }
+            }
+          } catch (error) {
+            console.error('Transcription stream error:', error);
+            socket.emit('transcription-error', error.message);
+          } finally {
+            console.log('Transcription stream ended');
+            isTranscriptionActive = false;
+          }
+        })();
+      })
+      .catch((error) => {
+        console.error('Transcription start error:', error);
+        socket.emit('transcription-error', { error: error.message || 'Failed to start transcription' });
+        isTranscriptionActive = false;
+        if (audioInputStream) {
+          audioInputStream.destroy();
+          audioInputStream = null;
+        }
+        transcribeStream = null;
+      });
+  });
+
+  socket.on('audio-chunk', (arrayBuffer) => {
+    if (audioInputStream && !audioInputStream.destroyed && isTranscriptionActive) {
+      audioInputStream.write(Buffer.from(arrayBuffer));
+    } else if (!isTranscriptionActive) {
+      console.warn('Audio chunk received but transcription is not active.');
+    } else if (audioInputStream && audioInputStream.destroyed) {
+      console.warn('Audio chunk received but audioInputStream is destroyed.');
+    }
+  });
+
+  socket.on('stop-transcription', () => {
+    console.log('Stopping transcription');
+    isTranscriptionActive = false;
+    if (audioInputStream) {
+      audioInputStream.end();
+      audioInputStream.destroy();
+      audioInputStream = null;
+    }
+  });
+
+  socket.on('disconnect', () => {
+    console.log('[SIO] Client disconnected');
+    isTranscriptionActive = false;
+    if (audioInputStream) {
+      audioInputStream.destroy();
+      audioInputStream = null;
+    }
+  });
+});
 
 app.get("/", (req, res) => {
   res.send("Welcome to DreamScope API");
@@ -153,7 +295,7 @@ app.post('/api/dreamPosts', async (req, res) => {
       );
       if (key) {
         s3Keys.push(
-          `https://${process.env.S3_BUCKET_NAME}.s3.amazonaws.com/${key}`
+          `https://${process.env.S3_BUCKET_NAME}.s3.amazonaws.com${key}`
         );
       }
     }
@@ -168,7 +310,7 @@ app.post('/api/dreamPosts', async (req, res) => {
   }
 });
 
-// get dream posts by user ID
+//dream posts by user ID
 app.get('/api/dreamPosts/user/:userId', async (req, res) => {
   try {
     const dreamPosts = await DreamPost.find({ userId: req.params.userId });
@@ -182,26 +324,8 @@ app.get('/api/dreamPosts/user/:userId', async (req, res) => {
   }
 });
 
-
-app.get('/api/dreamPosts/users/:userId/dates', async (req, res) => {
-  try {
-    const { userId } = req.params;
-
-    const userDreamPosts = await DreamPost.find({ userId: userId }, 'date');
-    const userDates = userDreamPosts.map(post => post.date);
-
-    // To get only unique dates for the user:
-    const uniqueUserDates = [...new Set(userDates.map(date => date.toISOString().split('T')[0]))];
-
-    res.status(200).json(uniqueUserDates);
-  } catch (error) {
-    console.error("Error fetching dream post dates for user:", error);
-    res.status(500).json({ error: error.message });
-  }
-});
-
 // update a dream post
-app.put("/api/dreamPosts/:postId", async (req, res) => {
+app.put("/api/dreamPostVisualUpdate/:postId", async (req, res) => {
   try {
     // Step 1: Fetch the current post
     const dreamPost = await DreamPost.findById(req.params.postId);
@@ -233,7 +357,7 @@ app.put("/api/dreamPosts/:postId", async (req, res) => {
       );
       if (key) {
         s3Keys.push(
-          `https://${process.env.S3_BUCKET_NAME}.s3.amazonaws.com/${key}`
+          `https://<span class="math-inline">\{process\.env\.S3\_BUCKET\_NAME\}\.s3\.amazonaws\.com/</span>{key}`
         );
       }
     }
@@ -346,6 +470,79 @@ app.get("/api/dreamPosts/users/:userId/date/:date", async (req, res) => {
   }
 });
 
+app.put('/api/dreamPosts/:postId/updateAnalysis', async (req, res) => {
+  const { userId, dreamText } = req.body;
+  const postId = req.params.postId;
+  try {
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+
+    const checkIn = await weeklyCheckIn.find({ userId: userId });
+
+    const dreamPost = await DreamPost.findById(postId);
+    if (!dreamPost) {
+      return res.status(404).json({ message: 'Dream log not found' });
+    }
+
+    if (dreamPost.userId.toString() !== userId) {
+      return res.status(403).json({ message: 'Unauthorized to update this dream' });
+    }
+
+    const analysisResult = await analyzeDream(
+      dreamPost.dreamText,
+      dreamPost.selectedThemes,
+      dreamPost.selectedSettings,
+      dreamPost.selectedEmotions,
+      user?.recurringPeople,
+      user?.recurringObjects,
+      user?.recurringPlaces,
+      user?.recurringThemes,
+      checkIn?.checkInArray,
+    );
+
+    dreamPost.analysis = analysisResult.analysis;
+    dreamPost.dreamPeople = analysisResult.people;
+    dreamPost.dreamObjects = analysisResult.objects;
+    dreamPost.dreamPlaces = analysisResult.places;
+    dreamPost.dreamThemes = analysisResult.themes;
+    user.recurringPeople = analysisResult.recurringPpl;
+    user.recurringObjects = analysisResult.recurringObj;
+    user.recurringPlaces = analysisResult.recurringPla;
+    user.recurringThemes = analysisResult.recurringThem;
+
+
+    await user.save();
+    const imageUrls = await getImages(dreamText);
+
+    const s3Keys = [];
+    for (let i = 0; i < imageUrls.length; i++) {
+      const imageUrl = imageUrls[i];
+      const key = await storeImageAsBlob(
+        dreamPost._id,
+        imageUrl,
+        dreamPost.userId,
+        i + 1
+      );
+      if (key) {
+        s3Keys.push(
+          `https://${process.env.S3_BUCKET_NAME}.s3.amazonaws.com/${key}`
+        );
+      }
+    }
+
+    dreamPost.visualizations = s3Keys;
+
+    await dreamPost.save();
+    res.status(201).json(dreamPost);
+  } catch (error) {
+    console.error('Error updating dream analysis:', error);
+    res.status(500).json({ message: 'Failed to update dream analysis' });
+  }
+});
+
 app.post('/api/checkIn/user/:userId', async (req, res) => {
   const { checkInText, date } = req.body;
   const { userId } = req.params;
@@ -408,5 +605,75 @@ app.get('/api/allcheckIns/user/:userId', async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.get('/api/dreamPosts/users/:userId/dates', async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const userDreamPosts = await DreamPost.find({ userId: userId }, 'date');
+    const userDates = userDreamPosts.map(post => post.date);
+
+    // To get only unique dates for the user:
+    const uniqueUserDates = [...new Set(userDates.map(date => date.toISOString().split('T')[0]))];
+
+    res.status(200).json(uniqueUserDates);
+  } catch (error) {
+    console.error("Error fetching dream post dates for user:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.use((err, req, res, next) => {
+  console.error('[Express Error Handler] Server error:', err);
+
+  if (err.name === 'CredentialsProviderError') {
+    return res.status(500).json({
+      error: 'AWS credentials not configured properly',
+      details: err.message
+    });
+  }
+
+  if (err.name === 'TranscribeServiceException') {
+    return res.status(502).json({
+      error: 'Transcription service error',
+      details: err.message
+    });
+  }
+
+  res.status(500).json({ error: 'Internal server error' });
+});
+
+app.post('/api/emptyCapture', async (req, res) => {
+  try {
+    const { userId, title, type, dreamText, selectedThemes, selectedSettings, selectedEmotions } = req.body;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+
+    const dreamPost = new DreamPost({
+      userId,
+      title,
+      type,
+      dreamText,
+      selectedThemes,
+      selectedSettings,
+      selectedEmotions
+    });
+    await dreamPost.save();
+
+    res.status(201).json(dreamPost);
+  } catch (error) {
+    console.error("Error processing dream post:", error);
+    res.status(400).json({ error: error.message });
+  }
+});
+
+// Handle unhandled promise rejections
+process.on('unhandledRejection', (err) => {
+  console.error('Unhandled rejection:', err);
+});
+
+// Handle uncaught exceptions
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught exception:', err); 1
+});   
