@@ -4,19 +4,19 @@ import { useRouter, useLocalSearchParams } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import { Feather } from '@expo/vector-icons';
 
-// Updated color theme based on the second program's color scheme
+// Updated color theme to match the second program's purple theme
 const DREAM_THEME = {
-    blue: '#00BFFF',          // Primary accent color (was yellow)
-    lightBlue: '#C9B9E2',     // Light text color (was lightYellow)
-    whiteBlue: '#FFFFFF',     // White text (was whiteYellow)
-    darkBlue: '#15041D',      // Dark background (was darkPurple)
-    blue2: '#2C123F',         // Medium background (was purple)
-    lightBlue2: '#3B1856',    // Light background (was lightPurple)
-    whiteBlue2: '#C9B9E2',    // Light purple text (was whitePurple)
-    accentBlue: '#00BFFF',    // Accent color (was pink)
-    textLight: '#C9B9E2',     // Using whiteBlue2 for text
-    accent: '#00BFFF',        // Using accentBlue as accent
-    primaryButton: '#0000ff'  // Using darker blue for primary button
+    purple: '#8A2BE2',         // Primary accent color
+    lightPurple: '#C9B9E2',    // Light text color
+    whitePurple: '#FFFFFF',    // White text
+    darkPurple: '#15041D',     // Dark background
+    purple2: '#2C123F',        // Medium background
+    lightPurple2: '#3B1856',   // Light background
+    whitePurple2: '#C9B9E2',   // Light purple text
+    accentPurple: '#8A2BE2',   // Accent color
+    textLight: '#C9B9E2',      // Using whitePurple2 for text
+    accent: '#8A2BE2',         // Using accentPurple as accent
+    primaryButton: '#2b288a'   // Using darker blue-purple for primary button from second program
 };
 
 export default function DetailedLogCompletion() {
@@ -39,7 +39,7 @@ export default function DetailedLogCompletion() {
 
     return (
         <LinearGradient
-            colors={[DREAM_THEME.darkBlue, DREAM_THEME.blue2, DREAM_THEME.lightBlue2]}
+            colors={[DREAM_THEME.darkPurple, DREAM_THEME.purple2, DREAM_THEME.lightPurple2]}
             style={{ flex: 1 }}
         >
             <StatusBar barStyle="light-content" />
@@ -66,10 +66,10 @@ export default function DetailedLogCompletion() {
                         style={{
                             fontSize: 26,
                             fontWeight: "bold",
-                            color: DREAM_THEME.whiteBlue,
+                            color: DREAM_THEME.whitePurple,
                             textAlign: "center",
                             marginBottom: 12,
-                            textShadowColor: "rgba(0, 191, 255, 0.3)", // Blue shadow
+                            textShadowColor: "rgba(138, 43, 226, 0.3)", // Purple shadow
                             textShadowOffset: { width: 0, height: 1 },
                             textShadowRadius: 5,
                         }}
@@ -81,7 +81,7 @@ export default function DetailedLogCompletion() {
                         style={{
                             fontSize: 24,
                             fontWeight: "bold",
-                            color: DREAM_THEME.blue,
+                            color: DREAM_THEME.purple,
                             marginBottom: 10,
                         }}
                     >
@@ -91,7 +91,7 @@ export default function DetailedLogCompletion() {
                     {/* Add mood indicator if available */}
                     {dreamMood && (
                         <View style={{
-                            backgroundColor: "rgba(0, 191, 255, 0.15)", // Blue with opacity
+                            backgroundColor: "rgba(138, 43, 226, 0.15)", // Purple with opacity
                             borderRadius: 12,
                             padding: 12,
                             marginTop: 10,
@@ -100,9 +100,9 @@ export default function DetailedLogCompletion() {
                             justifyContent: "center",
                             marginBottom: 10
                         }}>
-                            <Feather name="smile" size={18} color={DREAM_THEME.blue} />
+                            <Feather name="smile" size={18} color={DREAM_THEME.purple} />
                             <Text style={{
-                                color: DREAM_THEME.whiteBlue2,
+                                color: DREAM_THEME.whitePurple2,
                                 fontSize: 15,
                                 marginLeft: 8
                             }}>
@@ -114,7 +114,7 @@ export default function DetailedLogCompletion() {
                     {/* Add lucidity indicator if available */}
                     {dreamLucidity !== null && (
                         <View style={{
-                            backgroundColor: "rgba(0, 191, 255, 0.15)", // Blue with opacity
+                            backgroundColor: "rgba(138, 43, 226, 0.15)", // Purple with opacity
                             borderRadius: 12,
                             padding: 12,
                             marginTop: 10,
@@ -123,9 +123,9 @@ export default function DetailedLogCompletion() {
                             justifyContent: "center",
                             marginBottom: 10
                         }}>
-                            <Feather name="eye" size={18} color={DREAM_THEME.blue} />
+                            <Feather name="eye" size={18} color={DREAM_THEME.purple} />
                             <Text style={{
-                                color: DREAM_THEME.whiteBlue2,
+                                color: DREAM_THEME.whitePurple2,
                                 fontSize: 15,
                                 marginLeft: 8
                             }}>
@@ -137,7 +137,7 @@ export default function DetailedLogCompletion() {
                     {/* Tags section */}
                     {selectedTags.length > 0 && (
                         <View style={{
-                            backgroundColor: "rgba(0, 191, 255, 0.15)", // Blue with opacity
+                            backgroundColor: "rgba(138, 43, 226, 0.15)", // Purple with opacity
                             borderRadius: 12,
                             padding: 12,
                             marginTop: 10,
@@ -145,9 +145,9 @@ export default function DetailedLogCompletion() {
                             alignItems: "center",
                             justifyContent: "center"
                         }}>
-                            <Feather name="tag" size={18} color={DREAM_THEME.blue} />
+                            <Feather name="tag" size={18} color={DREAM_THEME.purple} />
                             <Text style={{
-                                color: DREAM_THEME.whiteBlue2,
+                                color: DREAM_THEME.whitePurple2,
                                 fontSize: 15,
                                 marginLeft: 8
                             }}>
@@ -160,29 +160,29 @@ export default function DetailedLogCompletion() {
                 {/* Completion card with success animation */}
                 <View style={{
                     alignItems: "center",
-                    backgroundColor: "rgba(0, 49, 76, 0.3)", // Darker blue with opacity
+                    backgroundColor: "rgba(24, 7, 35, 0.6)", // Darker purple with opacity
                     width: "100%",
                     borderRadius: 16,
                     padding: 30,
                     borderLeftWidth: 3,
-                    borderLeftColor: DREAM_THEME.blue,
+                    borderLeftColor: DREAM_THEME.purple,
                     marginBottom: 30
                 }}>
                     <View style={{
                         width: 80,
                         height: 80,
                         borderRadius: 40,
-                        backgroundColor: "rgba(0, 191, 255, 0.2)", // Blue with opacity
+                        backgroundColor: "rgba(138, 43, 226, 0.2)", // Purple with opacity
                         justifyContent: "center",
                         alignItems: "center",
                         marginBottom: 20
                     }}>
-                        <Feather name="check-circle" size={50} color={DREAM_THEME.blue} />
+                        <Feather name="check-circle" size={50} color={DREAM_THEME.purple} />
                     </View>
 
                     <Text style={{
                         fontSize: 18,
-                        color: DREAM_THEME.whiteBlue2,
+                        color: DREAM_THEME.whitePurple2,
                         textAlign: "center",
                         marginBottom: 10
                     }}>
@@ -191,7 +191,7 @@ export default function DetailedLogCompletion() {
 
                     <Text style={{
                         fontSize: 16,
-                        color: DREAM_THEME.whiteBlue2,
+                        color: DREAM_THEME.whitePurple2,
                         opacity: 0.8,
                         textAlign: "center",
                         fontStyle: "italic",
@@ -223,7 +223,7 @@ export default function DetailedLogCompletion() {
                 >
                     <ButtonText
                         style={{
-                            color: DREAM_THEME.whiteBlue,
+                            color: DREAM_THEME.whitePurple,
                             fontSize: 16,
                             fontWeight: "bold",
                         }}
@@ -235,8 +235,8 @@ export default function DetailedLogCompletion() {
                 <Button
                     onPress={() => router.push("/tabs/HomeScreen")}
                     style={{
-                        backgroundColor: "rgba(0, 49, 76, 0.8)", // Darker blue with opacity
-                        borderColor: DREAM_THEME.blue,
+                        backgroundColor: "rgba(24, 7, 35, 0.6)", // Darker purple with opacity
+                        borderColor: DREAM_THEME.purple,
                         borderWidth: 1.5,
                         borderRadius: 12,
                         alignItems: "center",
@@ -247,7 +247,7 @@ export default function DetailedLogCompletion() {
                 >
                     <ButtonText
                         style={{
-                            color: DREAM_THEME.whiteBlue,
+                            color: DREAM_THEME.whitePurple,
                             fontSize: 16,
                             fontWeight: "bold",
                         }}

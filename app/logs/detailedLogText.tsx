@@ -222,7 +222,7 @@ export default function DetailedLogTextScreen() {
             <View style={{ opacity: 0.2, left: 0, right: 0 }}>
                 <Image
                     source={require("../../Frontend/images/cloudbackground2.png")}
-                    style={{ position: "absolute", maxWidth: "auto", maxHeight: "auto", opacity: 0.1 }}
+                    style={{ position: "absolute", maxWidth: "auto", maxHeight: "auto", opacity: 0.5 }}
                     resizeMode="contain"
                 />
             </View>

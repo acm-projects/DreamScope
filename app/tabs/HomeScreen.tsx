@@ -74,7 +74,7 @@ function generateCurrentMonthDates() {
     const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
 
     // Generate all days in the current month
-    for (let i = 1; i <= daysInMonth - 2; i++) {
+    for (let i = 1; i <= daysInMonth; i++) {
         const d = new Date(currentYear, currentMonth, i);
         const label = d.toLocaleDateString('en-US', {
             month: 'short',
@@ -429,7 +429,7 @@ export default function HomeScreen() {
             day: 'numeric'
         });
 
-        return Number(justTheDay) % 29 === 0;
+        return Number(justTheDay) % 30 === 0;
     }
 
     useEffect(() => {
@@ -484,14 +484,14 @@ export default function HomeScreen() {
                                     onPress={handleCheckIn}
                                     style={styles.modalButton}
                                 >
-                                    <Text style={styles.modalButtonText}>Complete</Text>
+                                    <Text style={styles.modalButtonText}>Skip</Text>
                                 </TouchableOpacity>
 
                                 <TouchableOpacity
                                     onPress={() => setModalVisible(false)}
                                     style={styles.modalButton}
                                 >
-                                    <Text style={styles.modalButtonText}>Skip</Text>
+                                    <Text style={styles.modalButtonText}>Complete</Text>
                                 </TouchableOpacity>
                             </View>
                         </Animated.View>
