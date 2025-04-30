@@ -23,7 +23,7 @@ export default function RootLayout() {
                         tabBarShowLabel: true,
                         headerShown: false,
 
-                        tabBarActiveTintColor: "#0093ED",
+                        tabBarActiveTintColor: "#eadb8c",
                         tabBarInactiveTintColor: "#7B718B",
                         animation: "fade",
                         tabBarLabelStyle: {

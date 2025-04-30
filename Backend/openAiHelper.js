@@ -10,16 +10,16 @@ async function analyzeDream(dreamText, selectedThemes = [], selectedSettings = [
     const context = `You are an expert dream analyst. Analyze the dream in a concise paragraph format, providing interpretations based on psychology, symbolism, and emotions, using simple everyday language.
 
                     After the analysis paragraph, please identify and list the following from the dream as separate bulleted lists in this format only:
-                    - People mentioned
-                    - Objects mentioned
-                    - Places mentioned
-                    - Themes present
+                    - People mentioned:
+                    - Objects mentioned:
+                    - Places mentioned:
+                    - Themes present:
 
                     Compare using what is provided for recurring people, objects, places, or themes mentioned, and add to it what might recur. List the updated list of recurring people, objects, places, or themes as separate bulleted lists in this format only:
-                    - Recurring People
-                    - Recurring Objects
-                    - Recurring Places
-                    - Recurring Themes
+                    - Recurring People:
+                    - Recurring Objects:
+                    - Recurring Places:
+                    - Recurring Themes:
                     
                     If nothing is provided, add items from this dream to its respective list. Do not add anything in parentheses. Do not add any titles or sub headings of any sort. After the list of themes present, make sure the next thing is the list of recurring people.
                     if there are life updates provided, take them into account for interpretations.`;
@@ -72,10 +72,10 @@ async function analyzeDream(dreamText, selectedThemes = [], selectedSettings = [
 
         const entities = {
             analysis: extractAnalysis(response),
-            people: extractEntities(response, "People mentioned:"),
-            objects: extractEntities(response, "Objects mentioned:"),
-            places: extractEntities(response, "Places mentioned:"),
-            themes: extractEntities(response, "Themes present:"),
+            people: extractEntities(response, "- People mentioned"),
+            objects: extractEntities(response, "- Objects mentioned"),
+            places: extractEntities(response, "- Places mentioned"),
+            themes: extractEntities(response, "- Themes present"),
 
             recurringPpl: extractEntities(response, "Recurring People:"),
             recurringObj: extractEntities(response, "Recurring Objects:"),
@@ -140,7 +140,7 @@ function extractEntities(text, label) {
 
     const listText = text.substring(startOfList, endOfList).trim();
     return listText.split('\n')
-        .map(item => item.replace(/^-\s*/, '').trim())
+        .map(item => item.replace(/^/, '').trim())
         .filter(item => item !== '');
 }
 

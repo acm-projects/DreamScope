@@ -5,6 +5,7 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../Backend/firebaseConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { LinearGradient } from 'expo-linear-gradient';
+import { StatusBar } from 'react-native';
 
 const SignIn = (): JSX.Element => {
     const [form, setForm] = useState<{ email: string; password: string }>({
@@ -48,71 +49,73 @@ const SignIn = (): JSX.Element => {
 
 
     return (
-        <LinearGradient
-            colors={['#180723', '#2C123F', '#2C123F', '#3d1865']}
-            style={{ flex: 1 }}
-        >
-            <View style={{ position: "absolute", bottom: 0, top: 0, opacity: 0.8 }}>
-                <Image
-                    source={require("../../Frontend/images/cloudedLoginSignin.png")}
-                    style={{ maxWidth: "auto", maxHeight: "auto" }}
-                    resizeMode="contain"
-                />
-            </View>
-
-
-            <ScrollView contentContainerStyle={styles.scrollContainer}>
-                <View style={styles.innerContainer}>
-                    <Text style={styles.title}>
-                        <Text>N</Text>
-                        <Text style={styles.highlight}>oc</Text>
-                        <Text></Text>
-                        <Text style={styles.highlight}>turne</Text>
-                    </Text>
-
-                    <Image source={require("../../Frontend/images/logo-trans.png")} style={styles.logo} resizeMode="contain" />
-
-                    <TextInput
-                        style={[
-                            styles.input,
-                            focusedField === "email" && styles.inputFocused
-                        ]}
-                        placeholder="Email"
-                        value={form.email}
-                        onChangeText={(text) => setForm({ ...form, email: text })}
-                        keyboardType="email-address"
-                        autoCapitalize="none"
-                        onFocus={() => setFocusedField("email")}
-                        onBlur={() => setFocusedField(null)}
+        <><StatusBar hidden={false} />
+            <LinearGradient
+                colors={['#180723', '#2C123F', '#2C123F', '#3d1865']}
+                style={{ flex: 1 }}
+            >
+                <View style={{ position: "absolute", bottom: 0, top: 0, opacity: 0.8 }}>
+                    <Image
+                        source={require("../../Frontend/images/cloudedLoginSignin.png")}
+                        style={{ maxWidth: "auto", maxHeight: "auto" }}
+                        resizeMode="contain"
                     />
-
-                    <TextInput
-                        style={[
-                            styles.input,
-                            focusedField === "password" && styles.inputFocused
-                        ]}
-                        placeholder="Password"
-                        value={form.password}
-                        onChangeText={(text) => setForm({ ...form, password: text })}
-                        secureTextEntry
-                        onFocus={() => setFocusedField("password")}
-                        onBlur={() => setFocusedField(null)}
-                    />
-
-                    <TouchableOpacity style={styles.button} onPress={submit} disabled={isSubmitting}>
-                        <Text style={styles.buttonText}>{isSubmitting ? "Logging in..." : "Log in"}</Text>
-                    </TouchableOpacity>
-
-                    <View style={styles.footer}>
-                        <Text style={styles.footerText}>Don't have an account?</Text>
-                        <Link href="../../auth/sign_up" style={styles.linkText}>
-                            Sign up
-                        </Link>
-                    </View>
                 </View>
-            </ScrollView>
 
-        </LinearGradient>
+
+                <ScrollView contentContainerStyle={styles.scrollContainer}>
+                    <View style={styles.innerContainer}>
+                        <Text style={styles.title}>
+                            <Text>N</Text>
+                            <Text style={styles.highlight}>oc</Text>
+                            <Text></Text>
+                            <Text style={styles.highlight}>turne</Text>
+                        </Text>
+
+                        <Image source={require("../../Frontend/images/logo-trans.png")} style={styles.logo} resizeMode="contain" />
+
+                        <TextInput
+                            style={[
+                                styles.input,
+                                focusedField === "email" && styles.inputFocused
+                            ]}
+                            placeholder="Email"
+                            value={form.email}
+                            onChangeText={(text) => setForm({ ...form, email: text })}
+                            keyboardType="email-address"
+                            autoCapitalize="none"
+                            onFocus={() => setFocusedField("email")}
+                            onBlur={() => setFocusedField(null)}
+                        />
+
+                        <TextInput
+                            style={[
+                                styles.input,
+                                focusedField === "password" && styles.inputFocused
+                            ]}
+                            placeholder="Password"
+                            value={form.password}
+                            onChangeText={(text) => setForm({ ...form, password: text })}
+                            secureTextEntry
+                            onFocus={() => setFocusedField("password")}
+                            onBlur={() => setFocusedField(null)}
+                        />
+
+                        <TouchableOpacity style={styles.button} onPress={submit} disabled={isSubmitting}>
+                            <Text style={styles.buttonText}>{isSubmitting ? "Logging in..." : "Log in"}</Text>
+                        </TouchableOpacity>
+
+                        <View style={styles.footer}>
+                            <Text style={styles.footerText}>Don't have an account?</Text>
+                            <Link href="../../auth/sign_up" style={styles.linkText}>
+                                Sign up
+                            </Link>
+                        </View>
+                    </View>
+                </ScrollView>
+
+            </LinearGradient>
+        </>
     );
 };
 
@@ -174,7 +177,7 @@ const styles = StyleSheet.create({
         marginTop: 20,
     },
     footerText: {
-        color: "black",
+        color: "#D7C9E3",
         fontSize: 16,
     },
     linkText: {

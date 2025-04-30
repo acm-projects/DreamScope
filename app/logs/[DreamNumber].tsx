@@ -86,7 +86,7 @@ export default function DreamTimelinePage() {
                             elevation: 5,
                         }}
                     >
-                        <Text style={{ fontSize: 24, color: "#00BFFF" }}>
+                        <Text style={{ fontSize: 24, color: "#eadb8c" }}>
                             <Feather name="arrow-left" size={30} />
                         </Text>
                     </TouchableOpacity>
@@ -110,7 +110,7 @@ export default function DreamTimelinePage() {
                             style={{
                                 fontSize: 35,
                                 fontWeight: "bold",
-                                color: "#00BFFF",
+                                color: "white",
                                 marginBottom: 5,
                             }}
                         >
@@ -289,31 +289,19 @@ export default function DreamTimelinePage() {
 
 
 
-                    <Text style={{ fontWeight: "bold", fontSize: 25, color: "white", marginBottom: 10, marginTop: 10 }}>
-                        Generated Images
-                    </Text>
-                    <View
-                        style={{
-                            backgroundColor: "#0c1b33",
-                            borderRadius: 16,
-                            padding: 20,
-                            borderLeftWidth: 3,
-                            borderLeftColor: "#8A2BE2",
-                            borderRightWidth: 3,
-                            borderRightColor: "#8A2BE2",
-                        }}
-                    >
 
 
 
 
 
-                    </View>
+
+
+
 
 
                 </ScrollView>
 
-            </LinearGradient>
+            </LinearGradient >
         );
     }
     else if (params.DreamType == "Fragmented") {
@@ -688,7 +676,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'transparent',
     },
     dreamCard: {
-        backgroundColor: "rgba(0, 49, 76, 0.3)",
+        backgroundColor: "rgba(0, 49, 76, 1.0)",
         borderRadius: 16,
         padding: 20,
         marginHorizontal: 10,
@@ -736,13 +724,13 @@ const styles = StyleSheet.create({
     },
     dreamTypeTag: {
         marginTop: 8,
-        backgroundColor: "rgba(0, 191, 255, 0.15)",
+        backgroundColor: "rgba(24,7,35, 0.8)",
         borderRadius: 10,
         paddingVertical: 5,
         paddingHorizontal: 12,
     },
     dreamTypeText: {
-        color: "#00BFFF",
+        color: "#D7C9E3",
         fontSize: 14,
         fontWeight: "bold",
     },

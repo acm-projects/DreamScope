@@ -1,83 +1,20 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, Image, Pressable, Text, Button, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, StyleSheet, Image, Text, TouchableOpacity, Alert } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Fontisto } from '@expo/vector-icons';
-import userDreamData from '../../Frontend/assets/dummyJson/multipleDreamLogsExampleForTimeline.json';
+import axios from 'axios';
+import { useUser } from '../context/UserContext';
 
-let validDate = true;
-
-let dreamLoggedDates = userDreamData.map(entry => entry.DayMonthYear);
-
-for (let i = 0; i < userDreamData.length; i++) {
-    dreamLoggedDates[i] = userDreamData[i].DayMonthYear;
-}
-
-const getMarkedDates = (selectedDate: string, today: string) => {
-    const marks: any = {};
-
-    dreamLoggedDates.forEach(date => {
-        marks[date] = {
-            marked: true,
-            dotColor: 'transparent',
-            customStyles: {
-                container: {
-                    backgroundColor: '#E2CF65', // Yellow solid circle
-                    borderRadius: 20,
-                },
-                text: {
-                    color: '#180723', // Dark purple text on yellow
-                    fontWeight: 'bold',
-                },
-            },
-        };
-    });
-
-    if (selectedDate) {
-        marks[selectedDate] = {
-            ...marks[selectedDate],
-            selected: true,
-            dotColor: 'transparent', // Remove the dot color for selected date
-            selectedColor: '#d57f90', // Optional selected override
-            customStyles: {
-                container: {
-                    backgroundColor: '#d57f90',
-                    borderRadius: 20,
-                },
-                text: {
-                    color: '#180723',
-                    fontWeight: 'bold',
-                },
-            },
-        };
-    }
-
-
-    console.log(selectedDate)
-    if (!marks[today]) {
-        marks[today] = {
-            marked: true,
-            dotColor: 'transparent',
-            customStyles: {
-                container: {
-                    backgroundColor: '#D7C9E3',
-                    borderRadius: 20,
-                },
-                text: {
-                    color: '#180723',
-                    fontWeight: 'bold',
-                },
-            },
-        };
-    }
-
-    return marks;
-};
+const API_BASE_URL = "http://10.0.2.2:5001"; // use 'localhost' for iOS device testing
 
 const MonthViewCalendar = () => {
-    const [selectedDate, setSelectedDate] = useState('');
     const router = useRouter();
+    const { userData } = useUser();
+
+
+
+    const [selectedDate, setSelectedDate] = useState('');
 
     const a = new Date().toISOString().split('T')[0];
 
@@ -121,27 +58,98 @@ const MonthViewCalendar = () => {
     }
 
 
+    const [dreamLoggedDates, setDreamLoggedDates] = useState<string[]>([]);
 
 
+    useEffect(() => {
+        const fetchDreamDates = async () => {
+            try {
+                if (!userData || !userData._id) {
+                    return;
+                }
 
+                const response = await axios.get(`${API_BASE_URL}/api/dreamPosts/users/${userData._id}/dates`);
+                setDreamLoggedDates(response.data);
+            } catch (error) {
+                console.error("Failed to fetch dream dates:", error);
+            }
+        };
+
+        fetchDreamDates();
+    }, [userData]);
+
+    const getMarkedDates = (selectedDate: string, today: string) => {
+        const marks: Record<string, any> = {};
+
+        dreamLoggedDates.forEach(date => {
+            marks[date] = {
+                marked: true,
+                dotColor: 'transparent',
+                customStyles: {
+                    container: {
+                        backgroundColor: '#E2CF65',
+                        borderRadius: 20,
+                    },
+                    text: {
+                        color: '#180723',
+                        fontWeight: 'bold',
+                    },
+                },
+            };
+        });
+
+        if (selectedDate) {
+            marks[selectedDate] = {
+                ...marks[selectedDate],
+                selected: true,
+                selectedColor: '#d57f90',
+                customStyles: {
+                    container: {
+                        backgroundColor: '#d57f90',
+                        borderRadius: 20,
+                    },
+                    text: {
+                        color: '#180723',
+                        fontWeight: 'bold',
+                    },
+                },
+            };
+        }
+
+        if (!marks[today]) {
+            marks[today] = {
+                marked: true,
+                dotColor: 'transparent',
+                customStyles: {
+                    container: {
+                        backgroundColor: '#D7C9E3',
+                        borderRadius: 20,
+                    },
+                    text: {
+                        color: '#180723',
+                        fontWeight: 'bold',
+                    },
+                },
+            };
+        }
+
+        return marks;
+    };
 
     const handleDayPress = (day: { dateString: string }) => {
         setSelectedDate(day.dateString);
-        validDate = true;
     };
 
     const checkValidDate = () => {
-        if (validDate == true) {
-            return router.push({
+        if (selectedDate && dreamLoggedDates.includes(selectedDate)) {
+            router.push({
                 pathname: '/logs/Image_pages',
-                params: { date: selectedDate.toString() },
+                params: { date: selectedDate },
             });
         } else {
-            //create an alert that the date the user picked is invalid
+            Alert.alert("Invalid Date", "Please select a valid date to visualize your dream.");
         }
     };
-
-
 
     return (
         <LinearGradient colors={['#180723', '#2C123F', '#3d1865']} style={styles.container}>
@@ -157,7 +165,6 @@ const MonthViewCalendar = () => {
             <Text style={{ color: "white", opacity: .5, fontSize: 18, marginBottom: 50 }}>
                 Choose a date to bring a dream to life!
             </Text>
-
 
             <View style={styles.calendarWrapper}>
                 <Calendar
@@ -175,7 +182,7 @@ const MonthViewCalendar = () => {
                         monthTextColor: '#D7C9E3',
                         arrowColor: '#eadb8c',
                         textSectionTitleColor: '#D7C9E3',
-                        textMonthFontSize: 30, // Increased font size for the month
+                        textMonthFontSize: 30,
                     }}
                 />
             </View>
@@ -210,24 +217,11 @@ const styles = StyleSheet.create({
         width: '100%',
         borderRadius: 12,
         padding: 10,
-        backgroundColor: 'rgba(255, 255, 255, 0.05)', // Subtle overlay effect
+        backgroundColor: 'rgba(255, 255, 255, 0.05)',
         shadowColor: 'white',
         shadowOpacity: 0.8,
         shadowOffset: { width: 0, height: 4 },
         shadowRadius: 20,
-    },
-    profileButton: {
-        position: 'absolute',
-        top: 40,
-        right: 20,
-        width: 44,
-        height: 44,
-        borderRadius: 22,
-        backgroundColor: '#2C123F',
-        borderWidth: 2,
-        borderColor: '#D7C9E3',
-        justifyContent: 'center',
-        alignItems: 'center',
     },
     visualizeDreamButton: {
         backgroundColor: "#eadb8c",
@@ -252,3 +246,4 @@ const styles = StyleSheet.create({
 });
 
 export default MonthViewCalendar;
+

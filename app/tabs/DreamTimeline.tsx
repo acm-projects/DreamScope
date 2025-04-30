@@ -19,7 +19,7 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { BlurView } from 'expo-blur';
 
-const API_BASE_URL = "http://10.0.2.2:5001";
+const API_BASE_URL = 'http://10.0.2.2:5001';
 
 type DreamLog = {
     _id: string;

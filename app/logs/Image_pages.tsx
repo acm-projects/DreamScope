@@ -151,7 +151,7 @@ export default function AIAnalysisPage() {
                 onPress={() => router.push("/tabs/DreamVisualization")}
                 style={styles.backButton}
             >
-                <Feather name="arrow-left" size={30} color="#00BFFF" />
+                <Feather name="arrow-left" size={30} color="#eadb8c" />
             </TouchableOpacity>
 
             <ScrollView
@@ -162,7 +162,7 @@ export default function AIAnalysisPage() {
                 <View style={styles.headerSection}>
                     <Text style={styles.headerText}>DREAM VISUALS</Text>
                     <View style={styles.dateContainer}>
-                        <Feather name="calendar" size={20} color="#00BFFF" />
+                        <Feather name="calendar" size={20} color="#eadb8c" />
                         <Text style={styles.dateText}>{displayDate()}</Text>
                     </View>
                 </View>
@@ -177,7 +177,7 @@ export default function AIAnalysisPage() {
                                 resizeMode="cover"
                             />
                             <LinearGradient
-                                colors={['#00314C', '#00314C']} // Updated to match second code's blues
+                                colors={['#180723', '#270D3A']} // Updated to dark purple shades
                                 style={styles.captionContainer}
                             >
                                 <Text style={styles.caption}>Dream Visual {index + 1}</Text>
@@ -186,7 +186,7 @@ export default function AIAnalysisPage() {
                     ))
                 ) : (
                     <View style={styles.noImagesContainer}>
-                        <Feather name="image" size={60} color="#00BFFF" />
+                        <Feather name="image" size={60} color="#8A2BE2" />
                         <Text style={styles.noImagesText}>No dream visuals available for this date</Text>
                     </View>
                 )}
@@ -209,12 +209,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     loadingText: {
-        color: "#00BFFF", // Updated to blue from second code
+        color: "#3F165E", // Updated from blue to purple
         fontSize: 18,
         fontWeight: "500",
     },
     errorText: {
-        color: "#00BFFF", // Updated to blue from second code
+        color: "#3F165E", // Updated from blue to purple
         fontSize: 18,
         fontWeight: "500",
     },
@@ -227,7 +227,7 @@ const styles = StyleSheet.create({
         top: 40,
         left: 16,
         zIndex: 10,
-        backgroundColor: "rgba(0, 49, 76, 0.7)", // Updated to match second code's theme
+        backgroundColor: "rgba(24, 7, 35, 0.7)", // Updated from blue to purple
         borderRadius: 12,
         padding: 8,
         shadowColor: "#000",
@@ -242,13 +242,13 @@ const styles = StyleSheet.create({
     headerSection: {
         alignItems: "center",
         marginBottom: 24,
-        backgroundColor: "rgba(0, 49, 76, 0.3)", // Updated to match second code's theme
+        backgroundColor: "rgba(24, 7, 35, 0.3)", // Updated from blue to purple
         borderRadius: 16,
         padding: 16,
         borderWidth: 0,
         borderLeftWidth: 3,
-        borderLeftColor: "#00BFFF", // Updated to blue from second code
-        shadowColor: "#00BFFF",
+        borderLeftColor: "#8A2BE2", // Keep purple accent
+        shadowColor: "#8A2BE2",
         shadowOffset: {
             width: 0,
             height: 2,
@@ -258,19 +258,19 @@ const styles = StyleSheet.create({
         elevation: 5,
     },
     headerText: {
-        color: "white", // Updated to match second code's theme
+        color: "white",
         fontSize: 26,
         fontWeight: "bold",
         marginBottom: 8,
         letterSpacing: 1.2,
-        textShadowColor: "rgba(0, 191, 255, 0.3)",
+        textShadowColor: "rgba(63, 22, 94, 0.3)", // Updated from blue to purple
         textShadowOffset: { width: 0, height: 1 },
         textShadowRadius: 5,
     },
     dateContainer: {
         flexDirection: "row",
         alignItems: "center",
-        backgroundColor: "rgba(0, 0, 255, 0.15)", // Updated to match second code's theme
+        backgroundColor: "rgba(24, 7, 35, 0.15)", // Updated from blue to purple
         paddingVertical: 8,
         paddingHorizontal: 14,
         borderRadius: 20,
@@ -278,7 +278,7 @@ const styles = StyleSheet.create({
     dateText: {
         fontSize: 16,
         fontWeight: '600',
-        color: '#C9B9E2', // Updated to match second code's theme
+        color: '#C9B9E2', // Keep light purple
         marginLeft: 8,
     },
     imageCard: {
@@ -288,7 +288,7 @@ const styles = StyleSheet.create({
         width: screenWidth * 0.9,
         alignSelf: "center",
         elevation: 6,
-        shadowColor: "#00BFFF",
+        shadowColor: "#8A2BE2",
         shadowOffset: {
             width: 0,
             height: 4,
@@ -296,7 +296,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.3,
         shadowRadius: 4.65,
         borderWidth: 1.5,
-        borderColor: "#00BFFF", // Updated to blue from second code
+        borderColor: "#8A2BE2", // Keep purple accent
     },
     image: {
         width: "100%",
@@ -315,16 +315,16 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         height: 300,
-        backgroundColor: "rgba(0, 49, 76, 0.3)", // Updated to match second code's theme
+        backgroundColor: "rgba(24, 7, 35, 0.3)", // Updated from blue to purple
         borderRadius: 16,
         borderLeftWidth: 3,
-        borderLeftColor: "#00BFFF",
+        borderLeftColor: "#8A2BE2",
         marginTop: 20,
     },
     noImagesText: {
         marginTop: 16,
         fontSize: 16,
-        color: "#C9B9E2", // Updated to match second code's theme
+        color: "#C9B9E2", // Keep light purple
         textAlign: "center",
         paddingHorizontal: 20,
     }
